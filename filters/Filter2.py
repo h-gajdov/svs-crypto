@@ -13,7 +13,7 @@ class GetDataForCoinsFilter(Filter):
         result_dfs = []
 
         with ThreadPoolExecutor(max_workers=THREADS_COUNT) as executor:
-            ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD") for sym in data["symbol"][:1]]
+            ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD") for sym in data["symbol"][:1]] #[:1] means take only the first coin to take all coins just delete [:1]
 
             for future in as_completed(ohlcv):
                 df = future.result()
@@ -21,7 +21,8 @@ class GetDataForCoinsFilter(Filter):
                     result_dfs.append(df)
 
         final_df = pd.concat(result_dfs, ignore_index=True)
-        print(final_df.head())
+        final_df.fillna(method='bfill', inplace=True) #sometimes some rows are NaN
+        print(final_df.tail())
         print(f"Length: {len(final_df)}")
         return final_df
 
