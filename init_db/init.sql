@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS market_data (
     id SERIAL PRIMARY KEY,
     symbol VARCHAR(20) NOT NULL,
-    timestamp TIMESTAMP NOT NULL,
+    timestamp BIGINT NOT NULL,
     open DOUBLE PRECISION,
     high DOUBLE PRECISION,
     low DOUBLE PRECISION,
