@@ -1,2 +1,2 @@
 coinpaprika
-psycorg2
+psycopg2

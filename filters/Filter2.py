@@ -5,6 +5,7 @@ from filters.Filter import *
 import requests
 import pandas as pd
 import requests
+import time
 
 THREADS_COUNT = 10
 
@@ -13,7 +14,7 @@ class GetDataForCoinsFilter(Filter):
         result_dfs = []
 
         with ThreadPoolExecutor(max_workers=THREADS_COUNT) as executor:
-            ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD") for sym in data["symbol"][1:]] #[:1] means take only the first coin to take all coins just delete [:1]
+            ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD") for sym in data["symbol"][:1]] #[:1] means take only the first coin to take all coins just delete [:1]
 
             for future in as_completed(ohlcv):
                 df = future.result()
@@ -45,9 +46,9 @@ class GetDataForCoinsFilter(Filter):
         return df
 
     @staticmethod
-    def get_daily_ohlcv(symbol, currency="USD", start_year=2015):
+    def get_daily_ohlcv(symbol, currency="USD", start_timestamp=1420070400): #default start_timestamp is 01.01.2015 00:00:00
         print(f"Fetching symbol: {symbol}...")
-        url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}-{currency}?events=capitalGain%7Cdiv%7Csplit&formatted=true&includeAdjustedClose=true&interval=1d&period1=1420070400&period2=1763254946&symbol=BTC-USD&userYfid=true&lang=en-US&region=US'
+        url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}-{currency}?events=capitalGain%7Cdiv%7Csplit&formatted=true&includeAdjustedClose=true&interval=1d&period1={start_timestamp}&period2={int(time.time())}&symbol=BTC-USD&userYfid=true&lang=en-US&region=US'
 
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",

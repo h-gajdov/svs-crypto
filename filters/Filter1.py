@@ -7,4 +7,7 @@ class Top1000CoinsFilter(Filter):
         client = Coinpaprika.Client()
         df = pd.DataFrame(client.coins())
 
-        return df[df["is_active"] == True].head(1000)
+        df = df[df["is_active"] == True] #only active coinst
+        df = df.drop_duplicates(subset="symbol") #drop duplicate symbols
+
+        return df.head(1000)
