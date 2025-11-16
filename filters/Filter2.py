@@ -13,7 +13,7 @@ class GetDataForCoinsFilter(Filter):
         result_dfs = []
 
         with ThreadPoolExecutor(max_workers=THREADS_COUNT) as executor:
-            ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD") for sym in data["symbol"][:1]] #[:1] means take only the first coin to take all coins just delete [:1]
+            ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD") for sym in data["symbol"][1:]] #[:1] means take only the first coin to take all coins just delete [:1]
 
             for future in as_completed(ohlcv):
                 df = future.result()
