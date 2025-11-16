@@ -1,8 +1,8 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from filters.Filter import *
-from datetime import datetime
 
+import requests
 import pandas as pd
 import requests
 
@@ -22,60 +22,46 @@ class GetDataForCoinsFilter(Filter):
 
         final_df = pd.concat(result_dfs, ignore_index=True)
         print(final_df.head())
+        print(f"Length: {len(final_df)}")
         return final_df
 
     @staticmethod
-    def get_daily_ohlcv(symbol, currency, start_year=2015):
-        print(f"Fetching symbol: {symbol}")
-        url = "https://min-api.cryptocompare.com/data/v2/histoday"
+    def parse_data_to_df(data, symbol):
+        result = data['chart']['result'][0]
+        quote = result['indicators']['quote'][0]
 
-        all_data = []
-        to_ts = None  # no timestamp means fetch most recent first
+        df = pd.DataFrame({
+            'symbol': symbol,
+            # 'utc': pd.to_datetime(result['timestamp'], unit='s'),
+            'timestamp': result['timestamp'],
+            'open': quote['open'],
+            'high': quote['high'],
+            'low': quote['low'],
+            'close': quote['close'],
+            'volume': quote['volume']
+        })
 
-        # run until we reach year <= start_year
-        while True:
-            params = {
-                "fsym": symbol,
-                "tsym": currency,
-                "limit": 2000,
-                "api_key": ""
-            }
-            if to_ts:
-                params["toTs"] = to_ts
+        return df
 
-            r = requests.get(url, params=params)
-            data_json = r.json()
+    @staticmethod
+    def get_daily_ohlcv(symbol, currency="USD", start_year=2015):
+        print(f"Fetching symbol: {symbol}...")
+        url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}-{currency}?events=capitalGain%7Cdiv%7Csplit&formatted=true&includeAdjustedClose=true&interval=1d&period1=1420070400&period2=1763254946&symbol=BTC-USD&userYfid=true&lang=en-US&region=US'
 
-            if "Data" not in data_json or "Data" not in data_json["Data"]:
-                print(f"No data for {symbol}: {data_json}")
-                return pd.DataFrame()
-            data = data_json["Data"]["Data"]
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive"
+        }
 
-            if not data:
-                break
+        session = requests.Session()
+        resp = session.get(url, headers=headers)
+        data = resp.json()
 
-            all_data.extend(data)
+        if resp.status_code != 200:
+            print(f"Error fetching {symbol}: HTTP {resp.status_code}")
+            return pd.DataFrame()
 
-            # earliest timestamp from this batch
-            earliest_ts = data[0]["time"]
-            earliest_year = datetime.utcfromtimestamp(earliest_ts).year
-
-            # print(f"Fetched batch: earliest {earliest_year}")
-
-            if earliest_year <= start_year:
-                break
-
-            # request older candles next
-            to_ts = earliest_ts - 1
-
-        # remove duplicates when merging
-        all_data = {d["time"]: d for d in all_data}.values()
-
-        # convert timestamps to UTC datetime
-        # for d in all_data:
-        #     d["utc"] = datetime.utcfromtimestamp(d["time"]).strftime("%Y-%m-%d %H:%M:%S")
-
-        # sort by time
-        # all_data = sorted(all_data, key=lambda x: x["time"])
-        print(f"Fetched symbol: {symbol}")
-        return pd.DataFrame(all_data)
+        print(f"Fetched symbol: {symbol}!")
+        return GetDataForCoinsFilter.parse_data_to_df(data, symbol)
