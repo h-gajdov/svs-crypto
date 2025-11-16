@@ -10,5 +10,10 @@ CREATE TABLE IF NOT EXISTS market_data (
     UNIQUE(symbol, timestamp)
 );
 
+CREATE TABLE IF NOT EXISTS last_timestamp (
+    id SERIAL PRIMARY KEY,
+    timestamp BIGINT NOT NULL
+);
+
 CREATE INDEX IF NOT EXISTS idx_market_data_symbol ON market_data(symbol);
 CREATE INDEX IF NOT EXISTS idx_market_data_timestamp ON market_data(timestamp);

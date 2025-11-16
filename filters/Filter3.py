@@ -1,4 +1,5 @@
 from filters.Filter import *
+from db_controller.db import Database
 import time
 import psycopg2
 from io import StringIO
@@ -6,13 +7,7 @@ from io import StringIO
 class FillDatabaseFilter(Filter):
 
     def __init__(self):
-        self.conn = psycopg2.connect(
-            host="localhost",
-            database="mydb",
-            user="docker",
-            password="docker",
-        )
-        self.cur = self.conn.cursor()
+        self.db = Database()
 
     def process(self, data):
         start_time = time.time()
@@ -22,19 +17,17 @@ class FillDatabaseFilter(Filter):
             csv_buffer.seek(0)
 
             # Copy the CSV into the table
-            self.cur.copy_expert(
+            self.db.copy_expert(
                 """COPY market_data(symbol, timestamp, open, high, low, close, volume)
                    FROM STDIN WITH CSV HEADER""",
-                csv_buffer
-            )
+                csv_buffer)
 
-            self.conn.commit()
+            self.db.commit()
         except Exception as e:
-            self.conn.rollback()
+            self.db.roll_back()
             print(f"Error occurred: {e}")
         finally:
-            self.cur.close()
-            self.conn.close()
+            self.db.close()
 
         end_time = time.time()
         elapsed_time = end_time - start_time
