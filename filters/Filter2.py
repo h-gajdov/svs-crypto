@@ -7,7 +7,7 @@ import pandas as pd
 import requests
 import time
 
-THREADS_COUNT = 10
+THREADS_COUNT = 30
 
 class GetDataForCoinsFilter(Filter):
     def process(self, data):
