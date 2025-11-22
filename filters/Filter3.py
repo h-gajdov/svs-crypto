@@ -1,83 +1,116 @@
+import os
+import time
+import pandas as pd
+from io import StringIO
+from dotenv import load_dotenv
+
 from filters.Filter import *
 from db_controller.db import Database
-import time
-import psycopg2
-from io import StringIO
+
+load_dotenv()
+
+BATCH_SIZE = int(os.getenv("BATCH_SIZE", 50))
+
 
 class FillDatabaseFilter(Filter):
 
     def __init__(self):
+        # We don't open the DB here to avoid connection timeouts
+        # while waiting for the pipeline to start.
+        pass
+
+    def consume_stream(self, in_queue):
         self.db = Database()
+        buffer = []
 
-    def process(self, data):
+        is_fresh_db = self.db.is_empty()
+        mode_name = "FAST LOAD" if is_fresh_db else "SAFE UPDATE"
+
+        print(f"Filter 3: Connected. Mode: [{mode_name}]. Waiting for data...")
         start_time = time.time()
+
         try:
-            csv_buffer = StringIO()
-            data.to_csv(csv_buffer, index=False, header=True)
-            csv_buffer.seek(0)
+            while True:
+                # Get dataframe from queue
+                df_item = in_queue.get()
 
-            # Copy the CSV into the table
-            self.db.copy_expert(
-                """COPY market_data(symbol, timestamp, open, high, low, close, volume)
-                   FROM STDIN WITH CSV HEADER""",
-                csv_buffer)
+                # --- SENTINEL CHECK (End of Stream) ---
+                if df_item is None:
+                    if buffer:
+                        self._flush_batch(self.db, buffer, is_fresh_db)
+                    break
 
-            self.db.commit()
+                # Add to buffer
+                buffer.append(df_item)
+
+                # --- BATCH FLUSH ---
+                if len(buffer) >= BATCH_SIZE:
+                    self._flush_batch(self.db, buffer, is_fresh_db)
+                    buffer = []  # Clear buffer
+
+                in_queue.task_done()
+
         except Exception as e:
-            self.db.roll_back()
-            print(f"Error occurred: {e}")
+            print(f"Filter 3 Critical Error: {e}")
         finally:
             self.db.close()
+            total_time = time.time() - start_time
+            print(f"Filter 3 finished in {total_time:.4f} seconds.")
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Filter 3 finish in {elapsed_time:.4f} seconds.")
-        return data
+    def _flush_batch(self, db, buffer, is_fresh_db):
+        """Prepares the batch and delegates to the correct write method"""
+        if not buffer:
+            return
 
-    # duplicates safe function
-    def process_duplicate_safe(self, data):
-        start_time = time.time()
         try:
-            required_cols = ['symbol', 'timestamp', 'open', 'high', 'low', 'close', 'volume']
-            data = data[required_cols]
+            # Merge buffer into one DataFrame
+            batch_df = pd.concat(buffer, ignore_index=True)
+            batch_df = batch_df.ffill()  # Handle NaNs
 
-            #temporary table for dealing with duplicates
-            self.cur.execute("""
-                CREATE TEMP TABLE tmp_market_data (
-                    symbol TEXT,
-                    timestamp BIGINT,
-                    open NUMERIC,
-                    high NUMERIC,
-                    low NUMERIC,
-                    close NUMERIC,
-                    volume NUMERIC
-                ) ON COMMIT DROP;
-            """)
+            # Delegate to the specific strategy
+            if is_fresh_db:
+                self._write_batch_fast(db, batch_df)
+            else:
+                self._write_batch_safe(db, batch_df)
 
-            csv_buffer = StringIO()
-            data.to_csv(csv_buffer, index=False, header=True)
-            csv_buffer.seek(0)
+            # print(f"Filter 3: Wrote batch of {len(buffer)} items.")
 
-            self.cur.copy_expert(
-                "COPY tmp_market_data(symbol, timestamp, open, high, low, close, volume) FROM STDIN WITH CSV HEADER",
-                csv_buffer
-            )
-
-            self.cur.execute("""
-                INSERT INTO market_data (symbol, timestamp, open, high, low, close, volume)
-                SELECT * FROM tmp_market_data
-                ON CONFLICT (symbol, timestamp) DO NOTHING
-            """)
-
-            self.conn.commit()
         except Exception as e:
-            self.conn.rollback()
-            print(f"Error occurred: {e}")
-        finally:
-            self.cur.close()
-            self.conn.close()
+            db.roll_back()
+            print(f"Filter 3 Batch Error: {e}")
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Filter 3 finish in {elapsed_time:.4f} seconds.")
-        return data
+    def _write_batch_fast(self, db, data):
+        csv_buffer = StringIO()
+        data.to_csv(csv_buffer, index=False, header=True)
+        csv_buffer.seek(0)
+
+        db.copy_expert(
+            """COPY market_data(symbol, timestamp, open, high, low, close, volume)
+               FROM STDIN WITH CSV HEADER""",
+            csv_buffer
+        )
+        db.commit()
+
+    def _write_batch_safe(self, db, data):
+        csv_buffer = StringIO()
+        data.to_csv(csv_buffer, index=False, header=True)
+        csv_buffer.seek(0)
+
+        # 1. Clear Staging
+        db.execute("TRUNCATE TABLE market_data_staging")
+
+        # 2. Copy to Staging
+        db.copy_expert("""
+            COPY market_data_staging(symbol, timestamp, open, high, low, close, volume)
+            FROM STDIN WITH CSV HEADER
+        """, csv_buffer)
+
+        # 3. Insert from Staging to Main with Conflict Handling
+        db.execute("""
+            INSERT INTO market_data(symbol, timestamp, open, high, low, close, volume)
+            SELECT symbol, timestamp, open, high, low, close, volume
+            FROM market_data_staging
+            ON CONFLICT (symbol, timestamp) DO NOTHING;
+        """)
+
+        db.commit()

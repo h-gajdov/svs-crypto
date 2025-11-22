@@ -1,20 +1,40 @@
+import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime, date, timezone, time as dt_time
 
 from filters.Filter import *
+from db_controller.db import Database
 
-import requests
 import pandas as pd
 import requests
 import time
+from dotenv import load_dotenv
+load_dotenv()
 
-THREADS_COUNT = 10
+
+THREADS_COUNT = int(os.getenv('FILTER2_THREAD_COUNT', 30))
 
 class GetDataForCoinsFilter(Filter):
+    def __init__(self):
+        # db init in process_stream()
+        # self.db = Database()
+        pass
+
     def process(self, data):
         result_dfs = []
 
+        last_fetched_timestamp = self.db.fetchone("SELECT EXTRACT(EPOCH FROM DATE_TRUNC('day', TO_TIMESTAMP(MAX(timestamp))))::BIGINT AS last_timestamp FROM market_data;")['last_timestamp']
+        start_timestamp = last_fetched_timestamp if last_fetched_timestamp else 1420070400
+
+        midnight_utc = datetime.combine(date.today(), dt_time(0, 0, 0, tzinfo=timezone.utc))
+        end_timestamp = int(midnight_utc.timestamp()) #timestamp of today's date at 00:00
+
+        if end_timestamp == start_timestamp:
+            print("Data is up to date!")
+            return pd.DataFrame() #dont fetch data just return empty data frame
+
         with ThreadPoolExecutor(max_workers=THREADS_COUNT) as executor:
-            ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD") for sym in data["symbol"]] #[:1] means take only the first coin to take all coins just delete [:1]
+            ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD", start_timestamp, end_timestamp) for sym in data["symbol"]] #[:1] means take only the first coin to take all coins just delete [:1]
 
             for future in as_completed(ohlcv):
                 df = future.result()
@@ -27,10 +47,41 @@ class GetDataForCoinsFilter(Filter):
         print(f"Length: {len(final_df)}")
         return final_df
 
+    def process_stream(self, data, out_queue):
+        self.db = Database()
+        last_fetched_timestamp = self.db.fetchone("SELECT EXTRACT(EPOCH FROM DATE_TRUNC('day', TO_TIMESTAMP(MAX(timestamp))))::BIGINT AS last_timestamp FROM market_data;")
+        start_timestamp = last_fetched_timestamp['last_timestamp'] if last_fetched_timestamp['last_timestamp'] else 1420070400
+
+        midnight_utc = datetime.combine(date.today(), dt_time(0, 0, 0, tzinfo=timezone.utc))
+        end_timestamp = int(midnight_utc.timestamp()) #timestamp of today's date at 00:00
+
+        if end_timestamp == start_timestamp:
+            print("Data is up to date!")
+            out_queue.put(None)
+            return
+            # return pd.DataFrame() #dont fetch data just return empty data frame
+
+        with ThreadPoolExecutor(max_workers=THREADS_COUNT) as executor:
+            ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD", start_timestamp, end_timestamp) for sym in data["symbol"]] #[:1] means take only the first coin to take all coins just delete [:1]
+
+            for future in as_completed(ohlcv):
+                df = future.result()
+                if not df.empty:
+                    out_queue.put(df)
+
+        # final_df = pd.concat(result_dfs, ignore_index=True)
+        # final_df = final_df.ffill() #sometimes some rows are NaN
+        # print(final_df.tail())
+        out_queue.put(None)
+        # print(f"Length: {len(final_df)}")
+
     @staticmethod
     def parse_data_to_df(data, symbol):
         result = data['chart']['result'][0]
         quote = result['indicators']['quote'][0]
+
+        if 'timestamp' not in result:
+            return pd.DataFrame()
 
         df = pd.DataFrame({
             'symbol': symbol,
@@ -46,10 +97,10 @@ class GetDataForCoinsFilter(Filter):
         return df
 
     @staticmethod
-    def get_daily_ohlcv(symbol, currency="USD", start_timestamp=1420070400): #default start_timestamp is 01.01.2015 00:00:00
+    def get_daily_ohlcv(symbol, currency="USD", start_timestamp=1420070400, end_timestamp=int(time.time())): #default start_timestamp is 01.01.2015 00:00:00
         print(f"Fetching symbol: {symbol}...")
-        url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}-{currency}?events=capitalGain%7Cdiv%7Csplit&formatted=true&includeAdjustedClose=true&interval=1d&period1={start_timestamp}&period2={int(time.time())}&symbol=BTC-USD&userYfid=true&lang=en-US&region=US'
-
+        url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}-{currency}?events=capitalGain%7Cdiv%7Csplit&formatted=true&includeAdjustedClose=true&interval=1d&period1={start_timestamp}&period2={end_timestamp}&symbol=BTC-USD&userYfid=true&lang=en-US&region=US'
+        # print(url)
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
             "Accept-Language": "en-US,en;q=0.9",
@@ -61,7 +112,7 @@ class GetDataForCoinsFilter(Filter):
         resp = session.get(url, headers=headers)
         data = resp.json()
 
-        if resp.status_code != 200:
+        if resp.status_code != 200 or not data:
             print(f"Error fetching {symbol}: HTTP {resp.status_code}")
             return pd.DataFrame()
 
