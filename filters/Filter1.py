@@ -1,4 +1,4 @@
-# from coinpaprika import client as Coinpaprika
+from coinpaprika import client as Coinpaprika
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from filters.Filter import *
 
@@ -15,6 +15,7 @@ URLs = [
 "https://www.coingecko.com/?page=3&items=300",
 "https://www.coingecko.com/?page=4&items=300",
 "https://www.coingecko.com/?page=5&items=300",
+"https://www.coingecko.com/?page=6&items=300",
 # "https://www.coingecko.com/?page=5&items=200",
 # "https://www.coingecko.com/?page=6&items=200",
 ]
@@ -51,7 +52,7 @@ def get_top_coins():
             coins = future.result()
             all_coins.extend(coins)
 
-return all_coins
+    return all_coins
 
 def filter_liquid_coins(coins, min_liquidity=1_000_000):
     filtered = []
@@ -61,13 +62,13 @@ def filter_liquid_coins(coins, min_liquidity=1_000_000):
             filtered.append(c)
     return filtered
 
-def get_symbols_from_coingecko(data):
+def get_symbols_from_coingecko():
     coins = get_top_coins()
     liquid_coins = filter_liquid_coins(coins)
     print(len(liquid_coins))
     df = pd.DataFrame(liquid_coins)
     df = df.drop_duplicates(subset="symbol")  # drop duplicate symbols
-    df = df.head(1100)
+    df = df.head(1200)
     return df
 
 def get_symbols_from_coinpaprika():
@@ -90,6 +91,6 @@ class Top1000CoinsFilter(Filter):
 
     def process(self, data):
         if self.db.is_empty():
-            return get_symbols_from_coinpaprika()
+            return get_symbols_from_coingecko()
         else:
             return get_symbols_from_db(self.db)
