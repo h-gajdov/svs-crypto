@@ -1,6 +1,7 @@
 from pipelines.DataPipeline import *
 import time
 
+
 timer_start = time.time()
 
 pipeline = Pipeline()

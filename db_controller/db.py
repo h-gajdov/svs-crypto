@@ -1,6 +1,10 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import threading
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 class Database:
     _instance = None
@@ -13,7 +17,7 @@ class Database:
                     cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, host="localhost", database="mydb", user="docker", password="docker"):
+    def __init__(self, host=os.getenv("DB_HOST"), database=os.getenv("DB_NAME"), user=os.getenv("DB_USER"), password=os.getenv("DB_PASSWORD")):
         if not hasattr(self, "_conn"):
             self._conn = psycopg2.connect(
                 host=host,
