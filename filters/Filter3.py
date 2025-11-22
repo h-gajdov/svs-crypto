@@ -10,6 +10,12 @@ class FillDatabaseFilter(Filter):
         self.db = Database()
 
     def process(self, data):
+        if self.db.is_empty():
+            return self.fill_empty_database(data)
+        else:
+            return self.update_database(data)
+
+    def fill_empty_database(self, data):
         start_time = time.time()
         try:
             csv_buffer = StringIO()
@@ -31,53 +37,38 @@ class FillDatabaseFilter(Filter):
 
         end_time = time.time()
         elapsed_time = end_time - start_time
-        print(f"Filter 3 finish in {elapsed_time:.4f} seconds.")
+        print(f"Filter 3 finished in {elapsed_time:.4f} seconds.")
         return data
 
     # duplicates safe function
-    def process_duplicate_safe(self, data):
+    def update_database(self, data):
         start_time = time.time()
         try:
-            required_cols = ['symbol', 'timestamp', 'open', 'high', 'low', 'close', 'volume']
-            data = data[required_cols]
-
-            #temporary table for dealing with duplicates
-            self.cur.execute("""
-                CREATE TEMP TABLE tmp_market_data (
-                    symbol TEXT,
-                    timestamp BIGINT,
-                    open NUMERIC,
-                    high NUMERIC,
-                    low NUMERIC,
-                    close NUMERIC,
-                    volume NUMERIC
-                ) ON COMMIT DROP;
-            """)
-
             csv_buffer = StringIO()
             data.to_csv(csv_buffer, index=False, header=True)
             csv_buffer.seek(0)
 
-            self.cur.copy_expert(
-                "COPY tmp_market_data(symbol, timestamp, open, high, low, close, volume) FROM STDIN WITH CSV HEADER",
-                csv_buffer
-            )
+            # Copy to temporary table
+            self.db.execute("TRUNCATE TABLE market_data_staging")
+            self.db.copy_expert("""
+                COPY market_data_staging(symbol, timestamp, open, high, low, close, volume)
+                FROM STDIN WITH CSV HEADER
+            """, csv_buffer)
 
-            self.cur.execute("""
-                INSERT INTO market_data (symbol, timestamp, open, high, low, close, volume)
-                SELECT * FROM tmp_market_data
-                ON CONFLICT (symbol, timestamp) DO NOTHING
+            # Deal with duplicates
+            self.db.execute("""
+                INSERT INTO market_data(symbol, timestamp, open, high, low, close, volume)
+                SELECT *
+                FROM market_data_staging
+                ON CONFLICT (symbol, timestamp) DO NOTHING;
             """)
 
-            self.conn.commit()
+            self.db.commit()
         except Exception as e:
-            self.conn.rollback()
-            print(f"Error occurred: {e}")
+            self.db.roll_back()
+            print(f"Error: {e}")
         finally:
-            self.cur.close()
-            self.conn.close()
+            self.db.close()
 
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-        print(f"Filter 3 finish in {elapsed_time:.4f} seconds.")
+        print(f"Filter 3 finished in {time.time() - start_time:.4f} seconds.")
         return data

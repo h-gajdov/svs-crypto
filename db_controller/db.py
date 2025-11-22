@@ -27,6 +27,10 @@ class Database:
             )
             self._cur = self._conn.cursor(cursor_factory=RealDictCursor)
 
+    def is_empty(self):
+        number_of_rows = self.fetchone("SELECT COUNT(*) AS total FROM market_data;")['total']
+        return number_of_rows == 0
+
     def fetchall(self, query, params=None):
         self._cur.execute(query, params or ())
         return self._cur.fetchall()

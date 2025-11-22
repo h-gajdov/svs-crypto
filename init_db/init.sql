@@ -10,9 +10,15 @@ CREATE TABLE IF NOT EXISTS market_data (
     UNIQUE(symbol, timestamp)
 );
 
-CREATE TABLE IF NOT EXISTS last_timestamp (
-    id SERIAL PRIMARY KEY,
-    timestamp BIGINT NOT NULL
+-- This table is a temporary table for updating the main table
+CREATE TABLE IF NOT EXISTS market_data_staging (
+    symbol VARCHAR(20),
+    timestamp BIGINT,
+    open DOUBLE PRECISION,
+    high DOUBLE PRECISION,
+    low DOUBLE PRECISION,
+    close DOUBLE PRECISION,
+    volume DOUBLE PRECISION
 );
 
 CREATE INDEX IF NOT EXISTS idx_market_data_symbol ON market_data(symbol);
