@@ -21,6 +21,7 @@ class FillDatabaseFilter(Filter):
 
     def consume_stream(self, in_queue):
         self.db = Database()
+        daily_data = []
         buffer = []
 
         is_fresh_db = self.db.is_empty()
@@ -40,8 +41,12 @@ class FillDatabaseFilter(Filter):
                         self._flush_batch(self.db, buffer, is_fresh_db)
                     break
 
+                if df_item['type'] == 'daily':
+                    daily_data.append(df_item['data'])
+                    continue
+
                 # Add to buffer
-                buffer.append(df_item)
+                buffer.append(df_item['data'])
 
                 # --- BATCH FLUSH ---
                 if len(buffer) >= BATCH_SIZE:
@@ -50,6 +55,8 @@ class FillDatabaseFilter(Filter):
 
                 in_queue.task_done()
 
+            #When finished write daily data
+            self._write_daily_data(self.db, daily_data)
         except Exception as e:
             print(f"Filter 3 Critical Error: {e}")
         finally:
@@ -113,4 +120,25 @@ class FillDatabaseFilter(Filter):
             ON CONFLICT (symbol, timestamp) DO NOTHING;
         """)
 
+        db.commit()
+
+    def _write_daily_data(self, db, data):
+        df = pd.concat(data, ignore_index=True)
+
+        symbols_in_batch = df['symbol'].unique().tolist()
+        
+        # Delete outdated data for symbols in the db and insert fresh data
+        placeholders = ','.join(f"'{s}'" for s in symbols_in_batch)
+        db.execute(f"DELETE FROM daily_data WHERE symbol IN ({placeholders})")
+        db.commit()
+
+        csv_buffer = StringIO()
+        df.to_csv(csv_buffer, index=False, header=True)
+        csv_buffer.seek(0)
+
+        db.copy_expert(
+            """COPY daily_data(symbol, timestamp, last_price, volume_24h, high_24h, low_24h)
+               FROM STDIN WITH CSV HEADER""",
+            csv_buffer
+        )
         db.commit()

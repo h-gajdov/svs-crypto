@@ -16,8 +16,6 @@ URLs = [
 "https://www.coingecko.com/?page=4&items=300",
 "https://www.coingecko.com/?page=5&items=300",
 "https://www.coingecko.com/?page=6&items=300",
-# "https://www.coingecko.com/?page=5&items=200",
-# "https://www.coingecko.com/?page=6&items=200",
 ]
 
 def fetch_url(url):
@@ -54,7 +52,7 @@ def get_top_coins():
 
     return all_coins
 
-def filter_liquid_coins(coins, min_liquidity=1_000_000):
+def filter_liquid_coins(coins, min_liquidity=400_000):
     filtered = []
     for c in coins:
         volume = c.get("volume", 0)
@@ -90,7 +88,4 @@ class Top1000CoinsFilter(Filter):
         self.db = Database()
 
     def process(self, data):
-        if self.db.is_empty():
-            return get_symbols_from_coingecko()
-        else:
-            return get_symbols_from_db(self.db)
+        return get_symbols_from_coingecko()
