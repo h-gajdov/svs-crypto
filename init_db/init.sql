@@ -18,10 +18,7 @@ CREATE TABLE IF NOT EXISTS daily_data (
     volume_24h DOUBLE PRECISION,
     high_24h DOUBLE PRECISION,
     low_24h DOUBLE PRECISION,
-    UNIQUE(symbol, timestamp),
-    CONSTRAINT fk_daily_market_symbol FOREIGN KEY (symbol)
-        REFERENCES market_data(symbol)
-        ON DELETE CASCADE
+    UNIQUE(symbol, timestamp)
 );
 
 -- This table is a temporary table for updating the main table
