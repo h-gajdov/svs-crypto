@@ -6,9 +6,6 @@ import os
 load_dotenv()
 
 class Database:
-    # REMOVED: _instance, _lock, and __new__
-    # We want a NEW connection every time we call Database()
-
     def __init__(self, host=os.getenv("DB_HOST"), database=os.getenv("DB_NAME"), user=os.getenv("DB_USER"), password=os.getenv("DB_PASSWORD")):
         self._conn = psycopg2.connect(
             host=host,

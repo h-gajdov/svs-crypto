@@ -11,14 +11,7 @@ load_dotenv()
 
 BATCH_SIZE = int(os.getenv("BATCH_SIZE", 50))
 
-
 class FillDatabaseFilter(Filter):
-
-    def __init__(self):
-        # We don't open the DB here to avoid connection timeouts
-        # while waiting for the pipeline to start.
-        pass
-
     def consume_stream(self, in_queue):
         self.db = Database()
         daily_data = []
@@ -32,10 +25,9 @@ class FillDatabaseFilter(Filter):
 
         try:
             while True:
-                # Get dataframe from queue
                 df_item = in_queue.get()
 
-                # --- SENTINEL CHECK (End of Stream) ---
+                # SENTINEL CHECK (End of Stream)
                 if df_item is None:
                     if buffer:
                         self._flush_batch(self.db, buffer, is_fresh_db)
@@ -48,14 +40,14 @@ class FillDatabaseFilter(Filter):
                 # Add to buffer
                 buffer.append(df_item['data'])
 
-                # --- BATCH FLUSH ---
+                # BATCH FLUSH
                 if len(buffer) >= BATCH_SIZE:
                     self._flush_batch(self.db, buffer, is_fresh_db)
                     buffer = []  # Clear buffer
 
                 in_queue.task_done()
 
-            #When finished write daily data
+            # When finished write daily data
             self._write_daily_data(self.db, daily_data)
         except Exception as e:
             print(f"Filter 3 Critical Error: {e}")
@@ -65,7 +57,6 @@ class FillDatabaseFilter(Filter):
             print(f"Filter 3 finished in {total_time:.4f} seconds.")
 
     def _flush_batch(self, db, buffer, is_fresh_db):
-        """Prepares the batch and delegates to the correct write method"""
         if not buffer:
             return
 
@@ -79,8 +70,6 @@ class FillDatabaseFilter(Filter):
                 self._write_batch_fast(db, batch_df)
             else:
                 self._write_batch_safe(db, batch_df)
-
-            # print(f"Filter 3: Wrote batch of {len(buffer)} items.")
 
         except Exception as e:
             db.roll_back()

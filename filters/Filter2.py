@@ -15,11 +15,6 @@ DEFAULT_TIMESTAMP = int(os.getenv('FILTER2_DEFAULT_TIMESTAMP', 1420070400))
 THREADS_COUNT = int(os.getenv('FILTER2_THREAD_COUNT', 30))
 
 class GetDataForCoinsFilter(Filter):
-    def __init__(self):
-        # db init in process_stream()
-        # self.db = Database()
-        pass
-
     def process(self, data):
         result_dfs = []
 
@@ -87,11 +82,7 @@ class GetDataForCoinsFilter(Filter):
                 if daily_df is not None and not daily_df.empty:
                     out_queue.put({'type': 'daily', 'data': daily_df})
 
-        # final_df = pd.concat(result_dfs, ignore_index=True)
-        # final_df = final_df.ffill() #sometimes some rows are NaN
-        # print(final_df.tail())
         out_queue.put(None)
-        # print(f"Length: {len(final_df)}")
 
     @staticmethod
     def parse_data_to_df(data, symbol):
@@ -104,7 +95,6 @@ class GetDataForCoinsFilter(Filter):
 
         df = pd.DataFrame({
             'symbol': symbol,
-            # 'utc': pd.to_datetime(result['timestamp'], unit='s'),
             'timestamp': result['timestamp'],
             'open': quote['open'],
             'high': quote['high'],
@@ -128,7 +118,7 @@ class GetDataForCoinsFilter(Filter):
     def get_daily_ohlcv(symbol, currency="USD", start_timestamp=DEFAULT_TIMESTAMP, end_timestamp=int(time.time())): #default start_timestamp is 01.01.2015 00:00:00
         print(f"Fetching symbol: {symbol}...")
         url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}-{currency}?events=capitalGain%7Cdiv%7Csplit&formatted=true&includeAdjustedClose=true&interval=1d&period1={start_timestamp}&period2={end_timestamp}&symbol=BTC-USD&userYfid=true&lang=en-US&region=US'
-        # print(url)
+
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
             "Accept-Language": "en-US,en;q=0.9",
