@@ -73,10 +73,6 @@ class GetDataForCoinsFilter(Filter):
             for sym in data["symbol"]:
                 start_timestamp = last_ts_map.get(sym, DEFAULT_TIMESTAMP)
 
-                if start_timestamp >= end_timestamp:
-                    print(f'{sym} is up to date!')
-                    continue
-
                 tasks.append(
                     executor.submit(
                         GetDataForCoinsFilter.get_daily_ohlcv,
@@ -85,9 +81,11 @@ class GetDataForCoinsFilter(Filter):
                 )
 
             for future in as_completed(tasks):
-                df = future.result()
+                df, daily_df = future.result()
                 if not df.empty:
-                    out_queue.put(df)
+                    out_queue.put({'type': 'ohlcv', 'data': df})
+                if daily_df is not None and not daily_df.empty:
+                    out_queue.put({'type': 'daily', 'data': daily_df})
 
         # final_df = pd.concat(result_dfs, ignore_index=True)
         # final_df = final_df.ffill() #sometimes some rows are NaN
@@ -99,9 +97,10 @@ class GetDataForCoinsFilter(Filter):
     def parse_data_to_df(data, symbol):
         result = data['chart']['result'][0]
         quote = result['indicators']['quote'][0]
+        meta = result['meta']
 
-        if 'timestamp' not in result:
-            return pd.DataFrame()
+        if 'timestamp' not in result or not quote:
+            return pd.DataFrame(), pd.DataFrame()
 
         df = pd.DataFrame({
             'symbol': symbol,
@@ -114,7 +113,16 @@ class GetDataForCoinsFilter(Filter):
             'volume': quote['volume']
         })
 
-        return df
+        daily_df = pd.DataFrame({
+            'symbol': [symbol],
+            'timestamp': [meta.get('regularMarketTime', 0)],
+            'last_price': [meta.get('regularMarketPrice', 0)],
+            'volume_24h': [meta.get('regularMarketVolume', 0)],
+            'high_24h': [meta.get('regularMarketDayHigh', 0)],
+            'low_24h': [meta.get('regularMarketDayLow', 0)]
+        })
+
+        return df, daily_df
 
     @staticmethod
     def get_daily_ohlcv(symbol, currency="USD", start_timestamp=DEFAULT_TIMESTAMP, end_timestamp=int(time.time())): #default start_timestamp is 01.01.2015 00:00:00
@@ -134,7 +142,7 @@ class GetDataForCoinsFilter(Filter):
 
         if resp.status_code != 200 or not data:
             print(f"Error fetching {symbol}: HTTP {resp.status_code}")
-            return pd.DataFrame()
+            return pd.DataFrame(), pd.DataFrame
 
         print(f"Fetched symbol: {symbol}!")
         return GetDataForCoinsFilter.parse_data_to_df(data, symbol)
