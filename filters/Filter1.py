@@ -6,7 +6,6 @@ from db_controller.db import Database
 
 import pandas as pd
 import requests
-import re
 from bs4 import BeautifulSoup
 
 URLs = [
@@ -67,20 +66,6 @@ def get_symbols_from_coingecko():
     df = pd.DataFrame(liquid_coins)
     df = df.drop_duplicates(subset="symbol")  # drop duplicate symbols
     df = df.head(1200)
-    return df
-
-def get_symbols_from_coinpaprika():
-    client = Coinpaprika.Client()
-    df = pd.DataFrame(client.coins())
-
-    df = df[df["is_active"] == True] #only active coinst
-    df = df.drop_duplicates(subset="symbol") #drop duplicate symbols
-
-    return df[['symbol']].head(1100)
-
-def get_symbols_from_db(db):
-    rows = db.fetchall('SELECT DISTINCT symbol FROM market_data;')
-    df = pd.DataFrame(rows)
     return df
 
 class Top1000CoinsFilter(Filter):
