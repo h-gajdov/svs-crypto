@@ -75,7 +75,7 @@ footer > small {
     background: white;
     margin: 0.5em;
     padding: 1em;
-    border-radius: 4px;
+    border-radius: 10px;
     box-shadow: 0 0 10px 1px rgba(10 10 10 / 0.3);
 }
 
@@ -97,4 +97,110 @@ button {
     padding: 0.3em 1em;
     color: white;
     background: #47cf6d;
+}
+
+.dashboard-top-stats {
+    display: flex;
+    justify-content: space-between;
+}
+
+.top-stat {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.63em;
+    font-size: 14px;
+}
+
+.top-stat-head {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 2px solid #d9d9d9;
+    padding-bottom: 0.3em;
+}
+
+.small-logo {
+    width: 32px;
+    height: 32px;
+    border-radius: 100%;
+}
+
+.top-stat-coin {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.change-positive {
+    color: #49d06e;
+}
+
+.change-negative {
+    color: #f00;
+}
+
+.page-title {
+    margin-bottom: 10px;
+}
+
+.dashboard-wrapper {
+    padding: 22px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.dashboard-wrapper h2 {
+    text-align: center;
+}
+
+.dashboard-table {
+    margin: 15px 0;
+    font-size: 14px;
+}
+
+.dashboard-table {
+    width: 100%;
+    text-align: left;
+}
+
+.table-coin-label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.table-symbol {width: 21%;}
+
+.last-7-days-grid {
+    width: 187px;
+    height: 75px;
+}
+
+.dashboard-table td, .dashboard-table th {
+    border-bottom: 1px solid #D9D9D9;
+    padding: 8px 0;
+}
+
+.grey-text {
+    color: #6C6C6C;
+}
+
+.table-row-count {
+    width: 3%;
+}
+
+.pagination {
+    display: flex;
+    gap: 7px;
+}
+
+.page-btn {
+    padding: 0 7px;
+}
+
+.selected-page {
+    background: #7BD4D2;
+    color: white;
 }
