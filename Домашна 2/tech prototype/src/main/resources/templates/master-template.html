@@ -1,0 +1,27 @@
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Products</title>
+    <script src="https://kit.fontawesome.com/e59232f0a1.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/reset.css}">
+    <link rel="stylesheet" th:href="@{/css/master.css}">
+    <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>
+</head>
+<body>
+
+<header th:replace="fragments/header"></header>
+
+<main class="main-section">
+    <section th:replace="${bodyContent}"></section>
+</main>
+
+
+<footer th:replace="fragments/footer"></footer>
+
+
+</body>
+</html>
