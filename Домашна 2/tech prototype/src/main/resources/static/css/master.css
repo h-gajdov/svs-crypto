@@ -139,11 +139,11 @@ button {
 }
 
 .change-positive {
-    color: #49d06e;
+    color: #49d06e !important;
 }
 
 .change-negative {
-    color: #f00;
+    color: #f00 !important;
 }
 
 .page-title {
