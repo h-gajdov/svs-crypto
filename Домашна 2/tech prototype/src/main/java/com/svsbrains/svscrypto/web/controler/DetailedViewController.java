@@ -73,7 +73,7 @@ public class DetailedViewController {
 
     @GetMapping("/{symbol}/plot/{time}")
     @ResponseBody
-    public Map<String, Object> getPlotData(@PathVariable String symbol, @PathVariable String time) {
+    public Map<String, Object> getPlotData(@PathVariable String symbol, @PathVariable String time, @RequestParam(defaultValue = "open") String field) {
         List<MarketData> data;
         if(time.equals("max")) {
             data = marketDataService.getBySymbol(symbol);
@@ -82,7 +82,14 @@ public class DetailedViewController {
         }
 
         List<Long> timestamps = data.stream().map(MarketData::getTimestamp).toList();
-        List<Double> values = data.stream().map(MarketData::getOpen).toList();
+        List<Double> values = data.stream().map(md -> switch(field) {
+            case "open" -> md.getOpen();
+            case "high" -> md.getHigh();
+            case "low" -> md.getLow();
+            case "close" -> md.getClose();
+            case "volume" -> md.getVolume();
+            default -> md.getOpen();
+        }).toList();
 
         Map<String, Object> response = new HashMap<>();
         response.put("timestamps", timestamps);

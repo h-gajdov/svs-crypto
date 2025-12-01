@@ -50,12 +50,12 @@
                 <button class="graph-btn timeframe-btn graph-btn-selected" data-time="max">MAX</button>
             </div>
             <div class="graph-section">
-                <span class="graph-btn graph-btn-selected">Price</span>
-                <span class="graph-btn">Open</span>
-                <span class="graph-btn">High</span>
-                <span class="graph-btn">Low</span>
-                <span class="graph-btn">Close</span>
-                <span class="graph-btn">Volume</span>
+                <span class="graph-btn graph-btn-selected" data-field="price">Price</span>
+                <span class="graph-btn" data-field="open">Open</span>
+                <span class="graph-btn" data-field="high">High</span>
+                <span class="graph-btn" data-field="low">Low</span>
+                <span class="graph-btn" data-field="close">Close</span>
+                <span class="graph-btn" data-field="volume">Volume</span>
             </div>
         </div>
         <div class="download-graph-container">
@@ -142,14 +142,9 @@
         let values = [[${values}]]?.map(Number) || [];
         let dates = timestamps.map(ts => new Date(ts * 1000));
 
-        let trace = {
-            x: dates,
-            y: values,
-            type: 'scatter',
-            mode: 'lines',
-            fill: 'tozeroy',
-            line: { color: '#4A90E2' }
-        };
+        let currentField = "price";
+        let currentTime = "max";
+        let dataCache = { timestamps, values };
 
         let layout = {
             margin: { t: 20, r: 20, l: 60, b: 80 },
@@ -157,25 +152,76 @@
             xaxis: { tickangle: -45, type: 'date', tickformat: "%d %b", nticks: 10 }
         };
 
-        Plotly.newPlot(chartDiv, [trace], layout, { responsive: true });
+        function getTraceForField(field, dates, values) {
+            if (field === "price") {
+                return {
+                    x: dates,
+                    y: values,
+                    type: 'scatter',
+                    mode: 'lines',
+                    fill: 'tozeroy',
+                    line: { color: '#4A90E2' }
+                };
+            }
+
+            const colors = values.map((v, i) => i === 0 ? '#47cf6d' : (v >= values[i - 1] ? '#47cf6d' : '#ff4d4d'));
+            return {
+                x: dates,
+                y: values,
+                type: 'bar',
+                marker: { color: colors }
+            };
+        }
+
+        Plotly.newPlot(chartDiv, [getTraceForField(currentField, dates, values)], layout, { responsive: true });
 
         document.querySelectorAll('.timeframe-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
-                const time = btn.dataset.time;
+                currentTime = btn.dataset.time;
 
-                document.querySelectorAll('.timeframe-btn').forEach(b =>
-                    b.classList.remove('graph-btn-selected')
-                );
-
+                document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('graph-btn-selected'));
                 btn.classList.add('graph-btn-selected');
-                fetch(`/details/${symbol.replaceAll('"', '')}/plot/${time}`, { method: 'GET' })
+
+                fetch(`/details/${symbol.replaceAll('"', '')}/plot/${currentTime}`)
                     .then(res => res.json())
                     .then(data => {
-                        const newDates = data.timestamps.map(ts => new Date(ts * 1000));
-                        const newValues = data.values;
+                        dataCache = data;
+                        dates = data.timestamps.map(ts => new Date(ts * 1000));
+                        values = data.values;
 
-                        Plotly.update(chartDiv, { x: [newDates], y: [newValues] });
+                        const trace = getTraceForField(currentField, dates, values);
+                        Plotly.react(chartDiv, [trace], layout);
+                    })
+                    .catch(err => console.error('Error fetching plot data:', err));
+            });
+        });
+
+        document.querySelectorAll('[data-field]').forEach(btn => {
+            btn.classList.add('field-btn');
+
+            btn.addEventListener('click', () => {
+                currentField = btn.dataset.field.toLowerCase();
+                currentTime = document.querySelector('.graph-btn.timeframe-btn.graph-btn-selected').dataset.time;
+
+                console.log(currentField);
+                console.log(currentTime);
+
+                document.querySelectorAll('.field-btn').forEach(b => b.classList.remove('graph-btn-selected'));
+                btn.classList.add('graph-btn-selected');
+
+                dates = dataCache.timestamps.map(ts => new Date(ts * 1000));
+                values = dataCache.values;
+
+                fetch(`/details/${symbol.replaceAll('"', '')}/plot/${currentTime}?field=${currentField}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dataCache = data;
+                        dates = data.timestamps.map(ts => new Date(ts * 1000));
+                        values = data.values;
+
+                        const trace = getTraceForField(currentField, dates, values);
+                        Plotly.react(chartDiv, [trace], layout);
                     })
                     .catch(err => console.error('Error fetching plot data:', err));
             });
