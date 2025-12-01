@@ -2,22 +2,19 @@ package com.svsbrains.svscrypto.web.controler;
 
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
+import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
 import com.svsbrains.svscrypto.service.UserService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.yaml.snakeyaml.error.Mark;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/dashboard")
@@ -61,7 +58,8 @@ public class DashboardController {
             sparklineData.put(coin.getSymbol(), res);
         }
 
-        model.addAttribute("user",httpSession.getAttribute("user"));
+        User u=(User)httpSession.getAttribute("user");
+        model.addAttribute("user",u);
         model.addAttribute("top3Price", topPrice.subList(0, 3));
         model.addAttribute("top3Volume", top3Volume);
         model.addAttribute("top3New", top3New);
@@ -71,8 +69,9 @@ public class DashboardController {
         return "master-template";
     }
     @PostMapping("/addCoinToUser")
-    public String addCoin(@RequestParam String username,@RequestParam String symbol) {
-        userService.addCoinToList(username,symbol);
+    public String addCoin(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession) {
+        User u = userService.addCoinToList(username,symbol);
+        httpSession.setAttribute("user",u);
         return "redirect:/dashboard";
     }
 }
