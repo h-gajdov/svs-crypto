@@ -399,3 +399,11 @@ button {
     flex-direction: column;
     justify-content: space-between;
 }
+
+table {
+    border-collapse: collapse;
+}
+
+.clickable-row:hover {
+    background: #F3F4F6;
+}

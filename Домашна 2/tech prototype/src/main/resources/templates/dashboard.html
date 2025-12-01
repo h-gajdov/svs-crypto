@@ -11,7 +11,7 @@
                 <a>Change</a>
             </div>
 
-            <div th:each="coin : ${top3Price}" class="top-stat-coin">
+            <div th:each="coin : ${top3Price}" class="top-stat-coin clickable-row" th:data-symbol="${coin.symbol}">
                 <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
                 <a th:text="${coin.getSymbol()}"></a>
                 <a th:text="${coin.getFormattedLastPrice()}"></a>
@@ -26,7 +26,7 @@
                 <a>Change</a>
             </div>
 
-            <div th:each="coin : ${top3New}" class="top-stat-coin">
+            <div th:each="coin : ${top3New}" class="top-stat-coin clickable-row" th:data-symbol="${coin.symbol}">
                 <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
                 <a th:text="${coin.getSymbol()}"></a>
                 <a th:text="${coin.getFormattedLastPrice()}"></a>
@@ -41,7 +41,7 @@
                 <a>Change</a>
             </div>
 
-            <div th:each="coin : ${top3Gain}" class="top-stat-coin">
+            <div th:each="coin : ${top3Gain}" class="top-stat-coin clickable-row" th:data-symbol="${coin.symbol}">
                 <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
                 <a th:text="${coin.getSymbol()}"></a>
                 <a th:text="${coin.getFormattedLastPrice()}"></a>
@@ -56,7 +56,7 @@
                 <a>Change</a>
             </div>
 
-            <div th:each="coin : ${top3Volume}" class="top-stat-coin">
+            <div th:each="coin : ${top3Volume}" class="top-stat-coin clickable-row" th:data-symbol="${coin.symbol}">
                 <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
                 <a th:text="${coin.getSymbol()}"></a>
                 <a th:text="${coin.getFormattedLastPrice()}"></a>
@@ -84,7 +84,7 @@
                 </tr>
             </thead>
             <tbody>
-            <tr th:each="coin, iterStat : ${tableCoins}">
+            <tr th:each="coin, iterStat : ${tableCoins}" class="clickable-row" th:data-symbol="${coin.symbol}">
                 <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
                 <td class="table-row-count" th:text="${iterStat.index + 1} + '.'"></td>
                 <td>
@@ -150,6 +150,19 @@
                     width: 185,
                     height: 75
                 }, { staticPlot: true });
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('.clickable-row');
+            rows.forEach(row => {
+                row.style.cursor = 'pointer'; // show pointer on hover
+                row.addEventListener('click', () => {
+                    const symbol = row.dataset.symbol;
+                    window.location.href = `/details/${symbol}`;
+                });
             });
         });
     </script>
