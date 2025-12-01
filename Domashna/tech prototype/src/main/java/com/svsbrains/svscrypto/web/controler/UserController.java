@@ -6,6 +6,7 @@ import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
 import com.svsbrains.svscrypto.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.boot.Banner;
 import org.springframework.ui.Model;
@@ -87,5 +88,19 @@ public class UserController {
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);
         return "master-template";
+    }
+    @PostMapping("/addCoinToUser")
+    public String addCoin(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession, HttpServletRequest request) {
+        User u = userService.addCoinToList(username,symbol);
+        httpSession.setAttribute("user",u);
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/dashboard");
+    }
+    @PostMapping("/deleteCoinFromUser")
+    public String removeCoin(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession,HttpServletRequest request){
+        User u = userService.deleteCoinFromList(username,symbol);
+        httpSession.setAttribute("user",u);
+        String referer = request.getHeader("Referer");
+        return "redirect:" + (referer != null ? referer : "/dashboard");
     }
 }
