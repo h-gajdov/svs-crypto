@@ -62,6 +62,9 @@ public class UserController {
         model.addAttribute("bodyContent","user-list");
 
         User u=(User)httpSession.getAttribute("user");
+
+        if(u==null)return "redirect:/login";
+
         List<DailyData> topPrice = u.getCoins().stream().map(symbol->dailyDataService.getBySymbol(symbol).orElse(null)).toList();
 
 

@@ -86,20 +86,25 @@
             <tbody>
             <tr th:each="coin, iterStat : ${tableCoins}">
                 <td th:if="${user!=null}">
-                    <form th:action="@{/dashboard/addCoinToUser}" method="post">
+                    <form th:if="${!user.hasCoin(coin.symbol)}" th:action="@{/dashboard/addCoinToUser}" method="post">
                         <input type="hidden" name="username" th:value="${user.username}" />
                         <input type="hidden" name="symbol" th:value="${coin.symbol}" />
 
                         <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
-                            <svg th:if="${user.hasCoin(coin.symbol)}"
-                                 xmlns="http://www.w3.org/2000/svg" height="20px" width="20px" fill="#FFD700"
-                                 viewBox="0 0 24 24">
-                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-                            </svg>
-                            <svg th:if="${!user.hasCoin(coin.symbol)}"
-                                 xmlns="http://www.w3.org/2000/svg" height="20px" width="20px" fill="#6C6C6C"
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" width="20px" fill="#6C6C6C"
                                  viewBox="0 0 24 24">
                                 <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28L5.47 10.5l4.38-.38L12 6.1l2.15 4.01 4.38.38-3.77 2.89 1 4.28L12 15.4z"/>
+                            </svg>
+                        </button>
+                    </form>
+                    <form th:if="${user.hasCoin(coin.symbol)}" th:action="@{/dashboard/deleteCoinFromUser}" method="post">
+                        <input type="hidden" name="username" th:value="${user.username}" />
+                        <input type="hidden" name="symbol" th:value="${coin.symbol}" />
+
+                        <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20px" width="20px" fill="#FFD700"
+                                 viewBox="0 0 24 24">
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
                             </svg>
                         </button>
                     </form>

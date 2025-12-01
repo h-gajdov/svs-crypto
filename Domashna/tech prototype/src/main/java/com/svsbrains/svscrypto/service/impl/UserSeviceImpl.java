@@ -33,4 +33,12 @@ public class UserSeviceImpl implements UserService {
         userRepository.save(u);
         return u;
     }
+
+    @Override
+    public User deleteCoinFromList(String username, String c) {
+        User u=userRepository.getUserByUsername(username);
+        u.removeCoin(c);
+        userRepository.save(u);
+        return u;
+    }
 }

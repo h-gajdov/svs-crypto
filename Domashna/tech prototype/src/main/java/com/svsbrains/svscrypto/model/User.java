@@ -30,6 +30,10 @@ public class User {
         this.coins=new LinkedList<>();
     }
 
+    public void removeCoin(String c){
+        this.coins.remove(c);
+    }
+
     public void addCoin(String c){
         this.coins.add(c);
     }

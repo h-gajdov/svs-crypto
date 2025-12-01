@@ -8,5 +8,5 @@ public interface UserService{
     public void signInUser(String username,String first_name,String last_name, String email, String password);
     public User logInUserByUsername(String username, String password);
     public User addCoinToList(String username, String c);
-
+    public User deleteCoinFromList(String username, String c);
 }
