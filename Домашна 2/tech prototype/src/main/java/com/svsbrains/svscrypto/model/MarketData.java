@@ -15,6 +15,8 @@ public class MarketData {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String symbol;
+
     @ManyToOne
     private Coin coin;
     private Long timestamp;
@@ -23,4 +25,40 @@ public class MarketData {
     private Double low;
     private Double close;
     private Double volume;
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public Coin getCoin() {
+        return coin;
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public Double getOpen() {
+        return open;
+    }
+
+    public Double getHigh() {
+        return high;
+    }
+
+    public Double getLow() {
+        return low;
+    }
+
+    public Double getClose() {
+        return close;
+    }
+
+    public Double getVolume() {
+        return volume;
+    }
 }
