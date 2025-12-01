@@ -15,6 +15,30 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class Coin {
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public List<DailyData> getDailyData() {
+        return dailyData;
+    }
+
+    public void setDailyData(List<DailyData> dailyData) {
+        this.dailyData = dailyData;
+    }
+
+    public List<MarketData> getMarketData() {
+        return marketData;
+    }
+
+    public void setMarketData(List<MarketData> marketData) {
+        this.marketData = marketData;
+    }
+
     @Id
     @Column(unique = true)
     private String symbol;

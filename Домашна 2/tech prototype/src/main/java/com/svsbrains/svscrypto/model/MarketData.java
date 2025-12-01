@@ -11,6 +11,42 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "market_data")
 public class MarketData {
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
+
+    public void setCoin(Coin coin) {
+        this.coin = coin;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setOpen(Double open) {
+        this.open = open;
+    }
+
+    public void setHigh(Double high) {
+        this.high = high;
+    }
+
+    public void setLow(Double low) {
+        this.low = low;
+    }
+
+    public void setClose(Double close) {
+        this.close = close;
+    }
+
+    public void setVolume(Double volume) {
+        this.volume = volume;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
