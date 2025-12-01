@@ -19,4 +19,8 @@ public interface MarketDataService {
     List<MarketData> getMonthDataOfSymbol(String symbol);
 
     List<MarketData> getKDaysDataOfSymbol(String symbol, int k);
+
+    Optional<MarketData> getAllTimeHigh(String symbol);
+
+    Optional<MarketData> getAllTimeLow(String symbol);
 }

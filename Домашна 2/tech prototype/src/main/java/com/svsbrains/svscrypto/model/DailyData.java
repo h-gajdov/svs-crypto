@@ -39,6 +39,14 @@ public class DailyData {
         return formatNumber(monthlyChange);
     }
 
+    public String getFormattedHigh() {
+        return formatNumber(high_24h);
+    }
+
+    public String getFormattedLow() {
+        return formatNumber(low_24h);
+    }
+
     public String getFormattedThreeMonthsChange() {
         if(threeMonthsChange == null) return "0";
         return formatNumber(threeMonthsChange);
@@ -55,6 +63,10 @@ public class DailyData {
         }
     }
 
+    public String getFormattedHighLowRate() {
+        return formatNumber(((high_24h - low_24h) / low_24h) * 100);
+    }
+
     public double getChangePercent(Double number) {
         return ((last_price - number) / number) * 100;
     }
@@ -67,7 +79,7 @@ public class DailyData {
         return formatNumber(volume_24h);
     }
 
-    private String formatNumber(double number) {
+    public static String formatNumber(double number) {
         if (number >= 1_000_000_000) {
             return String.format("%.2fB", number / 1_000_000_000);
         } else if (number >= 1_000_000) {

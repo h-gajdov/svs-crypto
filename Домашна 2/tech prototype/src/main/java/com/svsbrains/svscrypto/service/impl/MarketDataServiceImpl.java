@@ -49,4 +49,14 @@ public class MarketDataServiceImpl implements MarketDataService {
         Pageable limit = PageRequest.of(0, k);
         return marketDataRepository.findLastNDaysBySymbol(symbol, limit);
     }
+
+    @Override
+    public Optional<MarketData> getAllTimeHigh(String symbol) {
+        return marketDataRepository.findFirstBySymbolOrderByHighDesc(symbol);
+    }
+
+    @Override
+    public Optional<MarketData> getAllTimeLow(String symbol) {
+        return marketDataRepository.findFirstBySymbolOrderByLowAsc(symbol);
+    }
 }

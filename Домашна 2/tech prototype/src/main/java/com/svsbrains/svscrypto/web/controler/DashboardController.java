@@ -36,10 +36,6 @@ public class DashboardController {
         List<DailyData> top3New = dailyDataService.getTopNew(3);
         List<DailyData> top3Volume = dailyDataService.getTopByVolume(3);
 
-        System.out.println(marketDataService.getMonthDataOfSymbol("BTC").getLast());
-        System.out.println(dailyDataService.getBySymbol("BTC"));
-        System.out.println(dailyDataService.getMonthlyChange("BTC"));
-
         //TODO: Refactor this
         topPrice.forEach(coin -> {
             double monthlyChange = dailyDataService.getMonthlyChange(coin.getSymbol());

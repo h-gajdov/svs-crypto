@@ -61,4 +61,12 @@ public class MarketData {
     public Double getVolume() {
         return volume;
     }
+
+    public String getFormattedHigh() {
+        return DailyData.formatNumber(high);
+    }
+
+    public String getFormattedLow() {
+        return DailyData.formatNumber(low);
+    }
 }

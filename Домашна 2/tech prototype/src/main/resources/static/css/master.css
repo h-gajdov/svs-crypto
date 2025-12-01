@@ -310,15 +310,16 @@ button {
     justify-content: flex-end;
 }
 
-.download-graph-btn {
+#download-graph-btn {
     display: flex;
     align-items: center;
     background: #155DFC;
     padding: 7px 15px;
     border-radius: 7px;
+    gap: 10px;
 }
 
-.download-graph-btn span {color: white;}
+#download-graph-btn span {color: white;}
 
 #data-graph {
     margin: 10px 0;

@@ -63,4 +63,9 @@ public class DailyDataServiceImpl implements DailyDataService {
         DailyData coin = getBySymbol(symbol).get();
         return coin.getChangePercent(marketData.getLow());
     }
+
+    @Override
+    public int getRankOfSymbol(String symbol) {
+        return dailyDataRepository.findRankBySymbol(symbol);
+    }
 }

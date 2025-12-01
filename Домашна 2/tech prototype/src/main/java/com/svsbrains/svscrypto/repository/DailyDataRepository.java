@@ -4,6 +4,7 @@ import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,4 +27,14 @@ public interface DailyDataRepository extends JpaRepository<DailyData, Long> {
 
     @Query("SELECT d FROM DailyData d ORDER BY d.volume_24h DESC")
     List<DailyData> findTopVolumes(org.springframework.data.domain.Pageable pageable);
+
+    @Query("""
+        SELECT 
+            1 + (SELECT COUNT(d2) 
+                 FROM DailyData d2 
+                 WHERE d2.last_price > d.last_price)
+        FROM DailyData d
+        WHERE d.symbol = :symbol
+    """)
+    Integer findRankBySymbol(@Param("symbol") String symbol);
 }

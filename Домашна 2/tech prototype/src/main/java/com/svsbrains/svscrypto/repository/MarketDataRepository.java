@@ -33,4 +33,8 @@ public interface MarketDataRepository extends JpaRepository<MarketData, Long> {
 
     @Query(value = "SELECT * FROM market_data WHERE symbol = :symbol ORDER BY timestamp DESC", nativeQuery = true)
     List<MarketData> findLastNDaysBySymbol(@Param("symbol") String symbol, Pageable pageable);
+
+    Optional<MarketData> findFirstBySymbolOrderByLowAsc(String symbol);
+
+    Optional<MarketData> findFirstBySymbolOrderByHighDesc(String symbol);
 }

@@ -20,4 +20,6 @@ public interface DailyDataService {
     double getMonthlyChange(String symbol);
 
     double getChangeFromMarketData(String symbol, MarketData marketData);
+
+    int getRankOfSymbol(String symbol);
 }
