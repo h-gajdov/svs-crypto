@@ -1,5 +1,5 @@
 header {
-    width: 100vw;
+    width: 100%;
     border-radius: 0 0 8px 8px;
     box-shadow: 0 0 10px 1px rgba(10 10 10 / 0.3);
     display: flex;
@@ -55,7 +55,7 @@ input, select {
 }
 
 footer {
-    width: 100vw;
+    width: 100%;
     border-radius: 8px 8px 0 0;
     box-shadow: 0 0 10px 1px rgba(10 10 10 / 0.3);
     display: flex;
@@ -212,6 +212,7 @@ button {
 }
 
 .back-btn {
+    background: none;
     display: flex;
     align-items: center;
     gap: 10px;
@@ -243,11 +244,20 @@ button {
 
 .add-to-favorites-btn {
     display: flex;
+    user-select: none;
     align-items: center;
     background: #155DFC;
     padding: 10px 20px;
     border-radius: 10px;
     gap: 7px;
+    transition: all 0.2s ease-in-out;
+}
+
+.add-to-favorites-btn:hover {
+    background: #0F4ACB;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
 }
 
 .add-to-favorites-btn span {
@@ -295,9 +305,19 @@ button {
 }
 
 .graph-section .graph-btn {
+    user-select: none;
     background: #F3F4F6;
     padding: 7px 15px;
     border-radius: 7px;
+    transition: all 0.2s ease-in-out;
+}
+
+.graph-section .graph-btn:hover {
+    background: #155DFC;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    color: white;
+    transition: all 0.2s ease-in-out;
 }
 
 .graph-btn-selected {
@@ -312,11 +332,20 @@ button {
 
 #download-graph-btn {
     display: flex;
+    user-select: none;
     align-items: center;
     background: #155DFC;
     padding: 7px 15px;
     border-radius: 7px;
     gap: 10px;
+    transition: all 0.2s ease-in-out;
+}
+
+#download-graph-btn:hover {
+    background: #0F4ACB;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
 }
 
 #download-graph-btn span {color: white;}
@@ -398,4 +427,41 @@ button {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.error {
+    color: #dc3545;
+}
+
+
+.compare-wrapper {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 8px;
+}
+.symbol-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px;
+    box-shadow: 0 0 7px 0 rgba(30 30 30 / 0.5);
+    border-radius: 8px;
+    background: #00f0e4;
+    font-weight: bold;
+}
+
+.symbol-wrapper form {
+    display: none;
+}
+
+.symbol-wrapper:hover form {
+    display: block;
+}
+table {
+    border-collapse: collapse;
+}
+
+.clickable-row:hover {
+    background: #F3F4F6;
 }
