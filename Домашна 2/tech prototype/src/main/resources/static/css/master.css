@@ -1,5 +1,5 @@
 header {
-    width: 100vw;
+    width: 100%;
     border-radius: 0 0 8px 8px;
     box-shadow: 0 0 10px 1px rgba(10 10 10 / 0.3);
     display: flex;
@@ -55,7 +55,7 @@ input, select {
 }
 
 footer {
-    width: 100vw;
+    width: 100%;
     border-radius: 8px 8px 0 0;
     box-shadow: 0 0 10px 1px rgba(10 10 10 / 0.3);
     display: flex;
@@ -212,6 +212,7 @@ button {
 }
 
 .back-btn {
+    background: none;
     display: flex;
     align-items: center;
     gap: 10px;

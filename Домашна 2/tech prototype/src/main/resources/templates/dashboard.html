@@ -84,7 +84,7 @@
                 </tr>
             </thead>
             <tbody>
-            <tr th:each="coin, iterStat : ${tableCoins}">
+            <tr th:each="coin, iterStat : ${tableCoins}" class="clickable-row" th:data-symbol="${coin.symbol}">
                 <td th:if="${user!=null}">
                     <form th:if="${!user.hasCoin(coin.symbol)}" th:action="@{/addCoinToUser}" method="post">
                         <input type="hidden" name="username" th:value="${user.username}" />
@@ -109,6 +109,7 @@
                         </button>
                     </form>
                 </td>
+                <td th:if="${user==null}"></td>
                 <td class="table-row-count" th:text="${iterStat.index + 1} + '.'"></td>
                 <td>
                     <div class="table-coin-label">

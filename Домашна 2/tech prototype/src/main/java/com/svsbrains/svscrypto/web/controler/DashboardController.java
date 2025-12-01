@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
-@RequestMapping("/dashboard")
+//@RequestMapping("/dashboard")
 public class DashboardController {
 
     private final MarketDataService marketDataService;
@@ -36,7 +36,7 @@ public class DashboardController {
         this.userService=userService;
     }
 
-    @GetMapping
+    @GetMapping({"/", "/dashboard"})
     public String getDashboard(Model model, HttpSession httpSession) {
         model.addAttribute("bodyContent", "dashboard");
         List<DailyData> topPrice = dailyDataService.getTopByPrice(10);

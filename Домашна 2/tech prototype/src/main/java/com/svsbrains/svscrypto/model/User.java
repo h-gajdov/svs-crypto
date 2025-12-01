@@ -101,7 +101,6 @@ public class User {
     @Email
     private String email;
 
-    @Lob //Za da ne go ogranicit br na karakteri
     @NotNull
     private String password;
 
