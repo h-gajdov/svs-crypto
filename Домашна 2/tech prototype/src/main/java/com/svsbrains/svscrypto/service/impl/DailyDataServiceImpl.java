@@ -50,4 +50,17 @@ public class DailyDataServiceImpl implements DailyDataService {
     public List<DailyData> getTopByVolume(int k) {
         return dailyDataRepository.findTopVolumes(PageRequest.of(0, k));
     }
+
+    @Override
+    public double getMonthlyChange(String symbol) {
+        DailyData coin = getBySymbol(symbol).get();
+        MarketData monthBefore = marketDataService.getMonthDataOfSymbol(symbol).getLast();
+        return coin.getChangePercent(monthBefore.getLow());
+    }
+
+    @Override
+    public double getChangeFromMarketData(String symbol, MarketData marketData) {
+        DailyData coin = getBySymbol(symbol).get();
+        return coin.getChangePercent(marketData.getLow());
+    }
 }

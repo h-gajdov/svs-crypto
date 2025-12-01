@@ -2,8 +2,10 @@ package com.svsbrains.svscrypto.repository;
 
 import com.svsbrains.svscrypto.model.Coin;
 import com.svsbrains.svscrypto.model.MarketData;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,4 +30,7 @@ public interface MarketDataRepository extends JpaRepository<MarketData, Long> {
     List<MarketData> findAllSymbolsFirstTimestamp();
 
     Optional<MarketData> findFirstBySymbolOrderByTimestampAsc(String symbol);
+
+    @Query(value = "SELECT * FROM market_data WHERE symbol = :symbol ORDER BY timestamp DESC", nativeQuery = true)
+    List<MarketData> findLastNDaysBySymbol(@Param("symbol") String symbol, Pageable pageable);
 }

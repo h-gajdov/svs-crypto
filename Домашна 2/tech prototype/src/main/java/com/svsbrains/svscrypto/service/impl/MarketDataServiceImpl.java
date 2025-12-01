@@ -4,6 +4,8 @@ import com.svsbrains.svscrypto.model.MarketData;
 import com.svsbrains.svscrypto.repository.DailyDataRepository;
 import com.svsbrains.svscrypto.repository.MarketDataRepository;
 import com.svsbrains.svscrypto.service.MarketDataService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -34,5 +36,17 @@ public class MarketDataServiceImpl implements MarketDataService {
     @Override
     public Optional<MarketData> getFirstTimestamp(String symbol) {
         return marketDataRepository.findFirstBySymbolOrderByTimestampAsc(symbol);
+    }
+
+    @Override
+    public List<MarketData> getMonthDataOfSymbol(String symbol) {
+        Pageable limit = PageRequest.of(0, 30);
+        return marketDataRepository.findLastNDaysBySymbol(symbol, limit);
+    }
+
+    @Override
+    public List<MarketData> getKDaysDataOfSymbol(String symbol, int k) {
+        Pageable limit = PageRequest.of(0, k);
+        return marketDataRepository.findLastNDaysBySymbol(symbol, limit);
     }
 }

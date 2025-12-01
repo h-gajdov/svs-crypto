@@ -84,175 +84,27 @@
                 </tr>
             </thead>
             <tbody>
-            <tr>
+            <tr th:each="coin, iterStat : ${tableCoins}">
                 <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">1.</td>
+                <td class="table-row-count" th:text="${iterStat.index + 1} + '.'"></td>
                 <td>
                     <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/BTC?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>Bitcoin</span>
+                        <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+                        <span th:text="${coin.getSymbol()}"></span>
                     </div>
                 </td>
-                <td class="grey-text table-symbol">BTC</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
-            </tr>
-            <tr>
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">2.</td>
+                <td class="grey-text table-symbol" th:text="${coin.getSymbol()}"></td>
+                <td th:text="${coin.getFormattedLastPrice()}"></td>
+                <td th:class="${coin.getChangePercent() < 0} ? 'change-negative' : 'change-positive'" th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}"></td>
+                <td th:class="${coin.getMonthlyChange() < 0} ? 'change-negative' : 'change-positive'" th:text="${(coin.getMonthlyChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedMonthlyChange() + '%'}"></td>
+                <td th:class="${coin.getThreeMonthsChange() < 0} ? 'change-negative' : 'change-positive'" th:text="${(coin.getThreeMonthsChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedThreeMonthsChange() + '%'}"></td>
+                <td th:text="${coin.getFormattedVolume()}"></td>
                 <td>
-                    <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/ETH?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>Etherium</span>
+                    <div class="sparkline"
+                         th:data-prices="${#strings.arrayJoin(sparklineData[coin.symbol], ',')}"
+                         style="width: 100%; height: 75px;">
                     </div>
                 </td>
-                <td class="grey-text table-symbol">ETH</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
-            </tr>
-            <tr>
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">3.</td>
-                <td>
-                    <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/XRP?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>XRP</span>
-                    </div>
-                </td>
-                <td class="grey-text table-symbol">XRP</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
-            </tr>
-            <tr>
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">4.</td>
-                <td>
-                    <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/BTC?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>Bitcoin</span>
-                    </div>
-                </td>
-                <td class="grey-text table-symbol">BTC</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
-            </tr>
-            <tr>
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">5.</td>
-                <td>
-                    <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/ETH?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>Etherium</span>
-                    </div>
-                </td>
-                <td class="grey-text table-symbol">ETH</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
-            </tr>
-            <tr>
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">6.</td>
-                <td>
-                    <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/XRP?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>XRP</span>
-                    </div>
-                </td>
-                <td class="grey-text table-symbol">XRP</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
-            </tr>
-            <tr>
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">7.</td>
-                <td>
-                    <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/BTC?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>Bitcoin</span>
-                    </div>
-                </td>
-                <td class="grey-text table-symbol">BTC</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
-            </tr>
-            <tr>
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">8.</td>
-                <td>
-                    <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/ETH?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>Etherium</span>
-                    </div>
-                </td>
-                <td class="grey-text table-symbol">ETH</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
-            </tr>
-            <tr>
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">9.</td>
-                <td>
-                    <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/XRP?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>XRP</span>
-                    </div>
-                </td>
-                <td class="grey-text table-symbol">XRP</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
-            </tr>
-            <tr>
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
-                <td class="table-row-count">10.</td>
-                <td>
-                    <div class="table-coin-label">
-                        <img class="small-logo" src="https://img.logo.dev/crypto/BTC?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-                        <span>Bitcoin</span>
-                    </div>
-                </td>
-                <td class="grey-text table-symbol">BTC</td>
-                <td>$90,818.45</td>
-                <td class="change-negative">▼ -0.07</td>
-                <td class="change-negative">▼ -0.30</td>
-                <td class="change-positive">▲ +7.01%</td>
-                <td>$40,026,056,090</td>
-                <td><img class="last-7-days-grid" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png"></td>
             </tr>
             </tbody>
         </table>
@@ -268,4 +120,37 @@
             <div class="next-page-btn">></div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sparklineDivs = document.querySelectorAll('.sparkline');
+
+            sparklineDivs.forEach(div => {
+                const pricesStr = div.dataset.prices || '';
+                if (!pricesStr) return;
+
+                // Convert "1.0,2.0,3.0" to [1,2,3]
+                const prices = pricesStr.split(',').map(Number);
+
+                if (prices.length === 0) return;
+
+                const color = prices[prices.length - 1] >= prices[0] ? '#49d06e' : '#ff0000';
+
+                Plotly.newPlot(div, [{
+                    x: Array.from({length: prices.length}, (_, i) => i),
+                    y: prices,
+                    mode: 'lines',
+                    line: { width: 2, color: color   },
+                    hoverinfo: 'none'
+                }], {
+                    margin: { t:0, b:0, l:0, r:0 },
+                    xaxis: { visible: false, fixedrange: true },
+                    yaxis: { visible: false, fixedrange: true, range: [Math.min(...prices), Math.max(...prices)] },
+                    showlegend: false,
+                    width: 185,
+                    height: 75
+                }, { staticPlot: true });
+            });
+        });
+    </script>
 </section>

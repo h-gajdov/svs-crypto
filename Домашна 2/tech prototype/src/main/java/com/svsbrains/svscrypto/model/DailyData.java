@@ -27,16 +27,21 @@ public class DailyData {
     private Double high_24h;
     private Double low_24h;
 
+    private Double monthlyChange;
+    private Double threeMonthsChange;
+
     public String getFormattedLastPrice() {
-        if (last_price >= 1_000_000_000) {
-            return String.format("%.2fB", last_price / 1_000_000_000);
-        } else if (last_price >= 1_000_000) {
-            return String.format("%.2fM", last_price / 1_000_000);
-        } else if (last_price >= 1_000) {
-            return String.format("%.2fK", last_price / 1_000);
-        } else {
-            return String.format("%.2f", last_price);
-        }
+        return formatNumber(last_price);
+    }
+
+    public String getFormattedMonthlyChange() {
+        if(monthlyChange == null) return "0";
+        return formatNumber(monthlyChange);
+    }
+
+    public String getFormattedThreeMonthsChange() {
+        if(threeMonthsChange == null) return "0";
+        return formatNumber(threeMonthsChange);
     }
 
     public double getChangePercent() {
@@ -44,14 +49,25 @@ public class DailyData {
         if (high_24h == null || high_24h == 0) return 0;
 
         if(last_price.equals(high_24h)) {
-            return ((last_price - low_24h) / low_24h) * 100;
+            return getChangePercent(low_24h);
         } else {
-            return ((last_price - high_24h) / high_24h) * 100;
+            return getChangePercent(high_24h);
         }
     }
 
+    public double getChangePercent(Double number) {
+        return ((last_price - number) / number) * 100;
+    }
+
     public String getFormattedChange() {
-        double number = getChangePercent();
+        return formatNumber(getChangePercent());
+    }
+
+    public String getFormattedVolume() {
+        return formatNumber(volume_24h);
+    }
+
+    private String formatNumber(double number) {
         if (number >= 1_000_000_000) {
             return String.format("%.2fB", number / 1_000_000_000);
         } else if (number >= 1_000_000) {
