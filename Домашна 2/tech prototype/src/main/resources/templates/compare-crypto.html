@@ -6,23 +6,83 @@
         <div class="grid-2col">
             <h4>Add Symbol to Compare (max 5)</h4>
             <h4>Time Range</h4>
-            <form>
-                <select>
-                    <option value="" disabled selected hidden>Search for a symbol...</option>
-                </select>
+            <form method="post">
+                <input required name="symbol" list="coins" placeholder="Search for a coin...">
+                <datalist id="coins">
+                    <option th:each="symbol: ${symbols}" th:value="${symbol}">
+                </datalist>
+<!--                <button th:disabled="${#lists.size(currentSymbols) >= 5}" class="success-button"><i class="fa-solid fa-plus" style="color: white"></i> Add</button>-->
                 <button class="success-button"><i class="fa-solid fa-plus" style="color: white"></i> Add</button>
             </form>
-            <select>
-                <option value="1d">1 Day</option>
-                <option value="7d">7 Days</option>
-                <option value="30d" selected>30 Days</option>
-                <option value="3m">3 Months</option>
-                <option value="1y">1 Year</option>
+            <select id="time-range">
+                <option th:selected="${days == 7}" value="7">7 Days</option>
+                <option th:selected="${days == 30}" value="30">30 Days</option>
+                <option th:selected="${days == 90}" value="90">90 Days</option>
+                <option th:selected="${days == 365}" value="365">1 Year</option>
             </select>
         </div>
-        <h4>Comparing (<span>th:text</span>):</h4>
-<!--        Comparing coins logic-->
-<!--        Plot-->
-<!--        Cards-->
+        <div th:if="${error != null}">
+            <p class="error" th:text="${error}"></p>
+        </div>
+        <h4>Comparing (<span th:text="${#lists.size(currentSymbols)}"></span>):</h4>
+        <div th:if="${#lists.size(currentSymbols) > 0}">
+            <div class="compare-wrapper">
+                <div class="symbol-wrapper" th:each="symbol: ${currentSymbols}">
+                    <img class="small-logo"
+                         th:src="${'https://img.logo.dev/crypto/' + symbol + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+                    <span th:text="${symbol}"></span>
+                    <form action="/compare-coins/remove" method="post">
+                        <input name="symbol" th:value="${symbol}" hidden/>
+                        <button type="submit" class="plain-button"><i class="fa-solid fa-x"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div id="data-graph"></div>
+            <script th:inline="javascript">
+                const marketData = /*[[${marketData}]]*/ [];
+                console.log(marketData)
+                const traces = marketData.map((singleCryptoHistory) => {
+                    const dates = singleCryptoHistory.map(item => new Date(item.timestamp * 1000));
+                    const values = singleCryptoHistory.map(item => item.high);
+                    const lineName = singleCryptoHistory[0]["symbol"]
+
+                    return {
+                        x: dates,
+                        y: values,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: lineName,
+                    };
+                });
+
+                const layout = {
+                    margin: {t: 20, r: 20, l: 60, b: 80},
+                    yaxis: {
+                        tickformat: '$,',
+                        autorange: true,
+                        title: 'Price (USD)'
+                    },
+                    xaxis: {
+                        tickangle: -45,
+                        type: 'date'
+                    },
+                    showlegend: true
+                };
+
+                // 3. Pass the ARRAY of traces to newPlot
+                Plotly.newPlot('data-graph', traces, layout, {responsive: true});
+            </script>
+        </div>
+        <div th:if="${#lists.isEmpty(currentSymbols)}">
+            <h4>Add coin!</h4>
+        </div>
+
+        <script>
+            document.getElementById("time-range").addEventListener("change", e => {
+                const url = new URL(window.location.href);
+                url.searchParams.set("days", e.target.value);
+                window.location.href = url.toString();
+            })
+        </script>
     </div>
 </section>

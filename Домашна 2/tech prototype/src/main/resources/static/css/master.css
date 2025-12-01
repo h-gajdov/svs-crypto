@@ -428,6 +428,35 @@ button {
     justify-content: space-between;
 }
 
+.error {
+    color: #dc3545;
+}
+
+
+.compare-wrapper {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 8px;
+}
+.symbol-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px;
+    box-shadow: 0 0 7px 0 rgba(30 30 30 / 0.5);
+    border-radius: 8px;
+    background: #00f0e4;
+    font-weight: bold;
+}
+
+.symbol-wrapper form {
+    display: none;
+}
+
+.symbol-wrapper:hover form {
+    display: block;
+}
 table {
     border-collapse: collapse;
 }
