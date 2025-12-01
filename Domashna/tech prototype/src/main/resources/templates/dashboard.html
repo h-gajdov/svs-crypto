@@ -1,0 +1,156 @@
+<section xmlns:th="http://www.thymeleaf.org">
+    <div class="page-title">
+        <h2>Cryptocurrency Dashboard</h2>
+        <p>Real-time market overview and price charts</p>
+    </div>
+
+    <div class="dashboard-top-stats">
+        <div class="wrapper top-stat">
+            <div class="top-stat-head">
+                <a>Top Price</a>
+                <a>Change</a>
+            </div>
+
+            <div th:each="coin : ${top3Price}" class="top-stat-coin">
+                <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+                <a th:text="${coin.getSymbol()}"></a>
+                <a th:text="${coin.getFormattedLastPrice()}"></a>
+                <a th:class="${coin.getChangePercent() < 0} ? 'change-negative' : 'change-positive'"
+                   th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}">
+                </a>
+            </div>
+        </div>
+        <div class="wrapper top-stat">
+            <div class="top-stat-head">
+                <a>New</a>
+                <a>Change</a>
+            </div>
+
+            <div th:each="coin : ${top3New}" class="top-stat-coin">
+                <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+                <a th:text="${coin.getSymbol()}"></a>
+                <a th:text="${coin.getFormattedLastPrice()}"></a>
+                <a th:class="${coin.getChangePercent() < 0} ? 'change-negative' : 'change-positive'"
+                   th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}">
+                </a>
+            </div>
+        </div>
+        <div class="wrapper top-stat">
+            <div class="top-stat-head">
+                <a>Top Gain</a>
+                <a>Change</a>
+            </div>
+
+            <div th:each="coin : ${top3Gain}" class="top-stat-coin">
+                <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+                <a th:text="${coin.getSymbol()}"></a>
+                <a th:text="${coin.getFormattedLastPrice()}"></a>
+                <a th:class="${coin.getChangePercent() < 0} ? 'change-negative' : 'change-positive'"
+                   th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}">
+                </a>
+            </div>
+        </div>
+        <div class="wrapper top-stat">
+            <div class="top-stat-head">
+                <a>Top Volume</a>
+                <a>Change</a>
+            </div>
+
+            <div th:each="coin : ${top3Volume}" class="top-stat-coin">
+                <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+                <a th:text="${coin.getSymbol()}"></a>
+                <a th:text="${coin.getFormattedLastPrice()}"></a>
+                <a th:class="${coin.getChangePercent() < 0} ? 'change-negative' : 'change-positive'"
+                   th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}">
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="wrapper dashboard-wrapper">
+        <h2>Cryptocurrency Prices by Market Cap</h2>
+        <table class="dashboard-table">
+            <thead>
+            <tr>
+                <th></th>
+                <th>#</th>
+                <th>Coin</th>
+                <th></th>
+                <th>Price</th>
+                <th>24h</th>
+                <th>1m</th>
+                <th>3m</th>
+                <th>24h volume</th>
+                <th>Last 7 Days Grid</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="coin, iterStat : ${tableCoins}">
+                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
+                <td class="table-row-count" th:text="${iterStat.index + 1} + '.'"></td>
+                <td>
+                    <div class="table-coin-label">
+                        <img class="small-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+                        <span th:text="${coin.getSymbol()}"></span>
+                    </div>
+                </td>
+                <td class="grey-text table-symbol" th:text="${coin.getSymbol()}"></td>
+                <td th:text="${coin.getFormattedLastPrice()}"></td>
+                <td th:class="${coin.getChangePercent() < 0} ? 'change-negative' : 'change-positive'" th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}"></td>
+                <td th:class="${coin.getMonthlyChange() < 0} ? 'change-negative' : 'change-positive'" th:text="${(coin.getMonthlyChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedMonthlyChange() + '%'}"></td>
+                <td th:class="${coin.getThreeMonthsChange() < 0} ? 'change-negative' : 'change-positive'" th:text="${(coin.getThreeMonthsChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedThreeMonthsChange() + '%'}"></td>
+                <td th:text="${coin.getFormattedVolume()}"></td>
+                <td>
+                    <div class="sparkline"
+                         th:data-prices="${#strings.arrayJoin(sparklineData[coin.symbol], ',')}"
+                         style="width: 100%; height: 75px;">
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <div class="pagination">
+            <div class="prev-page-btn grey-text"><</div>
+            <div class="page-btn selected-page">1</div>
+            <div class="page-btn">2</div>
+            <div class="page-btn">3</div>
+            <div class="page-btn">4</div>
+            <div class="page-btn">5</div>
+            <div class="page-btn">...</div>
+            <div class="page-btn">10</div>
+            <div class="next-page-btn">></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sparklineDivs = document.querySelectorAll('.sparkline');
+
+            sparklineDivs.forEach(div => {
+                const pricesStr = div.dataset.prices || '';
+                if (!pricesStr) return;
+
+                // Convert "1.0,2.0,3.0" to [1,2,3]
+                const prices = pricesStr.split(',').map(Number);
+
+                if (prices.length === 0) return;
+
+                const color = prices[prices.length - 1] >= prices[0] ? '#49d06e' : '#ff0000';
+
+                Plotly.newPlot(div, [{
+                    x: Array.from({length: prices.length}, (_, i) => i),
+                    y: prices,
+                    mode: 'lines',
+                    line: { width: 2, color: color   },
+                    hoverinfo: 'none'
+                }], {
+                    margin: { t:0, b:0, l:0, r:0 },
+                    xaxis: { visible: false, fixedrange: true },
+                    yaxis: { visible: false, fixedrange: true, range: [Math.min(...prices), Math.max(...prices)] },
+                    showlegend: false,
+                    width: 185,
+                    height: 75
+                }, { staticPlot: true });
+            });
+        });
+    </script>
+</section>

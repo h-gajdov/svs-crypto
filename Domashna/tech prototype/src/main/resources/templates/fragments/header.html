@@ -1,0 +1,21 @@
+<header xmlns:th="http://www.thymeleaf.org">
+    <nav>
+        <a href="/" class="logo">
+            <img th:src="@{/images/svs-logo.png}" alt="logo">
+            <p>SVSCRYPTO</p>
+        </a>
+        <a href="/dashboard">Dashboard</a>
+        <a href="/compare-coins">Compare Coins</a>
+        <a href="/historical-data">Historical Data</a>
+        <a href="/watchlist">My Watchlist</a>
+    </nav>
+    <div>
+        <input type="text" placeholder="Search for a symbol..."/>
+        <button class="plain-button" type="submit">
+            <i class="fa-solid fa-magnifying-glass fa-1_5x" style="color: #444;"></i>
+        </button>
+        <a href="/login"><i class="fa-regular fa-circle-user fa-1_5x" style="color: #444;"></i></a>
+        <a><i class="fa-regular fa-sun fa-1_5x" style="color: #FFD43B;"></i></a>
+        <a><i class="fa-regular fa-moon fa-1_5x"></i></a>
+    </div>
+</header>

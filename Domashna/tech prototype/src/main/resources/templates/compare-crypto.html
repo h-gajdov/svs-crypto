@@ -1,0 +1,28 @@
+<section xmlns:th="http://www.thymeleaf.org">
+    <h2>Compare Cryptocurrencies</h2>
+    <p>Compare performance of multiple cryptocurrencies over time</p>
+
+    <div class="wrapper">
+        <div class="grid-2col">
+            <h4>Add Symbol to Compare (max 5)</h4>
+            <h4>Time Range</h4>
+            <form>
+                <select>
+                    <option value="" disabled selected hidden>Search for a symbol...</option>
+                </select>
+                <button class="success-button"><i class="fa-solid fa-plus" style="color: white"></i> Add</button>
+            </form>
+            <select>
+                <option value="1d">1 Day</option>
+                <option value="7d">7 Days</option>
+                <option value="30d" selected>30 Days</option>
+                <option value="3m">3 Months</option>
+                <option value="1y">1 Year</option>
+            </select>
+        </div>
+        <h4>Comparing (<span>th:text</span>):</h4>
+<!--        Comparing coins logic-->
+<!--        Plot-->
+<!--        Cards-->
+    </div>
+</section>
