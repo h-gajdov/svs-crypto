@@ -243,11 +243,20 @@ button {
 
 .add-to-favorites-btn {
     display: flex;
+    user-select: none;
     align-items: center;
     background: #155DFC;
     padding: 10px 20px;
     border-radius: 10px;
     gap: 7px;
+    transition: all 0.2s ease-in-out;
+}
+
+.add-to-favorites-btn:hover {
+    background: #0F4ACB;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
 }
 
 .add-to-favorites-btn span {
@@ -295,9 +304,19 @@ button {
 }
 
 .graph-section .graph-btn {
+    user-select: none;
     background: #F3F4F6;
     padding: 7px 15px;
     border-radius: 7px;
+    transition: all 0.2s ease-in-out;
+}
+
+.graph-section .graph-btn:hover {
+    background: #155DFC;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    color: white;
+    transition: all 0.2s ease-in-out;
 }
 
 .graph-btn-selected {
@@ -312,11 +331,20 @@ button {
 
 #download-graph-btn {
     display: flex;
+    user-select: none;
     align-items: center;
     background: #155DFC;
     padding: 7px 15px;
     border-radius: 7px;
     gap: 10px;
+    transition: all 0.2s ease-in-out;
+}
+
+#download-graph-btn:hover {
+    background: #0F4ACB;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
 }
 
 #download-graph-btn span {color: white;}
@@ -428,4 +456,11 @@ button {
 
 .symbol-wrapper:hover form {
     display: block;
+}
+table {
+    border-collapse: collapse;
+}
+
+.clickable-row:hover {
+    background: #F3F4F6;
 }

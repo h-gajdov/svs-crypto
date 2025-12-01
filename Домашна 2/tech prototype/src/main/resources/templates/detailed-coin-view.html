@@ -1,14 +1,16 @@
 <section xmlns:th="http://www.thymeleaf.org">
-    <div class="back-btn">
-        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#8B8B8B"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
-        <span>Back</span>
-    </div>
+    <form th:action="@{'/dashboard'}" th:method="get">
+    <button class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#8B8B8B"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
+            <span>Back</span>
+        </button>
+    </form>
 
     <div class="coin-label-container">
         <div class="coin-label-left-section">
-            <img class="large-logo" src="https://img.logo.dev/crypto/BTC?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
-            <span class="coin-name">Bitcoin</span>
-            <span class="coin-symbol grey-text">BTC</span>
+            <img class="large-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+            <span class="coin-name" th:text="${coin.getSymbol()}"></span>
+            <span class="coin-symbol grey-text" th:text="${coin.getSymbol()}"></span>
         </div>
         <div class="add-to-favorites-btn">
             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg>
@@ -40,20 +42,20 @@
         </div>
         <div class="graph-btns">
             <div class="graph-section">
-                <form th:method="get" th:action="${'/details/' + coin.getSymbol() + '/plot/30'}"><button class="graph-btn">1M</button></form>
-                <form th:method="get" th:action="${'/details/' + coin.getSymbol() + '/plot/90'}"><button class="graph-btn">3M</button></form>
-                <form th:method="get" th:action="${'/details/' + coin.getSymbol() + '/plot/180'}"><button class="graph-btn">6M</button></form>
-                <form th:method="get" th:action="${'/details/' + coin.getSymbol() + '/plot/365'}"><button class="graph-btn">1Y</button></form>
-                <form th:method="get" th:action="${'/details/' + coin.getSymbol() + '/plot/1825'}"><button class="graph-btn">5Y</button></form>
-                <form th:method="get" th:action="${'/details/' + coin.getSymbol() + '/plot/max'}"><button class="graph-btn">MAX</button></form>
+                <button class="graph-btn timeframe-btn" data-time="30">1M</button>
+                <button class="graph-btn timeframe-btn" data-time="90">3M</button>
+                <button class="graph-btn timeframe-btn" data-time="180">6M</button>
+                <button class="graph-btn timeframe-btn" data-time="365">1Y</button>
+                <button class="graph-btn timeframe-btn" data-time="1825">5Y</button>
+                <button class="graph-btn timeframe-btn graph-btn-selected" data-time="max">MAX</button>
             </div>
             <div class="graph-section">
-                <span class="graph-btn graph-btn-selected">Price</span>
-                <span class="graph-btn">Open</span>
-                <span class="graph-btn">High</span>
-                <span class="graph-btn">Low</span>
-                <span class="graph-btn">Close</span>
-                <span class="graph-btn">Volume</span>
+                <span class="graph-btn graph-btn-selected" data-field="price">Price</span>
+                <span class="graph-btn" data-field="open">Open</span>
+                <span class="graph-btn" data-field="high">High</span>
+                <span class="graph-btn" data-field="low">Low</span>
+                <span class="graph-btn" data-field="close">Close</span>
+                <span class="graph-btn" data-field="volume">Volume</span>
             </div>
         </div>
         <div class="download-graph-container">
@@ -97,31 +99,34 @@
                 <div class="metric-wrapper">
                     <div class="metric-label-container">
                         <span class="metric-label grey-text">24 Hours</span>
-                        <span class="metric-change change-positive">▲ +2.45%</span>
+                        <span th:class="${coin.getChangePercent() < 0} ? 'metric-change change-negative' : 'metric-change change-positive'"
+                              th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}"></span>
                     </div>
 
                     <div class="slider-track">
-                        <div class="slider-fill" style="width: 12%;"></div>
+                        <div class="slider-fill" th:style="${'width: ' + (coin.getChangePercent() < 0 ? -coin.getChangePercent() : coin.getChangePercent() ) + '%; background: ' + (coin.getChangePercent() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
                     </div>
                 </div>
                 <div class="metric-wrapper">
                     <div class="metric-label-container">
                         <span class="metric-label grey-text">7 Days</span>
-                        <span class="metric-change change-positive">▲ +5.67%</span>
+                        <span th:class="${coin.getWeeklyChange() < 0} ? 'metric-change change-negative' : 'metric-change change-positive'"
+                              th:text="${(coin.getWeeklyChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedWeeklyChange() + '%'}"></span>
                     </div>
 
                     <div class="slider-track">
-                        <div class="slider-fill" style="width: 50%;"></div>
+                        <div class="slider-fill" th:style="${'width: ' + (coin.getWeeklyChange() < 0 ? -coin.getWeeklyChange() : coin.getWeeklyChange()) + '%; background: ' + (coin.getWeeklyChange() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
                     </div>
                 </div>
                 <div class="metric-wrapper">
                     <div class="metric-label-container">
                         <span class="metric-label grey-text">30 Days</span>
-                        <span class="metric-change change-positive">▲ +12.34%</span>
+                        <span th:class="${coin.getMonthlyChange() < 0} ? 'metric-change change-negative' : 'metric-change change-positive'"
+                              th:text="${(coin.getMonthlyChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedMonthlyChange() + '%'}"></span>
                     </div>
 
                     <div class="slider-track">
-                        <div class="slider-fill" style="width: 100%;"></div>
+                        <div class="slider-fill" th:style="${'width: ' + (coin.getMonthlyChange() < 0 ? -coin.getMonthlyChange() : coin.getMonthlyChange()) + '%; background: ' + (coin.getMonthlyChange() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
                     </div>
                 </div>
             </div>
@@ -130,37 +135,97 @@
 
     <script th:inline="javascript">
         /*<![CDATA[*/
-        const timestamps = [[${timestamps}]].map(Number);
-        const values = [[${values}]].map(Number);
+        const symbol = '[[${coin.symbol}]]';
+        const chartDiv = document.getElementById('data-graph');
 
-        const dates = timestamps.map(ts => new Date(ts * 1000));
+        let timestamps = [[${timestamps}]]?.map(Number) || [];
+        let values = [[${values}]]?.map(Number) || [];
+        let dates = timestamps.map(ts => new Date(ts * 1000));
 
-        const trace = {
-            x: dates,
-            y: values,
-            type: 'scatter',
-            mode: 'lines',
-            fill: 'tozeroy',
-            line: { color: '#4A90E2' }
-        };
+        let currentField = "price";
+        let currentTime = "max";
+        let dataCache = { timestamps, values };
 
-        const layout = {
+        let layout = {
             margin: { t: 20, r: 20, l: 60, b: 80 },
             yaxis: { tickformat: '$,', autorange: true },
-            xaxis: { tickangle: -45, type: 'date' }
+            xaxis: { tickangle: -45, type: 'date', tickformat: "%d %b", nticks: 10 }
         };
 
-        Plotly.newPlot('data-graph', [trace], layout, { responsive: true });
-        /*]]>*/
+        function getTraceForField(field, dates, values) {
+            if (field === "price") {
+                return {
+                    x: dates,
+                    y: values,
+                    type: 'scatter',
+                    mode: 'lines',
+                    fill: 'tozeroy',
+                    line: { color: '#4A90E2' }
+                };
+            }
 
-        document.getElementById('download-graph-btn').addEventListener('click', () => {
-            console.log("DOWNLOAD")
-            Plotly.downloadImage('data-graph', {
-                format: 'png',
-                filename: 'crypto_chart',
-                height: 600,
-                width: 1000
+            const colors = values.map((v, i) => i === 0 ? '#47cf6d' : (v >= values[i - 1] ? '#47cf6d' : '#ff4d4d'));
+            return {
+                x: dates,
+                y: values,
+                type: 'bar',
+                marker: { color: colors }
+            };
+        }
+
+        Plotly.newPlot(chartDiv, [getTraceForField(currentField, dates, values)], layout, { responsive: true });
+
+        document.querySelectorAll('.timeframe-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                currentTime = btn.dataset.time;
+
+                document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('graph-btn-selected'));
+                btn.classList.add('graph-btn-selected');
+
+                fetch(`/details/${symbol.replaceAll('"', '')}/plot/${currentTime}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dataCache = data;
+                        dates = data.timestamps.map(ts => new Date(ts * 1000));
+                        values = data.values;
+
+                        const trace = getTraceForField(currentField, dates, values);
+                        Plotly.react(chartDiv, [trace], layout);
+                    })
+                    .catch(err => console.error('Error fetching plot data:', err));
             });
         });
+
+        document.querySelectorAll('[data-field]').forEach(btn => {
+            btn.classList.add('field-btn');
+
+            btn.addEventListener('click', () => {
+                currentField = btn.dataset.field.toLowerCase();
+                currentTime = document.querySelector('.graph-btn.timeframe-btn.graph-btn-selected').dataset.time;
+
+                console.log(currentField);
+                console.log(currentTime);
+
+                document.querySelectorAll('.field-btn').forEach(b => b.classList.remove('graph-btn-selected'));
+                btn.classList.add('graph-btn-selected');
+
+                dates = dataCache.timestamps.map(ts => new Date(ts * 1000));
+                values = dataCache.values;
+
+                fetch(`/details/${symbol.replaceAll('"', '')}/plot/${currentTime}?field=${currentField}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dataCache = data;
+                        dates = data.timestamps.map(ts => new Date(ts * 1000));
+                        values = data.values;
+
+                        const trace = getTraceForField(currentField, dates, values);
+                        Plotly.react(chartDiv, [trace], layout);
+                    })
+                    .catch(err => console.error('Error fetching plot data:', err));
+            });
+        });
+        /*]]>*/
     </script>
 </section>

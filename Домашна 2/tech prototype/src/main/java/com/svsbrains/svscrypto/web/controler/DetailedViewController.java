@@ -6,15 +6,14 @@ import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/details")
@@ -29,25 +28,19 @@ public class DetailedViewController {
 
     @GetMapping("/{symbol}")
     public String getCompareCrypto(@PathVariable String symbol, Model model) {
-        addCoinStatsToModel(symbol, model); // common stats for the coin
+        DailyData coin = dailyDataService.getBySymbol(symbol).get();
+
+        //TODO: Refactor this
+        double monthlyChange = dailyDataService.getMonthlyChange(coin.getSymbol());
+        MarketData weekBefore = marketDataService.getKDaysDataOfSymbol(coin.getSymbol(), 7).getLast();
+        double weeklyChange = dailyDataService.getChangeFromMarketData(coin.getSymbol(), weekBefore);
+        coin.setMonthlyChange(monthlyChange);
+        coin.setWeeklyChange(weeklyChange);
+
+        addCoinStatsToModel(symbol, model);
         return "master-template";
     }
 
-    // Separate POST mapping to prepare chart data
-    @PostMapping("/{symbol}/plot/{time}")
-    public String plotTimeframe(@PathVariable String symbol,
-                                @PathVariable String time,
-                                Model model) {
-
-        addCoinStatsToModel(symbol, model); // include coin stats
-        addPlotDataToModel(symbol, time, model); // only plot data
-
-        return "master-template"; // render same template with updated chart
-    }
-
-    // ---------------- Helper functions ----------------
-
-    // Add common coin stats to the model
     private void addCoinStatsToModel(String symbol, Model model) {
         MarketData allTimeLow = marketDataService.getAllTimeLow(symbol).get();
         MarketData allTimeHigh = marketDataService.getAllTimeHigh(symbol).get();
@@ -78,25 +71,29 @@ public class DetailedViewController {
         model.addAttribute("bodyContent", "detailed-coin-view");
     }
 
-    private void addPlotDataToModel(String symbol, String time, Model model) {
-        int days;
-        switch (time.toLowerCase()) {
-            case "7d": days = 7; break;
-            case "30d": days = 30; break;
-            case "90d": days = 90; break;
-            default: days = 30;
+    @GetMapping("/{symbol}/plot/{time}")
+    @ResponseBody
+    public Map<String, Object> getPlotData(@PathVariable String symbol, @PathVariable String time, @RequestParam(defaultValue = "open") String field) {
+        List<MarketData> data;
+        if(time.equals("max")) {
+            data = marketDataService.getBySymbol(symbol);
+        } else {
+            data = marketDataService.getKDaysDataOfSymbol(symbol, Integer.parseInt(time));
         }
 
-        List<MarketData> data = marketDataService.getKDaysDataOfSymbol(symbol, days);
+        List<Long> timestamps = data.stream().map(MarketData::getTimestamp).toList();
+        List<Double> values = data.stream().map(md -> switch(field) {
+            case "open" -> md.getOpen();
+            case "high" -> md.getHigh();
+            case "low" -> md.getLow();
+            case "close" -> md.getClose();
+            case "volume" -> md.getVolume();
+            default -> md.getOpen();
+        }).toList();
 
-        List<Long> timestamps = data.stream()
-                .map(MarketData::getTimestamp)
-                .toList();
-        List<Double> values = data.stream()
-                .map(MarketData::getOpen)
-                .toList();
-
-        model.addAttribute("timestamps", timestamps);
-        model.addAttribute("values", values);
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamps", timestamps);
+        response.put("values", values);
+        return response;
     }
 }
