@@ -27,6 +27,7 @@ public class DailyData {
     private Double high_24h;
     private Double low_24h;
 
+    private Double weeklyChange;
     private Double monthlyChange;
     private Double threeMonthsChange;
 
@@ -37,6 +38,11 @@ public class DailyData {
     public String getFormattedMonthlyChange() {
         if(monthlyChange == null) return "0";
         return formatNumber(monthlyChange);
+    }
+
+    public String getFormattedWeeklyChange() {
+        if(weeklyChange == null) return "0";
+        return formatNumber(weeklyChange);
     }
 
     public String getFormattedHigh() {
