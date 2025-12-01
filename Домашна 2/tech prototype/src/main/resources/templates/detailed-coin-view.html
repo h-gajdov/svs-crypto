@@ -1,0 +1,130 @@
+<section xmlns:th="http://www.thymeleaf.org">
+    <div class="back-btn">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#8B8B8B"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
+        <span>Back</span>
+    </div>
+
+    <div class="coin-label-container">
+        <div class="coin-label-left-section">
+            <img class="large-logo" src="https://img.logo.dev/crypto/BTC?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
+            <span class="coin-name">Bitcoin</span>
+            <span class="coin-symbol grey-text">BTC</span>
+        </div>
+        <div class="add-to-favorites-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg>
+            <span>Add to favorites</span>
+        </div>
+    </div>
+
+    <div class="wrapper detailed-view-wrapper">
+        <div class="coin-heading-info">
+            <div class="coin-info">
+                <span class="heading">Rank</span>
+                <span class="data">#1</span>
+            </div>
+            <div class="coin-info">
+                <span class="heading">Current Price</span>
+                <span class="data">$90,818.45</span>
+                <span class="change change-positive">▲ +7.01%</span>
+            </div>
+            <div class="coin-info">
+                <span class="heading">Market Cap</span>
+                <span class="data">$845.00B</span>
+            </div>
+            <div class="coin-info">
+                <span class="heading">24H Volume</span>
+                <span class="data">28.50B</span>
+                <span class="vol-mkt-pct grey-text">Vol / Mkt Cap = 3.37%</span>
+            </div>
+        </div>
+        <div class="graph-btns">
+            <div class="graph-section">
+                <span class="graph-btn">1M</span>
+                <span class="graph-btn">3M</span>
+                <span class="graph-btn">6M</span>
+                <span class="graph-btn">1Y</span>
+                <span class="graph-btn">5Y</span>
+                <span class="graph-btn graph-btn-selected">MAX</span>
+            </div>
+            <div class="graph-section">
+                <span class="graph-btn graph-btn-selected">Price</span>
+                <span class="graph-btn">Open</span>
+                <span class="graph-btn">High</span>
+                <span class="graph-btn">Low</span>
+                <span class="graph-btn">Close</span>
+                <span class="graph-btn">Volume</span>
+            </div>
+        </div>
+        <div class="download-graph-container">
+            <div class="download-graph-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>
+                <span>Download Graph</span>
+            </div>
+        </div>
+        <div id="data-graph">
+            <img style="width: 100%; height: 430px;"
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Placeholder_view_vector.svg/330px-Placeholder_view_vector.svg.png">
+        </div>
+    </div>
+
+    <div id="market-statistics">
+        <div class="wrapper mkt-stat">
+            <span>Market Statistics</span>
+            <div class="grid">
+                <div class="cell">
+                    <span class="grey-text">24H High</span>
+                    <span class="change-positive">$44,100</span>
+                </div>
+                <div class="cell">
+                    <span class="grey-text">24H Low</span>
+                    <span class="change-negative">$42,300</span>
+                </div>
+                <div class="cell">
+                    <span class="grey-text">All-Time High</span>
+                    <span>120,000$</span>
+                    <span class="change-positive">-37.70%</span>
+                </div>
+                <div class="cell">
+                    <span class="grey-text">All-Time High</span>
+                    <span>0.01$</span>
+                    <span class="change-negative">+9E6%</span>
+                </div>
+            </div>
+        </div>
+        <div id="price-performance" class="wrapper mkt-stat">
+            <span>Price Performance</span>
+            <div class="sliders-container">
+                <div class="metric-wrapper">
+                    <div class="metric-label-container">
+                        <span class="metric-label grey-text">24 Hours</span>
+                        <span class="metric-change change-positive">▲ +2.45%</span>
+                    </div>
+
+                    <div class="slider-track">
+                        <div class="slider-fill" style="width: 12%;"></div>
+                    </div>
+                </div>
+                <div class="metric-wrapper">
+                    <div class="metric-label-container">
+                        <span class="metric-label grey-text">7 Days</span>
+                        <span class="metric-change change-positive">▲ +5.67%</span>
+                    </div>
+
+                    <div class="slider-track">
+                        <div class="slider-fill" style="width: 50%;"></div>
+                    </div>
+                </div>
+                <div class="metric-wrapper">
+                    <div class="metric-label-container">
+                        <span class="metric-label grey-text">30 Days</span>
+                        <span class="metric-change change-positive">▲ +12.34%</span>
+                    </div>
+
+                    <div class="slider-track">
+                        <div class="slider-fill" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
