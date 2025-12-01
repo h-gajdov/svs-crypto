@@ -85,7 +85,25 @@
             </thead>
             <tbody>
             <tr th:each="coin, iterStat : ${tableCoins}">
-                <td><svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#6C6C6C"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg></td>
+                <td th:if="${user!=null}">
+                    <form th:action="@{/dashboard/addCoinToUser}" method="post">
+                        <input type="hidden" name="username" th:value="${user.username}" />
+                        <input type="hidden" name="symbol" th:value="${coin.symbol}" />
+
+                        <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
+                            <svg th:if="${user.hasCoin(coin.symbol)}"
+                                 xmlns="http://www.w3.org/2000/svg" height="20px" width="20px" fill="#FFD700"
+                                 viewBox="0 0 24 24">
+                                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                            </svg>
+                            <svg th:if="${!user.hasCoin(coin.symbol)}"
+                                 xmlns="http://www.w3.org/2000/svg" height="20px" width="20px" fill="#6C6C6C"
+                                 viewBox="0 0 24 24">
+                                <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28L5.47 10.5l4.38-.38L12 6.1l2.15 4.01 4.38.38-3.77 2.89 1 4.28L12 15.4z"/>
+                            </svg>
+                        </button>
+                    </form>
+                </td>
                 <td class="table-row-count" th:text="${iterStat.index + 1} + '.'"></td>
                 <td>
                     <div class="table-coin-label">
@@ -122,7 +140,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const sparklineDivs = document.querySelectorAll('.sparkline');
 
             sparklineDivs.forEach(div => {
@@ -140,16 +158,16 @@
                     x: Array.from({length: prices.length}, (_, i) => i),
                     y: prices,
                     mode: 'lines',
-                    line: { width: 2, color: color   },
+                    line: {width: 2, color: color},
                     hoverinfo: 'none'
                 }], {
-                    margin: { t:0, b:0, l:0, r:0 },
-                    xaxis: { visible: false, fixedrange: true },
-                    yaxis: { visible: false, fixedrange: true, range: [Math.min(...prices), Math.max(...prices)] },
+                    margin: {t: 0, b: 0, l: 0, r: 0},
+                    xaxis: {visible: false, fixedrange: true},
+                    yaxis: {visible: false, fixedrange: true, range: [Math.min(...prices), Math.max(...prices)]},
                     showlegend: false,
                     width: 185,
                     height: 75
-                }, { staticPlot: true });
+                }, {staticPlot: true});
             });
         });
     </script>

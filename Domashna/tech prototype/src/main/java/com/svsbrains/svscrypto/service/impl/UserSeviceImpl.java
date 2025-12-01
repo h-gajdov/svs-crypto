@@ -27,7 +27,7 @@ public class UserSeviceImpl implements UserService {
     }
 
     @Override
-    public void addCoinToList(String username, Coin c) {
+    public void addCoinToList(String username, String c) {
         User u=userRepository.getUserByUsername(username);
         u.addCoin(c);
         userRepository.save(u);

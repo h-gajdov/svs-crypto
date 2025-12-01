@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -16,6 +18,8 @@ import java.util.List;
 @Entity
 @Table(name = "app_user")
 public class User {
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> coins;
 
     public User(String username, String firstName, String lastName, String email, String password) {
         this.username=username;
@@ -23,10 +27,10 @@ public class User {
         this.last_name=lastName;
         this.email=email;
         this.password=password;
-        this.coins=new ArrayList<>();
+        this.coins=new LinkedList<>();
     }
 
-    public void addCoin(Coin c){
+    public void addCoin(String c){
         this.coins.add(c);
     }
 
@@ -70,12 +74,17 @@ public class User {
         this.password = password;
     }
 
-    public List<Coin> getCoins() {
+    public List<String> getCoins() {
         return coins;
     }
 
-    public void setCoins(List<Coin> coins) {
+    public void setCoins(List<String> coins) {
         this.coins = coins;
+    }
+
+    public boolean hasCoin(String symbol) {
+        if (coins == null) return false;
+        return coins.stream().anyMatch(c -> c.equals(symbol));
     }
 
     @Id
@@ -91,6 +100,4 @@ public class User {
     @NotNull
     private String password;
 
-    @ManyToMany
-    private List<Coin> coins;
 }

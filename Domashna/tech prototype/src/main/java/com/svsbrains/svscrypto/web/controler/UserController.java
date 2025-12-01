@@ -2,6 +2,7 @@ package com.svsbrains.svscrypto.web.controler;
 
 import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.UserService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class UserController {
     private final UserService userService;
+    private final HttpSession httpSession;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, HttpSession httpSession) {
         this.userService = userService;
+        this.httpSession = httpSession;
     }
 
     @GetMapping("/login")
@@ -26,7 +29,7 @@ public class UserController {
     public String logInUser(@RequestParam String username,@RequestParam String password,Model model){
         User user=userService.logInUserByUsername(username,password);
         if(user==null) return "redirect:/login?error";
-        model.addAttribute("user",user);
+        httpSession.setAttribute("user",user);
         return "redirect:/dashboard";
     }
     @GetMapping("/signin")

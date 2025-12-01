@@ -4,10 +4,12 @@ import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
+import com.svsbrains.svscrypto.service.UserService;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.yaml.snakeyaml.error.Mark;
 
 import java.io.IOException;
@@ -23,14 +25,16 @@ public class DashboardController {
 
     private final MarketDataService marketDataService;
     private final DailyDataService dailyDataService;
+    private final UserService userService;
 
-    public DashboardController(MarketDataService marketDataService, DailyDataService dailyDataService) throws IOException {
+    public DashboardController(MarketDataService marketDataService, DailyDataService dailyDataService,UserService userService) throws IOException {
         this.marketDataService = marketDataService;
         this.dailyDataService = dailyDataService;
+        this.userService=userService;
     }
 
     @GetMapping
-    public String getDashboard(Model model) {
+    public String getDashboard(Model model, HttpSession httpSession) {
         model.addAttribute("bodyContent", "dashboard");
         List<DailyData> topPrice = dailyDataService.getTopByPrice(10);
         List<DailyData> top3Gain = dailyDataService.getTopByGain(3);
@@ -57,6 +61,7 @@ public class DashboardController {
             sparklineData.put(coin.getSymbol(), res);
         }
 
+        model.addAttribute("user",httpSession.getAttribute("user"));
         model.addAttribute("top3Price", topPrice.subList(0, 3));
         model.addAttribute("top3Volume", top3Volume);
         model.addAttribute("top3New", top3New);
@@ -64,5 +69,10 @@ public class DashboardController {
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);
         return "master-template";
+    }
+    @PostMapping("/addCoinToUser")
+    public String addCoin(@RequestParam String username,@RequestParam String symbol) {
+        userService.addCoinToList(username,symbol);
+        return "redirect:/dashboard";
     }
 }
