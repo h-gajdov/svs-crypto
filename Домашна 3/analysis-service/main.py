@@ -1,4 +1,5 @@
 #to run: uvicorn main:app --reload --port 8000
+from sentiment.sentiment_analysis import *
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -9,4 +10,16 @@ def check_connection():
 
 @app.get("/get-news/{symbol}")
 def get_news(symbol):
-    return {"symbol": symbol, "status": "ok"}
+    news = get_sentiment(symbol)
+    return {"symbol": symbol, "news": news}
+
+@app.get("/estimate-news/{symbol}")
+def estimate_news_for_symbol(symbol):
+    news = get_sentiment(symbol)
+    tensor, sentiment = estimate_sentiment(news)
+    return {
+        "symbol": symbol, 
+        "news": news,
+        "probability": tensor,
+        "sentiment": sentiment
+    }
