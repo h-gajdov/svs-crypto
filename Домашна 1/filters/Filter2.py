@@ -1,6 +1,9 @@
 import os
+import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, date, timezone, time as dt_time
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from filters.Filter import *
 from db_controller.db import Database
@@ -13,6 +16,19 @@ load_dotenv()
 
 DEFAULT_TIMESTAMP = int(os.getenv('FILTER2_DEFAULT_TIMESTAMP', 1420070400))
 THREADS_COUNT = int(os.getenv('FILTER2_THREAD_COUNT', 30))
+
+def get_session_with_retries():
+    session = requests.Session()
+    retries = Retry(
+        total=5,
+        backoff_factor=1,  # waits 1s, 2s, 4s, 8s...
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["HEAD", "GET", "OPTIONS"]
+    )
+    adapter = HTTPAdapter(max_retries=retries)
+    session.mount("https://", adapter)
+    session.mount("http://", adapter)
+    return session
 
 class GetDataForCoinsFilter(Filter):
     def process(self, data):
@@ -65,13 +81,16 @@ class GetDataForCoinsFilter(Filter):
 
         with ThreadPoolExecutor(max_workers=THREADS_COUNT) as executor:
             tasks = []
-            for sym in data["symbol"]:
-                start_timestamp = last_ts_map.get(sym, DEFAULT_TIMESTAMP)
+            for row in data.itertuples(index=False):
+                sym = row.symbol
+                cap = row.market_cap
+                coin = {'symbol': sym, 'market_cap': cap}
+                start_timestamp = last_ts_map.get(coin['symbol'], DEFAULT_TIMESTAMP)
 
                 tasks.append(
                     executor.submit(
                         GetDataForCoinsFilter.get_daily_ohlcv,
-                        sym, "USD", start_timestamp, end_timestamp
+                        coin, "USD", start_timestamp, end_timestamp
                     )
                 )
 
@@ -85,7 +104,10 @@ class GetDataForCoinsFilter(Filter):
         out_queue.put(None)
 
     @staticmethod
-    def parse_data_to_df(data, symbol):
+    def parse_data_to_df(data, coin):
+        symbol = coin['symbol']
+        market_cap = coin['market_cap']
+
         result = data['chart']['result'][0]
         quote = result['indicators']['quote'][0]
         meta = result['meta']
@@ -105,17 +127,22 @@ class GetDataForCoinsFilter(Filter):
 
         daily_df = pd.DataFrame({
             'symbol': [symbol],
+            'name': [re.sub(r'\bUSD\b', '', str(meta.get('longName', symbol))).strip()],
             'timestamp': [meta.get('regularMarketTime', 0)],
+            'market_cap': [market_cap],
             'last_price': [meta.get('regularMarketPrice', 0)],
             'volume_24h': [meta.get('regularMarketVolume', 0)],
             'high_24h': [meta.get('regularMarketDayHigh', 0)],
             'low_24h': [meta.get('regularMarketDayLow', 0)]
         })
 
+        # print(daily_df)
         return df, daily_df
 
     @staticmethod
-    def get_daily_ohlcv(symbol, currency="USD", start_timestamp=DEFAULT_TIMESTAMP, end_timestamp=int(time.time())): #default start_timestamp is 01.01.2015 00:00:00
+    def get_daily_ohlcv(coin, currency="USD", start_timestamp=DEFAULT_TIMESTAMP, end_timestamp=int(time.time())): #default start_timestamp is 01.01.2015 00:00:00
+        symbol = coin['symbol']
+
         print(f"Fetching symbol: {symbol}...")
         url = f'https://query1.finance.yahoo.com/v8/finance/chart/{symbol}-{currency}?events=capitalGain%7Cdiv%7Csplit&formatted=true&includeAdjustedClose=true&interval=1d&period1={start_timestamp}&period2={end_timestamp}&symbol=BTC-USD&userYfid=true&lang=en-US&region=US'
 
@@ -126,13 +153,14 @@ class GetDataForCoinsFilter(Filter):
             "Connection": "keep-alive"
         }
 
-        session = requests.Session()
-        resp = session.get(url, headers=headers)
-        data = resp.json()
-
-        if resp.status_code != 200 or not data:
-            print(f"Error fetching {symbol}: HTTP {resp.status_code}")
-            return pd.DataFrame(), pd.DataFrame
+        session = get_session_with_retries()
+        try:
+            resp = session.get(url, headers=headers, timeout=10)
+            resp.raise_for_status()
+            data = resp.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Failed to fetch {symbol}: {e}")
+            return pd.DataFrame(), pd.DataFrame()
 
         print(f"Fetched symbol: {symbol}!")
-        return GetDataForCoinsFilter.parse_data_to_df(data, symbol)
+        return GetDataForCoinsFilter.parse_data_to_df(data, coin)

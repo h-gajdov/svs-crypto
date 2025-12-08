@@ -13,7 +13,9 @@ CREATE TABLE IF NOT EXISTS market_data (
 CREATE TABLE IF NOT EXISTS daily_data (
     id SERIAL PRIMARY KEY,
     symbol VARCHAR(20) NOT NULL,
+    name VARCHAR(100) NOT NULL,
     timestamp BIGINT NOT NULL,
+    market_cap DOUBLE PRECISION,
     last_price DOUBLE PRECISION,
     volume_24h DOUBLE PRECISION,
     high_24h DOUBLE PRECISION,

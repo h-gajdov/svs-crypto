@@ -32,7 +32,8 @@ def fetch_url(url):
             index = int(cells[1].text)
             symbol = cells[2].select_one("a > div > div > div").text.strip()
             vol = float(cells[9].select_one("span").text[1:].replace(",", ""))
-            data.append({"index": index, "symbol": symbol, "volume": vol})
+            market_cap = float(cells[10].select_one("span").text[1:].replace(",", ""))
+            data.append({"index": index, "symbol": symbol, "market_cap": market_cap, "volume": vol})
         return data
     except Exception as e:
         print(f"[ERROR] Failed to fetch {url}: {e}")
@@ -63,7 +64,10 @@ def get_symbols_from_coingecko():
     liquid_coins = filter_liquid_coins(coins)
     print(len(liquid_coins))
     df = pd.DataFrame(liquid_coins)
-    df = df.drop_duplicates(subset="symbol")  # drop duplicate symbols
+    df = df.sort_values(by="market_cap", ascending=False)
+
+    # Drop duplicates based on symbol, keeping the first (which has the highest market_cap)
+    df = df.drop_duplicates(subset="symbol", keep="first")
     df = df.head(1200)
     return df
 
