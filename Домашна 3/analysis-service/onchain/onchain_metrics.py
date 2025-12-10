@@ -1,15 +1,57 @@
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
-from selenium.webdriver import Chrome
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 
-headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-                    'AppleWebKit/537.36 (KHTML, like Gecko) '
-                    'Chrome/140.0.0.0 Safari/537.36',
-}
+def fetch_extended_data():
+    try:
+        chains = requests.get("https://api.llama.fi/chains").json()
+        tvl_map = {}
+        for c in chains:
+            symbol = c.get("tokenSymbol")
+            tvl = {
+                "tvl": c.get("tvl"),
+                "coin_id": c.get("gecko_id")
+            }
+            if symbol and tvl is not None:
+                tvl_map[symbol.upper()] = tvl
+        return tvl_map
+    except Exception as e:
+        print(f"Error fetching chain TVLs: {e}")
+        return {}
+
+extended_coin_data = fetch_extended_data()
+
+def get_coin_id(symbol):
+    return {
+        "asset": symbol,
+        "coin_id": extended_coin_data.get(symbol)['coin_id']
+    }
+
+def get_tvl(symbol):
+    if symbol not in extended_coin_data: return 0
+    else: {
+        "asset": symbol,
+        "tvl": extended_coin_data.get(symbol).get("tvl")
+    }
+
+def get_nvt(symbol):
+    try:
+        if symbol not in extended_coin_data: return 0
+        coin_id = extended_coin_data.get(symbol)['coin_id']
+        if not coin_id:
+            return 0
+        url = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
+        r = requests.get(url)
+        data = r.json()
+        market_cap = data["market_data"]["market_cap"]["usd"]
+        volume = data["market_data"]["total_volume"]["usd"]
+        return {
+            "asset": symbol,
+            "nvt":market_cap / volume if volume else 0
+            }
+    except Exception as e:
+        print(f"Error fetching NVT for {symbol}: {e}")
+        return None
 
 def get_coinmetrics_data(symbol, daysBefore, metrics):
     url = f'https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets={symbol.lower()}&metrics={metrics}'
@@ -51,6 +93,9 @@ def get_whale_movements(number_of_alerts=5):
     return data
 
 if __name__ == '__main__':
-    print(get_address_count('USDC'))
+    print(get_address_count('BTC'))
     print(get_transactions_count('USDC'))
     print(get_whale_movements())
+    print(get_nvt("BTC"))
+    print(get_tvl("BTC"))
+    print(get_coin_id("BTC"))
