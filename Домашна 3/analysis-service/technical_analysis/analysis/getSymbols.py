@@ -31,7 +31,7 @@ def load_data(symbol, limit=50000):
     """
     df = pd.read_sql(query, engine)
 
-    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='ms')
+    df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
     df.set_index('timestamp', inplace=True)
 
     return df

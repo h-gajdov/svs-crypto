@@ -2,7 +2,7 @@ import ta
 import numpy as np
 
 def add_indicators(df):
-    if len(df) >= 14: 
+    if len(df) >= 30:
         df["RSI"] = ta.momentum.RSIIndicator(df["close"]).rsi()
         macd = ta.trend.MACD(df["close"])
         df["MACD"] = macd.macd()
