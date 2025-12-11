@@ -355,7 +355,8 @@ button {
 }
 
 #market-statistics {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
 }
 
 #market-statistics .mkt-stat {
@@ -464,4 +465,8 @@ table {
 
 .clickable-row:hover {
     background: #F3F4F6;
+}
+
+.hidden {
+    display: none;
 }

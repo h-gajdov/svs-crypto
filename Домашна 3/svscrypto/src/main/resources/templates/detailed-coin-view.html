@@ -1,19 +1,24 @@
 <section xmlns:th="http://www.thymeleaf.org">
     <form th:action="@{'/dashboard'}" th:method="get">
-    <button class="back-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#8B8B8B"><path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/></svg>
+        <button class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#8B8B8B">
+                <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/>
+            </svg>
             <span>Back</span>
         </button>
     </form>
 
     <div class="coin-label-container">
         <div class="coin-label-left-section">
-            <img class="large-logo" th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+            <img class="large-logo"
+                 th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
             <span class="coin-name" th:text="${coin.getName()}"></span>
             <span class="coin-symbol grey-text" th:text="${coin.getSymbol()}"></span>
         </div>
         <div class="add-to-favorites-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff"><path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff">
+                <path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/>
+            </svg>
             <span>Add to favorites</span>
         </div>
     </div>
@@ -37,7 +42,8 @@
             <div class="coin-info">
                 <span class="heading">24H Volume</span>
                 <span class="data" th:text="${coin.getFormattedVolume()}"></span>
-                <span class="vol-mkt-pct grey-text" th:text="${'(24H - 24L) / 24L = %' + coin.getFormattedHighLowRate()}"></span>
+                <span class="vol-mkt-pct grey-text"
+                      th:text="${'(24H - 24L) / 24L = %' + coin.getFormattedHighLowRate()}"></span>
             </div>
         </div>
         <div class="graph-btns">
@@ -60,7 +66,9 @@
         </div>
         <div class="download-graph-container">
             <div id="download-graph-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff"><path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff">
+                    <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/>
+                </svg>
                 <span>Download Graph</span>
             </div>
         </div>
@@ -104,7 +112,8 @@
                     </div>
 
                     <div class="slider-track">
-                        <div class="slider-fill" th:style="${'width: ' + (coin.getChangePercent() < 0 ? -coin.getChangePercent() : coin.getChangePercent() ) + '%; background: ' + (coin.getChangePercent() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
+                        <div class="slider-fill"
+                             th:style="${'width: ' + (coin.getChangePercent() < 0 ? -coin.getChangePercent() : coin.getChangePercent() ) + '%; background: ' + (coin.getChangePercent() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
                     </div>
                 </div>
                 <div class="metric-wrapper">
@@ -115,7 +124,8 @@
                     </div>
 
                     <div class="slider-track">
-                        <div class="slider-fill" th:style="${'width: ' + (coin.getWeeklyChange() < 0 ? -coin.getWeeklyChange() : coin.getWeeklyChange()) + '%; background: ' + (coin.getWeeklyChange() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
+                        <div class="slider-fill"
+                             th:style="${'width: ' + (coin.getWeeklyChange() < 0 ? -coin.getWeeklyChange() : coin.getWeeklyChange()) + '%; background: ' + (coin.getWeeklyChange() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
                     </div>
                 </div>
                 <div class="metric-wrapper">
@@ -126,11 +136,27 @@
                     </div>
 
                     <div class="slider-track">
-                        <div class="slider-fill" th:style="${'width: ' + (coin.getMonthlyChange() < 0 ? -coin.getMonthlyChange() : coin.getMonthlyChange()) + '%; background: ' + (coin.getMonthlyChange() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
+                        <div class="slider-fill"
+                             th:style="${'width: ' + (coin.getMonthlyChange() < 0 ? -coin.getMonthlyChange() : coin.getMonthlyChange()) + '%; background: ' + (coin.getMonthlyChange() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
                     </div>
                 </div>
             </div>
         </div>
+        <div class="wrapper mkt-stat">
+            <span>Price Prediction</span><br>
+            <div id="prediction-div" class="hidden">
+                <span class="metric-label grey-text">Tomorrow Close Price</span><br>
+                <span id="predicted_next_close_price"></span><br><br>
+                <span class="metric-label grey-text">Mean Absolute Percentage Error (MAPE)</span><br>
+                <span id="MAPE"></span><br><br>
+                <span class="metric-label grey-text">Root Mean Square Error (RMSE)</span><br>
+                <span id="RMSE"></span><br><br>
+                <span class="metric-label grey-text">R<sup>2</sup> Score</span><br>
+                <span id="R2"></span><br>
+            </div>
+            <button class="btn btn-primary" id="get-prediction-btn">Get Prediction</button>
+        </div>
+    </div>
     </div>
 
     <script th:inline="javascript">
@@ -138,18 +164,20 @@
         const symbol = '[[${coin.symbol}]]';
         const chartDiv = document.getElementById('data-graph');
 
+        let pricePrediction;
+
         let timestamps = [[${timestamps}]]?.map(Number) || [];
         let values = [[${values}]]?.map(Number) || [];
         let dates = timestamps.map(ts => new Date(ts * 1000));
 
         let currentField = "price";
         let currentTime = "max";
-        let dataCache = { timestamps, values };
+        let dataCache = {timestamps, values};
 
         let layout = {
-            margin: { t: 20, r: 20, l: 60, b: 80 },
-            yaxis: { tickformat: '$,', autorange: true },
-            xaxis: { tickangle: -45, type: 'date', tickformat: "%d %b", nticks: 10 }
+            margin: {t: 20, r: 20, l: 60, b: 80},
+            yaxis: {tickformat: '$,', autorange: true},
+            xaxis: {tickangle: -45, type: 'date', tickformat: "%d %b", nticks: 10}
         };
 
         function getTraceForField(field, dates, values) {
@@ -160,7 +188,7 @@
                     type: 'scatter',
                     mode: 'lines',
                     fill: 'tozeroy',
-                    line: { color: '#4A90E2' }
+                    line: {color: '#4A90E2'}
                 };
             }
 
@@ -169,11 +197,64 @@
                 x: dates,
                 y: values,
                 type: 'bar',
-                marker: { color: colors }
+                marker: {color: colors}
             };
         }
 
-        Plotly.newPlot(chartDiv, [getTraceForField(currentField, dates, values)], layout, { responsive: true });
+        Plotly.newPlot(chartDiv, [getTraceForField(currentField, dates, values)], layout, {responsive: true});
+
+        let predictionInterval;
+        let counter = 0
+
+        function predictionIntervalHandler() {
+            if (!pricePrediction) {
+                thinkingAnimation()
+                return
+            }
+            counter = 0
+            clearInterval(predictionInterval)
+            document.querySelector("#thinking").remove()
+            displayPrediction()
+        }
+
+        function displayPrediction() {
+
+            document.querySelector("#predicted_next_close_price").innerText = pricePrediction["predicted_next_close_price"] + "$ (USD)"
+            for (let key in pricePrediction["metrics"]) {
+                document.querySelector(`#${key}`).innerText = pricePrediction["metrics"][key]
+            }
+
+            document.querySelector("#prediction-div").classList.remove("hidden")
+        }
+
+        //Animation for thinking
+        function thinkingAnimation() {
+            const thinkingParagraph = document.querySelector("#thinking");
+            thinkingParagraph.innerText = "Thinking" + ".".repeat(++counter % 4)
+        }
+
+        //Prediction Button
+        document.querySelector("#get-prediction-btn").addEventListener("click", (e) => {
+
+            if (!pricePrediction) {
+                e.target.insertAdjacentHTML("afterend", `
+                        <p id="thinking">Thinking</p>
+                    `)
+                thinkingAnimation()
+                e.target.remove()
+                predictionInterval = setInterval(predictionIntervalHandler, 500)
+                return
+            }
+            e.target.remove()
+            displayPrediction()
+        })
+        document.addEventListener("DOMContentLoaded", (e) => {
+            fetch(`/api/prediction?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+                return response.json();
+            }).then(data => {
+                pricePrediction = data
+            })
+        })
 
         document.querySelectorAll('.timeframe-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
