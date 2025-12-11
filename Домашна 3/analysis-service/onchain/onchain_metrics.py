@@ -99,6 +99,13 @@ def get_hash_rate(symbol, daysBefore=1):
         entry['HashRate'] = float(entry['HashRate'])
     return result
 
+def get_mvrv_ratio(symbol, daysBefore=1):
+    result = get_coinmetrics_data(symbol, daysBefore, "CapMVRVCur")
+    result = parse_coinmetrics_data(result)
+    for entry in result:
+        entry['CapMVRVCur'] = float(entry['CapMVRVCur'])
+    return result
+    
 if __name__ == '__main__':
     print(get_address_count('BTC'))
     print(get_transactions_count('USDC'))
@@ -107,3 +114,4 @@ if __name__ == '__main__':
     print(get_tvl("BTC"))
     print(get_coin_id("BTC"))
     print(get_hash_rate('BTC'))
+    print(get_mvrv_ratio('USDC'))
