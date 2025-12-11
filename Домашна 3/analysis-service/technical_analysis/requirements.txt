@@ -1,0 +1,4 @@
+numpy
+ta
+pandas
+sqlalchemy
