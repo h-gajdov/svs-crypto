@@ -92,6 +92,13 @@ def get_whale_movements(number_of_alerts=5):
         entry['time'] = datetime.fromtimestamp(entry['timestamp']).strftime('%Y-%m-%dT%H:%M:%S.') + '000000000Z'
     return data
 
+def get_hash_rate(symbol, daysBefore=1):
+    result = get_coinmetrics_data(symbol, daysBefore, "HashRate")
+    result = parse_coinmetrics_data(result)
+    for entry in result:
+        entry['HashRate'] = float(entry['HashRate'])
+    return result
+
 if __name__ == '__main__':
     print(get_address_count('BTC'))
     print(get_transactions_count('USDC'))
@@ -99,3 +106,4 @@ if __name__ == '__main__':
     print(get_nvt("BTC"))
     print(get_tvl("BTC"))
     print(get_coin_id("BTC"))
+    print(get_hash_rate('BTC'))
