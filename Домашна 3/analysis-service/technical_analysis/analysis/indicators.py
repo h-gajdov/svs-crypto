@@ -21,20 +21,20 @@ def add_indicators(df):
         df["BB_lower"] = bb.bollinger_lband()
         df["VMA_20"] = df["volume"].rolling(20).mean()
     else:
-        df["RSI"] = df["close"] * np.nan
-        df["MACD"] = df["close"] * np.nan
-        df["MACD_signal"] = df["close"] * np.nan
-        df["STOCH_K"] = df["close"] * np.nan
-        df["STOCH_D"] = df["close"] * np.nan
-        df["ADX"] = df["close"] * np.nan
-        df["CCI"] = df["close"] * np.nan
-        df["SMA_20"] = df["close"] * np.nan
-        df["EMA_20"] = df["close"] * np.nan
-        df["WMA_20"] = df["close"] * np.nan
-        df["BB_middle"] = df["close"] * np.nan
-        df["BB_upper"] = df["close"] * np.nan
-        df["BB_lower"] = df["close"] * np.nan
-        df["VMA_20"] = df["volume"] * np.nan
+        df["RSI"] = np.nan
+        df["MACD"] = np.nan
+        df["MACD_signal"] =  np.nan
+        df["STOCH_K"] =  np.nan
+        df["STOCH_D"] =  np.nan
+        df["ADX"] = np.nan
+        df["CCI"] = np.nan
+        df["SMA_20"] = np.nan
+        df["EMA_20"] = np.nan
+        df["WMA_20"] = np.nan
+        df["BB_middle"] = np.nan
+        df["BB_upper"] = np.nan
+        df["BB_lower"] = np.nan
+        df["VMA_20"] = np.nan
 
     return df
 

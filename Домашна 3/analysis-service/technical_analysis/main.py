@@ -12,6 +12,7 @@ def analyze_all_cryptos():
 
         df = load_data(symbol)
         df = add_indicators(df)
+        print(df)
 
         signals_1D = calculate_signals(df)
         signals_1W = timeframe_analysis(df, "1W")
