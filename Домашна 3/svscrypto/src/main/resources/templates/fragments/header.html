@@ -1,21 +1,30 @@
 <header xmlns:th="http://www.thymeleaf.org">
-    <nav>
-        <a href="/" class="logo">
-            <img th:src="@{/images/svs-logo.png}" alt="logo">
-            <p>SVSCRYPTO</p>
-        </a>
-        <a href="/dashboard">Dashboard</a>
-        <a href="/compare-coins">Compare Coins</a>
-        <a href="/historical-data">Historical Data</a>
-        <a href="/watchlist">My Watchlist</a>
-    </nav>
     <div>
-        <input type="text" placeholder="Search for a symbol..."/>
-        <button class="plain-button" type="submit">
-            <i class="fa-solid fa-magnifying-glass fa-1_5x" style="color: #444;"></i>
-        </button>
-        <a href="/login"><i class="fa-regular fa-circle-user fa-1_5x" style="color: #444;"></i></a>
-        <a><i class="fa-regular fa-sun fa-1_5x" style="color: #FFD43B;"></i></a>
-        <a><i class="fa-regular fa-moon fa-1_5x"></i></a>
+        <nav class="horizontal-center">
+            <button id="menu-button"><i class="fa-solid fa-bars"></i></button>
+            <a href="/" class="logo">
+                <img th:src="@{/images/svs-logo.png}" alt="logo">
+                <p>SVSCRYPTO</p>
+            </a>
+            <div th:replace="fragments/menu :: menu(menuClass='menu horizontal-center', menuId='main-menu')"></div>
+        </nav>
+        <div class="horizontal-center">
+            <div class="search-wrapper horizontal-center">
+                <input type="text" placeholder="Search for a symbol..."/>
+                <button class="plain-button" type="submit">
+                    <i class="fa-solid fa-magnifying-glass fa-1_5x" style="color: #444;"></i>
+                </button>
+            </div>
+            <a href="/login"><i class="fa-regular fa-circle-user fa-1_5x" style="color: #444;"></i></a>
+            <a><i class="fa-regular fa-sun fa-1_5x" style="color: #FFD43B;"></i></a>
+            <a><i class="fa-regular fa-moon fa-1_5x"></i></a>
+        </div>
     </div>
+    <div th:replace="fragments/menu :: menu(menuClass='hidden', menuId='dropdown-menu')"></div>
+
+    <script>
+        document.querySelector("#menu-button").addEventListener("click", (e) => {
+            document.querySelector("#dropdown-menu").classList.toggle("dropdown-menu")
+        })
+    </script>
 </header>

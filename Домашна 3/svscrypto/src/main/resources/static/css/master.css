@@ -2,19 +2,66 @@ header {
     width: 100%;
     border-radius: 0 0 8px 8px;
     box-shadow: 0 0 10px 1px rgba(10 10 10 / 0.3);
-    display: flex;
     min-height: 50px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
     background: white;
 }
 
-header > * {
+header > div:first-child {
+    padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.horizontal-center {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 1em;
+}
+
+.dropdown-menu {
+    display: none;
+    padding: 8px 16px !important;
+    width: 100%;
+    position: static !important;
+    gap: 4px;
+}
+
+.dropdown-menu a {
+    padding: 4px 8px;
+    text-align: start;
+
+}
+
+#menu-button {
+    display: none;
+}
+
+@media screen and (max-width: 1200px) {
+    .menu {
+        display: none;
+    }
+
+    .search-wrapper {
+        display: none;
+    }
+
+    .dropdown-menu {
+        display: flex !important;
+        flex-direction: column;
+        box-shadow: none;
+        border: none !important;
+        align-items: stretch;
+    }
+
+    .dropdown-menu a:hover {
+        background: rgba(240 240 240/0.8);
+    }
+
+    #menu-button {
+        display: block;
+    }
 }
 
 input, select {
@@ -177,7 +224,9 @@ button {
     gap: 7px;
 }
 
-.table-symbol {width: 21%;}
+.table-symbol {
+    width: 21%;
+}
 
 .last-7-days-grid {
     width: 187px;
@@ -348,7 +397,9 @@ button {
     transition: all 0.2s ease-in-out;
 }
 
-#download-graph-btn span {color: white;}
+#download-graph-btn span {
+    color: white;
+}
 
 #data-graph {
     margin: 10px 0;
@@ -441,6 +492,7 @@ button {
     align-items: center;
     gap: 8px;
 }
+
 .symbol-wrapper {
     display: flex;
     align-items: center;
@@ -459,6 +511,7 @@ button {
 .symbol-wrapper:hover form {
     display: block;
 }
+
 table {
     border-collapse: collapse;
 }
