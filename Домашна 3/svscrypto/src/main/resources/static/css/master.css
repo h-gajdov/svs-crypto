@@ -146,8 +146,6 @@ button {
     background: #47cf6d;
 }
 
-
-
 .dashboard-top-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -236,9 +234,8 @@ button {
 .dashboard-table {
     margin: 15px 0;
     font-size: 14px;
-}
-
-.dashboard-table {
+    border-collapse: separate;
+    border-spacing: 0;
     width: 100%;
     text-align: left;
 }
@@ -547,4 +544,43 @@ table {
 
 .hidden {
     display: none;
+}
+
+.table-scroll-container {
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    position: relative;
+}
+
+
+.sticky-col {
+    position: sticky;
+    background-color: white;
+    z-index: 2;
+}
+
+thead .sticky-col {
+    z-index: 5;
+}
+
+.column-1 {
+    left: 0;
+    width: 25px;
+    min-width: 25px;
+    max-width: 25px;
+}
+
+.column-2 {
+    left: 25px;
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
+}
+
+.column-3 {
+    left: 75px;
+    width: 150px;
+    min-width: 150px;
+    max-width: 150px;
 }
