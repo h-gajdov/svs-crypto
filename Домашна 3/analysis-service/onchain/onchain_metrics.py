@@ -73,22 +73,26 @@ def get_coinmetrics_data(symbol, daysBefore, metrics):
 
     return data['data'][-daysBefore:]
 
-def parse_coinmetrics_data(data):
+def parse_coinmetrics_data(data, metrics):
     for entry in data:
         entry['asset'] = entry['asset'].upper()
         time_str = entry['time'] 
         time_str = time_str.split('.')[0] + "Z"
         dt = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
         entry['timestamp'] = dt.timestamp()
+
+        for metric in metrics.split(','):
+            entry[metric] = float(entry[metric])
+
     return data
 
 def get_address_count(symbol, daysBefore=1):   
     result = get_coinmetrics_data(symbol, daysBefore, 'AdrActCnt')
-    return parse_coinmetrics_data(result)
+    return parse_coinmetrics_data(result, 'AdrActCnt')
 
 def get_transactions_count(symbol, daysBefore=1):
     result = get_coinmetrics_data(symbol, daysBefore, 'TxCnt')
-    return parse_coinmetrics_data(result)
+    return parse_coinmetrics_data(result, 'TxCnt')
 
 def get_whale_movements(number_of_alerts=5):
     url = 'https://whale-alert.io/alerts.json?range=last_30_days'
@@ -105,16 +109,12 @@ def get_whale_movements(number_of_alerts=5):
 
 def get_hash_rate(symbol, daysBefore=1):
     result = get_coinmetrics_data(symbol, daysBefore, "HashRate")
-    result = parse_coinmetrics_data(result)
-    for entry in result:
-        entry['HashRate'] = float(entry['HashRate'])
+    result = parse_coinmetrics_data(result, "HashRate")
     return result
 
 def get_mvrv_ratio(symbol, daysBefore=1):
     result = get_coinmetrics_data(symbol, daysBefore, "CapMVRVCur")
-    result = parse_coinmetrics_data(result)
-    for entry in result:
-        entry['CapMVRVCur'] = float(entry['CapMVRVCur'])
+    result = parse_coinmetrics_data(result, "CapMVRVCur")
     return result
 
 def parse_number(s):
@@ -162,13 +162,26 @@ def get_exchange_flow(symbol):
         'data': result
     }
 
+def get_all_metrics(symbol):
+    metrics = 'AdrActCnt,TxCnt,HashRate,CapMVRVCur'
+    
+    result = get_coinmetrics_data(symbol, 1, metrics)
+    result = parse_coinmetrics_data(result, metrics)[0]
+    result['nvt'] = get_nvt(symbol)['nvt']
+    result['tvl'] = get_tvl(symbol)['tvl']
+    result['coin_id'] = get_coin_id(symbol)['coin_id']
+    result['exchange_flow'] = get_exchange_flow(symbol)
+
+    return result
+
 if __name__ == '__main__':
-    print(get_address_count('BTC'))
-    print(get_transactions_count('USDC'))
-    print(get_whale_movements())
-    print(get_nvt("BTC"))
-    print(get_tvl("BTC"))
-    print(get_coin_id("BTC"))
-    print(get_hash_rate('BTC'))
-    print(get_mvrv_ratio('USDC'))
-    print(get_exchange_flow('XRP'))
+    # print(get_address_count('BTC'))
+    # print(get_transactions_count('USDC'))
+    # print(get_whale_movements())
+    # print(get_nvt("BTC"))
+    # print(get_tvl("BTC"))
+    # print(get_coin_id("BTC"))
+    # print(get_hash_rate('BTC'))
+    # print(get_mvrv_ratio('USDC'))
+    # print(get_exchange_flow('XRP'))
+    print(get_all_metrics('BTC'))
