@@ -1,6 +1,17 @@
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
+from selenium.webdriver import Chrome
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+
+chrome_options = Options()
+chrome_options.add_argument("--headless=new")
+chrome_options.add_argument("user-agent=Mozilla/5.0 ...")
+driver = Chrome(options=chrome_options)
+print("BROWSER STARTED...")
 
 def fetch_extended_data():
     try:
@@ -29,7 +40,7 @@ def get_coin_id(symbol):
 
 def get_tvl(symbol):
     if symbol not in extended_coin_data: return 0
-    else: {
+    return {
         "asset": symbol,
         "tvl": extended_coin_data.get(symbol).get("tvl")
     }
@@ -105,7 +116,52 @@ def get_mvrv_ratio(symbol, daysBefore=1):
     for entry in result:
         entry['CapMVRVCur'] = float(entry['CapMVRVCur'])
     return result
-    
+
+def parse_number(s):
+    s = s.replace("+", "").replace("$", "").strip()
+    multipliers = {
+        "K": 1_000,
+        "M": 1_000_000,
+        "B": 1_000_000_000,
+        "T": 1_000_000_000_000,
+        "Q": 1_000_000_000_000_000,
+        "m": 1e-3,
+        "μ": 1e-6
+    }
+
+    if s[-1] in multipliers:
+        return float(s[:-1]) * multipliers[s[-1]]
+    else:
+        return float(s)
+
+def get_exchange_flow(symbol):
+    url = f'https://www.coinglass.com/currencies/{symbol}?type=spot'
+    driver.get(url)
+    element = WebDriverWait(driver, 30).until(
+        EC.presence_of_element_located((By.XPATH, "//button[text()='Spot Flows']"))
+    )
+    driver.execute_script("arguments[0].click();", element)
+
+    def rows_loaded(driver):
+        rows = driver.find_elements(By.CSS_SELECTOR, '.cg-style-a2wtpa tbody tr')
+        return rows if len(rows) >= 48 and rows[1].text else False
+
+    WebDriverWait(driver, 30).until(rows_loaded)
+
+    soup = BeautifulSoup(driver.page_source, 'html.parser')
+    rows = soup.select('.cg-style-a2wtpa tbody tr')[1:23] #30 is maxmimum amount of seconds to wait else it throws TimeoutException
+    result = []
+    for row in rows:
+        cells = row.find_all('td')
+        netflow = parse_number(cells[3].text)
+        timeframe = cells[0].text
+        result.append({"timeframe": timeframe, 'netflow': netflow})
+
+    return {
+        'asset': symbol,
+        'data': result
+    }
+
 if __name__ == '__main__':
     print(get_address_count('BTC'))
     print(get_transactions_count('USDC'))
@@ -115,3 +171,4 @@ if __name__ == '__main__':
     print(get_coin_id("BTC"))
     print(get_hash_rate('BTC'))
     print(get_mvrv_ratio('USDC'))
+    print(get_exchange_flow('XRP'))

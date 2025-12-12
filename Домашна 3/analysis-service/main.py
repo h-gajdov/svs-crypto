@@ -1,5 +1,6 @@
 #to run: uvicorn main:app --reload --port 8000
 from sentiment.sentiment_analysis import *
+from onchain.onchain_metrics import  *
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -23,3 +24,7 @@ def estimate_news_for_symbol(symbol):
         "probability": tensor,
         "sentiment": sentiment
     }
+
+@app.get('/get-exchange-flow/{symbol}')
+def exchange_flow(symbol):
+    return get_exchange_flow(symbol)
