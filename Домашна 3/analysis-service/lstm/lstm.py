@@ -6,12 +6,11 @@ import pandas as pd
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from pydantic import BaseModel
 from sqlalchemy import create_engine
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, r2_score
-from fastapi import Query
 from dotenv import load_dotenv
 
 load_dotenv("../../.env")
@@ -32,7 +31,7 @@ TRAIN_SPLIT = 0.70
 HIDDEN_SIZE = 128
 INPUT_FEATURES = 5
 # Folder to save models
-MODEL_DIR = "models"
+MODEL_DIR = "lstm_models"
 
 if not os.path.exists(MODEL_DIR):
     os.makedirs(MODEL_DIR)
@@ -103,9 +102,7 @@ def load_metadata(symbol):
             return json.load(f).get("last_trained_date")
     return None
 
-
-@app.get("/api/predict", response_model=PredictionResponse)
-def predict_price(symbol: str = Query()):
+def predict_price(symbol):
     symbol = symbol.upper()
 
     model_path = os.path.join(MODEL_DIR, f"{symbol}.pth")
@@ -235,8 +232,3 @@ def predict_price(symbol: str = Query()):
         import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
-
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)

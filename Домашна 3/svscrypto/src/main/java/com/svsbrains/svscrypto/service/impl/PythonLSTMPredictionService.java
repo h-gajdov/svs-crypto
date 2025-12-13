@@ -18,7 +18,7 @@ public class PythonLSTMPredictionService implements PredictionService {
     @Override
     public PredictionResponseDto predictPrice(String symbol) {
         try {
-            String url = String.format("%s?symbol=%s", PYTHON_API_URL, symbol);
+            String url = String.format("%s/%s", PYTHON_API_URL, symbol);
 
             ResponseEntity<PredictionResponseDto> response =
                     restTemplate.getForEntity(url, PredictionResponseDto.class);

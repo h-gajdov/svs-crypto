@@ -7,8 +7,7 @@ from alpaca_trade_api import REST
 from datetime import datetime, timedelta
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 
-dotenv_path = os.path.abspath(os.path.join(os.getcwd(), "..", "..", ".env"))
-load_dotenv(dotenv_path)
+load_dotenv('../../.env')
 
 ALPACA_API_KEY = os.getenv("ALPACA_API_KEY")
 ALPACA_API_SECRET = os.getenv("ALPACA_API_SECRET")

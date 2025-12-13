@@ -3,7 +3,8 @@ import numpy as np
 
 from sentiment.sentiment_analysis import *
 from onchain.onchain_metrics import  *
-from fastapi import FastAPI
+from lstm.lstm import *
+from fastapi import FastAPI, Query
 
 app = FastAPI()
 
@@ -173,3 +174,11 @@ def combine_onchain_and_sentiment(symbol):
             "exchange_flows": exch * weights["exchange_flows"]
         }
     }
+
+@app.get("/api/predict/{symbol}", response_model=PredictionResponse)
+def get_predict_price(symbol):
+    return predict_price(symbol)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
