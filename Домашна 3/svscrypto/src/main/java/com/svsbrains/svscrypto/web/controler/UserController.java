@@ -90,7 +90,7 @@ public class UserController {
         List<String> symbols = coinService.getAllSymbols();
         model.addAttribute("symbols",symbols);
 
-        model.addAttribute("user",httpSession.getAttribute("user"));
+        model.addAttribute("user",(User) httpSession.getAttribute("user"));
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);
         return "master-template";

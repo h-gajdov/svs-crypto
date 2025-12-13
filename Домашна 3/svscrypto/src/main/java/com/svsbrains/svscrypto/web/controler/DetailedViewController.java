@@ -47,6 +47,10 @@ public class DetailedViewController {
         User u=(User)httpSession.getAttribute("user");
         model.addAttribute("user",u);
 
+        if(u!=null){
+            u.addHistoryCoin(symbol);
+        }
+
         List<String> symbols = coinService.getAllSymbols();
         model.addAttribute("symbols",symbols);
 

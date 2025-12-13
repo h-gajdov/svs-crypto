@@ -9,4 +9,5 @@ public interface UserService{
     public User logInUserByUsername(String username, String password);
     public User addCoinToList(String username, String c);
     public User deleteCoinFromList(String username, String c);
+    public User addHistoryCoin(String username,String s);
 }
