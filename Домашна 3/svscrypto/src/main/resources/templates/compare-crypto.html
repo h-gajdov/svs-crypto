@@ -73,8 +73,15 @@
                         tickangle: -45,
                         type: 'date'
                     },
+
                     showlegend: true
                 };
+
+                if (localStorage.getItem("darkMode") === "true") {
+                    layout.paper_bgcolor = '#1f2630'
+                    layout.plot_bgcolor = '#1f2630'
+                    layout.font = {color: 'white'}
+                }
 
                 // 3. Pass the ARRAY of traces to newPlot
                 Plotly.newPlot('data-graph', traces, layout, {responsive: true});
