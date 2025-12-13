@@ -3,7 +3,9 @@ header {
     border-radius: 0 0 8px 8px;
     box-shadow: 0 0 10px 1px rgba(10 10 10 / 0.3);
     min-height: 50px;
-    background: white;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 header > div:first-child {
@@ -56,7 +58,8 @@ header > div:first-child {
     }
 
     .dropdown-menu a:hover {
-        background: rgba(240 240 240/0.8);
+        background-color: var(--bg-color);
+        color: var(--text-color);
     }
 
     #menu-button {
@@ -115,7 +118,7 @@ footer {
 }
 
 footer > small {
-    color: #777;
+    color: #ede8e8;
 }
 
 .wrapper {
@@ -152,7 +155,7 @@ button {
     gap: 16px;
 }
 
-/* ============ If we want to avoid 3/1 elements in the row problem
+/* If we want to avoid 3/1 elements in the row problem
 /*.dashboard-top-stats {*/
 /*    display: grid;*/
 /*    grid-template-columns: 1fr;*/
@@ -170,7 +173,6 @@ button {
 /*        grid-template-columns: repeat(4, 1fr);*/
 /*    }*/
 /*}
-========================================
 */
 
 
@@ -585,3 +587,83 @@ thead .sticky-col {
     min-width: 150px;
     max-width: 150px;
 }
+
+:root {
+    --bg-color: #ffffff;
+    --bg-secondary: #f5f6f8;
+    --text-color: #120f0f;
+    --border-color: #e0e0e0;
+    --accent-color: #100808;
+    --bs-body-color: #1e1e1e;
+    --bs-body-bg: #ffffff;
+    --bs-emphasis-color: #1e1e1e;
+    --bs-secondary-color: #6c757d;
+    --bs-heading-color: #fdf9f9;
+}
+
+.theme-dark {
+    --bg-color: #0f1115;
+    --bg-secondary: #1a1d23;
+    --text-color: #f6f6f6;
+    --border-color: #f2f2f3;
+    --accent-color: #f1cc0d;
+    --bs-body-color: #dee2e6;
+    --bs-body-bg: #212529;
+    --bs-emphasis-color: #fff;
+    --bs-secondary-color: rgba(222, 226, 230, 0.75);
+    --bs-heading-color:#fff;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: "IBM Plex Sans", sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+main {
+    background-color: var(--bg-color);
+}
+
+section {
+    background-color: var(--bg-secondary);
+}
+
+a {
+    color: var(--accent-color);
+}
+
+hr {
+    border-color: var(--border-color);
+}
+
+.theme-toggle {
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+    color: var(--accent-color);
+    transform: scale(1.1);
+}
+.theme-toggle i {
+    color: var(--accent-color);
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+header .icon{
+    color: var(--text-color);
+}
+footer{
+    background: var(--bg-color);
+    color: var(--text-color);
+}
+h2,p,span{
+    color: var(--text-color);
+}
+
+
+
+
+
+

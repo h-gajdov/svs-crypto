@@ -12,12 +12,15 @@
             <div class="search-wrapper horizontal-center">
                 <input type="text" placeholder="Search for a symbol..."/>
                 <button class="plain-button" type="submit">
-                    <i class="fa-solid fa-magnifying-glass fa-1_5x" style="color: #444;"></i>
+                    <i class="fa-solid fa-magnifying-glass fa-1_5x icon"></i>
                 </button>
             </div>
-            <a href="/login"><i class="fa-regular fa-circle-user fa-1_5x" style="color: #444;"></i></a>
-            <a><i class="fa-regular fa-sun fa-1_5x" style="color: #FFD43B;"></i></a>
-            <a><i class="fa-regular fa-moon fa-1_5x"></i></a>
+            <a href="/login" class="icon">
+                <i class="fa-regular fa-circle-user fa-1_5x icon"></i>
+            </a>
+            <a class="theme-toggle" href="javascript:void(0)">
+                <i id="theme-icon" class="fa-regular fa-moon fa-1_5x"></i>
+            </a>
         </div>
     </div>
     <div th:replace="fragments/menu :: menu(menuClass='hidden', menuId='dropdown-menu')"></div>
