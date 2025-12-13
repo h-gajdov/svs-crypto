@@ -162,6 +162,23 @@
             </div>
             <button class="btn btn-primary" id="get-prediction-btn">Get Prediction</button>
         </div>
+        <div class="wrapper mkt-stat">
+            <span>On Chain metrics</span><br>
+            <div id="on-chain-div">
+                <span class="metrics-label grey-text">Active addresses</span><br>
+                <span id="active_addresses_count"></span><br>
+                <span class="metrics-label grey-text">Transactions</span><br>
+                <span id="transactions_count"></span><br>
+                <span class="metrics-label grey-text">Hashrate</span><br>
+                <span id="hashrate_value"></span><br>
+                <span class="metrics-label grey-text">TVL</span><br>
+                <span id="tvl_value"></span><br>
+                <span class="metrics-label grey-text">NVT</span><br>
+                <span id="nvt_value"></span><br>
+                <span class="metrics-label grey-text">MVRV</span><br>
+                <span id="mvrv_value"></span><br>
+            </div>
+        </div>
     </div>
     </div>
 
@@ -171,6 +188,7 @@
         const chartDiv = document.getElementById('data-graph');
 
         let pricePrediction;
+        let onchainIndicator;
 
         let timestamps = [[${timestamps}]]?.map(Number) || [];
         let values = [[${values}]]?.map(Number) || [];
@@ -233,6 +251,16 @@
             document.querySelector("#prediction-div").classList.remove("hidden")
         }
 
+        function displayOnChainMetrics() {
+            raw_data = onchainIndicator['onchain_raw']
+            document.querySelector("#active_addresses_count").innerText = raw_data['active_addresses']
+            document.querySelector("#transactions_count").innerText = raw_data['transactions']
+            document.querySelector("#hashrate_value").innerText = raw_data['hashrate']
+            document.querySelector("#tvl_value").innerText = raw_data['tvl']
+            document.querySelector("#nvt_value").innerText = raw_data['nvt']
+            document.querySelector("#mvrv_value").innerText = raw_data['mvrv']
+        }
+
         //Animation for thinking
         function thinkingAnimation() {
             const thinkingParagraph = document.querySelector("#thinking");
@@ -255,6 +283,13 @@
             displayPrediction()
         })
         document.addEventListener("DOMContentLoaded", (e) => {
+            fetch(`/api/on-chain?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+                return response.json();
+            }).then(data => {
+                onchainIndicator = data;
+                displayOnChainMetrics();
+            })
+
             fetch(`/api/prediction?symbol=${symbol.replaceAll('"', '')}`).then(response => {
                 return response.json();
             }).then(data => {

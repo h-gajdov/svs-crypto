@@ -103,13 +103,21 @@ def combine_onchain_and_sentiment(symbol):
     sentiment_score = prob if label == "positive" else -prob
     m = get_all_metrics(symbol)
 
-    addr = log_normalize(m.get("AdrActCnt"), scale=1_000_000)
-    tx   = log_normalize(m.get("TxCnt"), scale=1_000_000)
-    hash_r = log_normalize(m.get("HashRate"), scale=2_000_000_000)
-    tvl  = log_normalize(m.get("tvl"), scale=50_000_000_000)
-    nvt  = inverse_log_normalize(m.get("nvt"), scale=100)
-    mvrv = inverse_log_normalize(m.get("CapMVRVCur"), scale=5)
-    exch = normalize_exchange_flow(m.get("exchange_flow"), scale=20_000_000_000)
+    addr_raw = m.get("AdrActCnt")
+    tx_raw = m.get("TxCnt")
+    hash_raw = m.get("HashRate")
+    tvl_raw = m.get("tvl")
+    nvt_raw = m.get("nvt")
+    mvrv_raw = m.get("CapMVRVCur")
+    exch_raw = m.get("exchange_flow")
+
+    addr = log_normalize(addr_raw, scale=1_000_000)
+    tx   = log_normalize(tx_raw, scale=1_000_000)
+    hash_r = log_normalize(hash_raw, scale=2_000_000_000)
+    tvl  = log_normalize(tvl_raw, scale=50_000_000_000)
+    nvt  = inverse_log_normalize(nvt_raw, scale=100)
+    mvrv = inverse_log_normalize(mvrv_raw, scale=5)
+    exch = normalize_exchange_flow(exch_raw, scale=20_000_000_000)
 
     weights = {
         "active_addresses": 0.10,
@@ -146,6 +154,16 @@ def combine_onchain_and_sentiment(symbol):
             "label": label,
             "probability": prob,
             "score": sentiment_score
+        },
+
+        'onchain_raw': {
+            "active_addresses": addr_raw,
+            "transactions": tx_raw,
+            "hashrate": hash_raw,
+            "tvl": tvl_raw,
+            "nvt": nvt_raw,
+            "mvrv": mvrv_raw,
+            "exchange_flows": exch_raw
         },
 
         "onchain_normalized": {
