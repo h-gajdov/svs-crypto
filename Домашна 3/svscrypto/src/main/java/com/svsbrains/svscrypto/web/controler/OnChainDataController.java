@@ -1,5 +1,6 @@
 package com.svsbrains.svscrypto.web.controler;
 
+import com.svsbrains.svscrypto.model.dto.EstimateNewsDto;
 import com.svsbrains.svscrypto.model.dto.OnChainMetricsDto;
 import com.svsbrains.svscrypto.model.dto.OnChainSentimentDto;
 import com.svsbrains.svscrypto.service.OnChainService;
@@ -21,6 +22,17 @@ public class OnChainDataController {
     @GetMapping("/metrics")
     public ResponseEntity<OnChainMetricsDto> getAllMetricsFromSymbol(@RequestParam String symbol) {
         OnChainMetricsDto data = onChainService.getAllMetrics(symbol);
+
+        if (data != null) {
+            return ResponseEntity.ok(data);
+        } else {
+            return ResponseEntity.status(503).build();
+        }
+    }
+
+    @GetMapping("/news")
+    public ResponseEntity<EstimateNewsDto> getNewsEstimate(@RequestParam String symbol) {
+        EstimateNewsDto data = onChainService.estimateNews(symbol);
 
         if (data != null) {
             return ResponseEntity.ok(data);
