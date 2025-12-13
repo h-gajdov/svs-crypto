@@ -11,7 +11,7 @@ def check_connection():
 
 @app.get("/get-news/{symbol}")
 def get_news(symbol):
-    news = get_sentiment(symbol)
+    news = get_sentiment(symbol + ',' + get_coin_id(symbol))
     return {"symbol": symbol, "news": news}
 
 @app.get("/estimate-news/{symbol}")
