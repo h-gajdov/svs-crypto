@@ -12,6 +12,7 @@ load_dotenv(dotenv_path)
 
 ALPACA_API_KEY = os.getenv("ALPACA_API_KEY")
 ALPACA_API_SECRET = os.getenv("ALPACA_API_SECRET")
+NEWS_DATA_API_KEY = os.getenv('NEWS_DATA_API_KEY')
 BASE_URL = 'https://paper-api.alpaca.markets/v2'
 
 api = REST(base_url=BASE_URL, key_id=ALPACA_API_KEY, secret_key=ALPACA_API_SECRET)
@@ -30,7 +31,7 @@ def get_dates(daysBefore=3):
     return today.strftime("%Y-%m-%d"), three_days_prior.strftime("%Y-%m-%d")
 
 def get_news_from_newsdataio(symbol):
-    url = f'https://newsdata.io/api/1/latest?apikey=pub_14c587b00eb94d3f857fcb9e99d558fd&qInTitle={symbol}&language=en&video=0'
+    url = f'https://newsdata.io/api/1/latest?apikey={NEWS_DATA_API_KEY}&qInTitle={symbol}&language=en&video=0'
     response = requests.get(url)
     news = response.json()['results']
 
@@ -51,13 +52,13 @@ def get_news_from_alpaca(symbol, daysBefore=3):
     news = api.get_news(
         symbol=f"{symbol}/USD", start=three_days_prior, end=today
     )
-
+    
     news_raw = [{
         'author': [ev.__dict__['_raw']['author']],
         'headline': ev.__dict__['_raw']['headline'],
         'content': ev.__dict__['_raw']['content'],
         'created_at': ev.__dict__['_raw']['created_at'],
-        'image': ev.__dict__['_raw']['images'][1]['url'],
+        'image': ev.__dict__['_raw']['images'][1]['url'] if ev.__dict__['_raw']['images'] else '',
         'source': ev.__dict__['_raw']['source'],
         'summary': ev.__dict__['_raw']['summary'],
         'url': ev.__dict__['_raw']['url']
@@ -77,8 +78,6 @@ def estimate_sentiment(news):
             (n.get('headline', '')).strip() #use headline only because trainmoing is very slow
             for n in news
         ]
-
-    print(news)
 
     if news:
         tokens = tokenizer(news, return_tensors="pt", padding=True, truncation=True).to(device)

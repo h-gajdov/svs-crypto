@@ -35,22 +35,25 @@ extended_coin_data = fetch_extended_data()
 def get_coin_id(symbol):
     return {
         "asset": symbol,
-        "coin_id": extended_coin_data.get(symbol)['coin_id']
+        "coin_id": extended_coin_data.get(symbol, {'coin_id': ''})['coin_id']
     }
 
 def get_tvl(symbol):
-    if symbol not in extended_coin_data: return 0
     return {
         "asset": symbol,
-        "tvl": extended_coin_data.get(symbol).get("tvl")
+        "tvl": extended_coin_data.get(symbol).get("tvl") if symbol in extended_coin_data else 0
     }
 
 def get_nvt(symbol):
     try:
-        if symbol not in extended_coin_data: return 0
+        if symbol not in extended_coin_data:
+            raise Exception('Coin id not found')
+        
         coin_id = extended_coin_data.get(symbol)['coin_id']
+    
         if not coin_id:
-            return 0
+            raise Exception('Coin id not found')
+        
         url = f"https://api.coingecko.com/api/v3/coins/{coin_id}"
         r = requests.get(url)
         data = r.json()
@@ -58,31 +61,45 @@ def get_nvt(symbol):
         volume = data["market_data"]["total_volume"]["usd"]
         return {
             "asset": symbol,
-            "nvt":market_cap / volume if volume else 0
+            "nvt": market_cap / volume if volume else 0
             }
     except Exception as e:
         print(f"Error fetching NVT for {symbol}: {e}")
-        return None
+        return {
+            'asset': symbol,
+            'nvt': 0
+        }
 
 def get_coinmetrics_data(symbol, daysBefore, metrics):
     url = f'https://community-api.coinmetrics.io/v4/timeseries/asset-metrics?assets={symbol.lower()}&metrics={metrics}'
     response = requests.get(url)
     data = response.json()
     if "error" in data:
-        raise RuntimeError(f"API returned an error: {data['error']}")
+        now_str = datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        return [{"asset": symbol, **{m: 0 for m in metrics.split(",")}, "time": now_str} for _ in range(daysBefore)] #put 0 for every metric
 
     return data['data'][-daysBefore:]
 
 def parse_coinmetrics_data(data, metrics):
     for entry in data:
         entry['asset'] = entry['asset'].upper()
-        time_str = entry['time'] 
-        time_str = time_str.split('.')[0] + "Z"
-        dt = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
-        entry['timestamp'] = dt.timestamp()
+
+        time_str = entry.get('time')
+        if time_str:
+            time_str = entry['time']
+            time_str = time_str.split('.')[0] + "Z"
+            dt = datetime.strptime(time_str, "%Y-%m-%dT%H:%M:%SZ")
+            entry['timestamp'] = dt.timestamp()
+        else:
+            entry['timestamp'] = None
 
         for metric in metrics.split(','):
-            entry[metric] = float(entry[metric])
+            value = entry.get(metric)
+
+            try:
+                entry[metric] = float(value) if value is not None else 0.0
+            except (ValueError, TypeError):
+                entry[metric] = 0.0
 
     return data
 
@@ -175,13 +192,13 @@ def get_all_metrics(symbol):
     return result
 
 if __name__ == '__main__':
-    # print(get_address_count('BTC'))
-    # print(get_transactions_count('USDC'))
-    # print(get_whale_movements())
-    # print(get_nvt("BTC"))
-    # print(get_tvl("BTC"))
-    # print(get_coin_id("BTC"))
-    # print(get_hash_rate('BTC'))
-    # print(get_mvrv_ratio('USDC'))
-    # print(get_exchange_flow('XRP'))
+    print(get_address_count('BTC'))
+    print(get_transactions_count('USDC'))
+    print(get_whale_movements())
+    print(get_nvt("SHIB"))
+    print(get_tvl("BTC"))
+    print(get_coin_id("BTC"))
+    print(get_hash_rate('BTC'))
+    print(get_mvrv_ratio('USDC'))
+    print(get_exchange_flow('XRP'))
     print(get_all_metrics('BTC'))
