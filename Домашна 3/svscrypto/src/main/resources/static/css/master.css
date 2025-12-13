@@ -314,6 +314,7 @@ button {
 }
 
 .add-to-favorites-btn {
+    color:white;
     display: flex;
     user-select: none;
     align-items: center;

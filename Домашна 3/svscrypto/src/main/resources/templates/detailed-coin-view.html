@@ -15,11 +15,17 @@
             <span class="coin-name" th:text="${coin.getName()}"></span>
             <span class="coin-symbol grey-text" th:text="${coin.getSymbol()}"></span>
         </div>
-        <div class="add-to-favorites-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#fff">
-                <path d="m354-287 126-76 126 77-33-144 111-96-146-13-58-136-58 135-146 13 111 97-33 143ZM233-120l65-281L80-590l288-25 112-265 112 265 288 25-218 189 65 281-247-149-247 149Zm247-350Z"/>
-            </svg>
-            <span>Add to favorites</span>
+        <div th:if="${user!=null}">
+            <form th:if="${!user.hasCoin(coin.symbol)}" th:action="@{/addCoinToUser}" method="post">
+                <input type="hidden" name="username" th:value="${user.username}"/>
+                <input type="hidden" name="symbol" th:value="${coin.symbol}"/>
+                <button type="submit" class="add-to-favorites-btn">Add coin to favorites</button>
+            </form>
+            <form th:if="${user.hasCoin(coin.symbol)}" th:action="@{/deleteCoinFromUser}" method="post">
+                <input type="hidden" name="username" th:value="${user.username}"/>
+                <input type="hidden" name="symbol" th:value="${coin.symbol}"/>
+                <button type="submit" class="add-to-favorites-btn">Remove coin from favorites</button>
+            </form>
         </div>
     </div>
 

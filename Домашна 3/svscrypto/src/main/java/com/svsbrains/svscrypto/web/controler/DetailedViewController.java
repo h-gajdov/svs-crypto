@@ -2,8 +2,10 @@ package com.svsbrains.svscrypto.web.controler;
 
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
+import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +29,7 @@ public class DetailedViewController {
     }
 
     @GetMapping("/{symbol}")
-    public String getCompareCrypto(@PathVariable String symbol, Model model) {
+    public String getCompareCrypto(@PathVariable String symbol, Model model, HttpSession httpSession) {
         DailyData coin = dailyDataService.getBySymbol(symbol).get();
 
         //TODO: Refactor this
@@ -38,6 +40,10 @@ public class DetailedViewController {
         coin.setWeeklyChange(weeklyChange);
 
         addCoinStatsToModel(symbol, model);
+
+        User u=(User)httpSession.getAttribute("user");
+        model.addAttribute("user",u);
+
         return "master-template";
     }
 
