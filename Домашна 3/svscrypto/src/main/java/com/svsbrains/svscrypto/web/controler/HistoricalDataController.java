@@ -7,47 +7,42 @@ import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
 import com.svsbrains.svscrypto.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.yaml.snakeyaml.error.Mark;
-import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Controller
-//@RequestMapping("/dashboard")
-public class DashboardController {
-
-    private final MarketDataService marketDataService;
-    private final DailyDataService dailyDataService;
+@RequestMapping("/historical-data")
+public class HistoricalDataController {
     private final UserService userService;
+    private final HttpSession httpSession;
+    private final DailyDataService dailyDataService;
+    private final MarketDataService marketDataService;
     private final CoinService coinService;
 
-    public DashboardController(MarketDataService marketDataService, DailyDataService dailyDataService,UserService userService,CoinService coinService) throws IOException {
-        this.marketDataService = marketDataService;
+    public HistoricalDataController(UserService userService, HttpSession httpSession, DailyDataService dailyDataService,CoinService coinService, MarketDataService marketDataService) {
+        this.userService = userService;
+        this.httpSession = httpSession;
         this.dailyDataService = dailyDataService;
-        this.userService=userService;
+        this.marketDataService = marketDataService;
         this.coinService=coinService;
     }
 
-    @GetMapping({"/", "/dashboard"})
-    public String getDashboard(Model model, HttpSession httpSession) {
-        model.addAttribute("bodyContent", "dashboard");
-        List<DailyData> topPrice = dailyDataService.getTopByPrice(10);
-        List<DailyData> top3Gain = dailyDataService.getTopByGain(3);
-        List<DailyData> top3New = dailyDataService.getTopNew(3);
-        List<DailyData> top3Volume = dailyDataService.getTopByVolume(3);
+    @GetMapping
+    public String getHistory(Model model){
+        User u=(User)httpSession.getAttribute("user");
+        if(u==null) return "redirect:/login";
 
-        //TODO: Refactor this
+        model.addAttribute("bodyContent","history");
+
+        List<DailyData> topPrice = u.getHistoryCoins().stream().map(symbol->dailyDataService.getBySymbol(symbol).orElse(null)).toList();
+
         topPrice.forEach(coin -> {
             double monthlyChange = dailyDataService.getMonthlyChange(coin.getSymbol());
             MarketData threeMonthsBefore = marketDataService.getKDaysDataOfSymbol(coin.getSymbol(), 90).getLast();
@@ -63,18 +58,13 @@ public class DashboardController {
             sparklineData.put(coin.getSymbol(), res);
         }
 
-        User u=(User)httpSession.getAttribute("user");
-        model.addAttribute("user",u);
-
         List<String> symbols = coinService.getAllSymbols();
         model.addAttribute("symbols",symbols);
 
-        model.addAttribute("top3Price", topPrice.subList(0, 3));
-        model.addAttribute("top3Volume", top3Volume);
-        model.addAttribute("top3New", top3New);
-        model.addAttribute("top3Gain", top3Gain);
+        model.addAttribute("user",httpSession.getAttribute("user"));
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);
+
         return "master-template";
     }
 }

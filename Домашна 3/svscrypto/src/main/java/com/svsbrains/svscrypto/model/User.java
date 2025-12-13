@@ -68,6 +68,18 @@ public class User {
 
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> coins;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> historyCoins;
+
+    public List<String> getHistoryCoins() {
+        return historyCoins;
+    }
+
+    public void setHistoryCoins(List<String> historyCoins) {
+        this.historyCoins = historyCoins;
+    }
+
     public User(){
         this.username="";
         this.first_name="";
@@ -75,6 +87,7 @@ public class User {
         this.email="";
         this.password="";
         this.coins=new LinkedList<>();
+        this.historyCoins=new LinkedList<>();
     }
 
     public User(String username, String firstName, String lastName, String email, String password) {
@@ -84,6 +97,7 @@ public class User {
         this.email=email;
         this.password=password;
         this.coins=new LinkedList<>();
+        this.historyCoins=new LinkedList<>();
     }
 
     public void removeCoin(String c){

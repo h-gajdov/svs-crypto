@@ -1,0 +1,123 @@
+<section xmlns:th="http://www.thymeleaf.org">
+    <div class="page-title">
+        <h2>My History</h2>
+        <p>Real-time market overview and price charts for cryptocurrencies searched by you</p>
+    </div>
+    <div class="wrapper dashboard-wrapper">
+        <h2>Cryptocurrency Prices by Market Cap</h2>
+        <div class="table-scroll-container">
+            <table class="dashboard-table">
+                <thead>
+                <tr>
+                    <th class="sticky-col column-1"></th>
+                    <th class="sticky-col column-2">#</th>
+                    <th class="sticky-col column-3">Coin</th>
+                    <th></th>
+                    <th>Price</th>
+                    <th>24h</th>
+                    <th>1m</th>
+                    <th>3m</th>
+                    <th>24h volume</th>
+                    <th>Last 7 Days Grid</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="coin, iterStat : ${tableCoins}" class="clickable-row" th:data-symbol="${coin.symbol}">
+                    <td class="sticky-col column-1" th:if="${user!=null}">
+                        <form th:if="${!user.hasCoin(coin.symbol)}" th:action="@{/addCoinToUser}" method="post">
+                            <input type="hidden" name="username" th:value="${user.username}"/>
+                            <input type="hidden" name="symbol" th:value="${coin.symbol}"/>
+
+                            <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" width="20px" fill="#6C6C6C"
+                                     viewBox="0 0 24 24">
+                                    <path d="M22 9.24l-7.19-.62L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21 12 17.27 18.18 21l-1.64-7.03L22 9.24zM12 15.4l-3.76 2.27 1-4.28L5.47 10.5l4.38-.38L12 6.1l2.15 4.01 4.38.38-3.77 2.89 1 4.28L12 15.4z"/>
+                                </svg>
+                            </button>
+                        </form>
+                        <form th:if="${user.hasCoin(coin.symbol)}" th:action="@{/deleteCoinFromUser}" method="post">
+                            <input type="hidden" name="username" th:value="${user.username}"/>
+                            <input type="hidden" name="symbol" th:value="${coin.symbol}"/>
+
+                            <button type="submit" style="background:none;border:none;padding:0;cursor:pointer;">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="20px" width="20px" fill="#FFD700"
+                                     viewBox="0 0 24 24">
+                                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                </svg>
+                            </button>
+                        </form>
+                    </td>
+                    <td class="sticky-col column-1" th:if="${user==null}"></td>
+                    <td class="table-row-count sticky-col column-2" th:text="${iterStat.index + 1} + '.'"></td>
+                    <td class="sticky-col column-3">
+                        <div class="table-coin-label">
+                            <img class="small-logo"
+                                 th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+                            <span th:text="${coin.getName()}"></span>
+                        </div>
+                    </td>
+                    <td class="grey-text table-symbol" th:text="${coin.getSymbol()}"></td>
+                    <td th:text="${coin.getFormattedLastPrice()}"></td>
+                    <td th:class="${coin.getChangePercent() < 0} ? 'change-negative' : 'change-positive'"
+                        th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}"></td>
+                    <td th:class="${coin.getMonthlyChange() < 0} ? 'change-negative' : 'change-positive'"
+                        th:text="${(coin.getMonthlyChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedMonthlyChange() + '%'}"></td>
+                    <td th:class="${coin.getThreeMonthsChange() < 0} ? 'change-negative' : 'change-positive'"
+                        th:text="${(coin.getThreeMonthsChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedThreeMonthsChange() + '%'}"></td>
+                    <td th:text="${coin.getFormattedVolume()}"></td>
+                    <td>
+                        <div class="sparkline"
+                             th:data-prices="${#strings.arrayJoin(sparklineData[coin.symbol], ',')}"
+                             style="width: 100%; height: 75px;">
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination">
+            <div class="prev-page-btn grey-text"><</div>
+            <div class="page-btn selected-page">1</div>
+            <div class="page-btn">2</div>
+            <div class="page-btn">3</div>
+            <div class="page-btn">4</div>
+            <div class="page-btn">5</div>
+            <div class="page-btn">...</div>
+            <div class="page-btn">10</div>
+            <div class="next-page-btn">></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const sparklineDivs = document.querySelectorAll('.sparkline');
+
+            sparklineDivs.forEach(div => {
+                const pricesStr = div.dataset.prices || '';
+                if (!pricesStr) return;
+
+                // Convert "1.0,2.0,3.0" to [1,2,3]
+                const prices = pricesStr.split(',').map(Number);
+
+                if (prices.length === 0) return;
+
+                const color = prices[prices.length - 1] >= prices[0] ? '#49d06e' : '#ff0000';
+
+                Plotly.newPlot(div, [{
+                    x: Array.from({length: prices.length}, (_, i) => i),
+                    y: prices,
+                    mode: 'lines',
+                    line: {width: 2, color: color},
+                    hoverinfo: 'none'
+                }], {
+                    margin: {t: 0, b: 0, l: 0, r: 0},
+                    xaxis: {visible: false, fixedrange: true},
+                    yaxis: {visible: false, fixedrange: true, range: [Math.min(...prices), Math.max(...prices)]},
+                    showlegend: false,
+                    width: 185,
+                    height: 75
+                }, {staticPlot: true});
+            });
+        });
+    </script>
+</section>
