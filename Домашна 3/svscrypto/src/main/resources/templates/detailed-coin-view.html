@@ -166,20 +166,34 @@
             <span>On Chain metrics</span><br>
             <div id="on-chain-div">
                 <span class="metrics-label grey-text">Active addresses</span><br>
-                <span id="active_addresses_count"></span><br>
+                <span id="active_addresses_count"></span><br><br>
                 <span class="metrics-label grey-text">Transactions</span><br>
-                <span id="transactions_count"></span><br>
+                <span id="transactions_count"></span><br><br>
                 <span class="metrics-label grey-text">Hashrate</span><br>
-                <span id="hashrate_value"></span><br>
+                <span id="hashrate_value"></span><br><br>
                 <span class="metrics-label grey-text">TVL</span><br>
-                <span id="tvl_value"></span><br>
+                <span id="tvl_value"></span><br><br>
                 <span class="metrics-label grey-text">NVT</span><br>
-                <span id="nvt_value"></span><br>
+                <span id="nvt_value"></span><br><br>
                 <span class="metrics-label grey-text">MVRV</span><br>
-                <span id="mvrv_value"></span><br>
+                <span id="mvrv_value"></span>
             </div>
         </div>
     </div>
+
+    <div class="wrapper mkt-stat">
+        <span>Exchange flows</span>
+        <div id="exchange-flow-table">
+            <div class="header exchange-row">
+                <span>Symbol</span>
+                <span>Netflow</span>
+                <span>Timeframe</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper mkt-stat">
+        <span th:text="${'News for ' + coin.getName()}"></span>
     </div>
 
     <script th:inline="javascript">
@@ -251,14 +265,53 @@
             document.querySelector("#prediction-div").classList.remove("hidden")
         }
 
+        function formatHashRate(hashRate) {
+            if (hashRate >= 1e12) return (hashRate / 1e12).toFixed(2) + " TH/s";
+            if (hashRate >= 1e9)  return (hashRate / 1e9).toFixed(2) + " GH/s";
+            if (hashRate >= 1e6)  return (hashRate / 1e6).toFixed(2) + " MH/s";
+            if (hashRate >= 1e3)  return (hashRate / 1e3).toFixed(2) + " kH/s";
+            return hashRate + " H/s";
+        }
+
+        function formatLargeNumber(value) {
+            const absValue = Math.abs(value);
+            let formatted;
+
+            if (absValue >= 1e9) formatted = (absValue / 1e9).toFixed(2) + "B";
+            else if (absValue >= 1e6) formatted = (absValue / 1e6).toFixed(2) + "M";
+            else if (absValue >= 1e3) formatted = (absValue / 1e3).toFixed(2) + "K";
+            else formatted = absValue.toFixed(2);
+
+            return value < 0 ? "-" + formatted : formatted;
+        }
+
         function displayOnChainMetrics() {
-            raw_data = onchainIndicator['onchain_raw']
-            document.querySelector("#active_addresses_count").innerText = raw_data['active_addresses']
-            document.querySelector("#transactions_count").innerText = raw_data['transactions']
-            document.querySelector("#hashrate_value").innerText = raw_data['hashrate']
-            document.querySelector("#tvl_value").innerText = raw_data['tvl']
-            document.querySelector("#nvt_value").innerText = raw_data['nvt']
-            document.querySelector("#mvrv_value").innerText = raw_data['mvrv']
+            document.querySelector("#active_addresses_count").innerText = formatLargeNumber(onchainIndicator['AdrActCnt']);
+            document.querySelector("#transactions_count").innerText = formatLargeNumber(onchainIndicator['TxCnt']);
+            document.querySelector("#hashrate_value").innerText = formatHashRate(onchainIndicator['HashRate']);
+            document.querySelector("#tvl_value").innerText = formatLargeNumber(onchainIndicator['tvl']);
+            document.querySelector("#nvt_value").innerText = formatLargeNumber(onchainIndicator['nvt']);
+            document.querySelector("#mvrv_value").innerText = formatLargeNumber(onchainIndicator['CapMVRVCur']);
+            displayExchangeFlows(onchainIndicator['exchange_flow']['data'])
+        }
+
+        function displayExchangeFlows(exchangeFlows) {
+            let table = document.querySelector('#exchange-flow-table');
+            for(let i = 0; i < exchangeFlows.length; i++) {
+                let timeframe = exchangeFlows[i]['timeframe']
+                let netflow = exchangeFlows[i]['netflow'];
+                let arrow = netflow < 0 ? '▼ ' : '▲ ';
+                let colorClass = netflow < 0 ? 'change-negative' : 'change-positive';
+
+                let flowElement = `
+                <div class="exchange-row">
+                <span>${symbol.replaceAll('"', '')}</span>
+                <span class="${colorClass}">${arrow}${formatLargeNumber(netflow)} $</span>
+                <span>${timeframe}</span>
+                </div>
+                `;
+                table.innerHTML += flowElement
+            }
         }
 
         //Animation for thinking
@@ -283,7 +336,7 @@
             displayPrediction()
         })
         document.addEventListener("DOMContentLoaded", (e) => {
-            fetch(`/api/on-chain?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+            fetch(`/api/on-chain/metrics?symbol=${symbol.replaceAll('"', '')}`).then(response => {
                 return response.json();
             }).then(data => {
                 onchainIndicator = data;

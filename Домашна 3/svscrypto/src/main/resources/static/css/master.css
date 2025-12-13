@@ -439,7 +439,7 @@ button {
     flex: 1;
 }
 
-#market-statistics .mkt-stat > span {
+.mkt-stat > span {
     font-size: 20px;
     margin-bottom: 10px;
 }
@@ -662,8 +662,40 @@ h2,p,span{
     color: var(--text-color);
 }
 
+#exchange-flow-table {
+    display: flex;
+    flex-direction: column;
+    padding: 0 12%;
+    margin-top: 1em;
+    user-select: none;
+}
 
+#exchange-flow-table .exchange-row {
+    display: flex;
+    justify-content: space-between;
+}
 
+#exchange-flow-table .header {
+    font-weight: 500;
+}
 
+.exchange-row {
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    padding: 3px 10px;
+}
 
+.exchange-row:not(:first-child):hover {
+    background: var(--border-color);
+}
 
+.exchange-row:last-child {
+    border-bottom: none;
+}
+
+.exchange-row span {
+    width: 33%;
+}
+
+.exchange-row span:nth-child(3) {text-align: right;}
+.exchange-row span:nth-child(2) {text-align: center;}
