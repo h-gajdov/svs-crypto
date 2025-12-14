@@ -513,13 +513,6 @@
                 });
 
 
-            fetch(`/identificators/${symbol.replaceAll('"','')}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data) displayIndicators(data);
-                })
-                .catch(err => console.error("Error fetching indicators:", err));
-
             fetch(`/technical-analysis?symbol=${symbol.replaceAll('"','')}`)
                 .then(res => res.json())
                 .then(data => {

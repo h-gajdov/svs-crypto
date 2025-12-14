@@ -5,6 +5,7 @@ from sentiment.sentiment_analysis import *
 from onchain.onchain_metrics import  *
 from lstm.lstm import *
 from fastapi import FastAPI, Query
+from technicalAnalysis.analysis import *
 
 app = FastAPI()
 
