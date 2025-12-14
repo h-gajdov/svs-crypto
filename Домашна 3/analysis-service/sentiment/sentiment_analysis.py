@@ -6,9 +6,17 @@ from dotenv import load_dotenv
 from alpaca_trade_api import REST
 from datetime import datetime, timedelta
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
+import feedparser
 
 dotenv_path = os.path.abspath(os.path.join(os.getcwd(), "..", "..", ".env"))
 load_dotenv(dotenv_path)
+
+RSS_FEEDS = [
+    "https://cointelegraph.com/rss",
+    "https://www.coindesk.com/arc/outboundfeeds/rss/",
+    "https://decrypt.co/feed",
+    "https://bitcoinmagazine.com/feed"
+]
 
 ALPACA_API_KEY = os.getenv("ALPACA_API_KEY")
 ALPACA_API_SECRET = os.getenv("ALPACA_API_SECRET")
@@ -25,10 +33,12 @@ model = AutoModelForSequenceClassification.from_pretrained(
 ).to(device)
 labels = ["positive", "negative"]
 
+
 def get_dates(daysBefore=3):
-    today = datetime.now() 
+    today = datetime.now()
     three_days_prior = today - timedelta(days=daysBefore)
     return today.strftime("%Y-%m-%d"), three_days_prior.strftime("%Y-%m-%d")
+
 
 def get_news_from_newsdataio(symbol):
     url = f'https://newsdata.io/api/1/latest?apikey={NEWS_DATA_API_KEY}&qInTitle={symbol}&language=en&video=0'
@@ -38,21 +48,22 @@ def get_news_from_newsdataio(symbol):
     news_raw = [{
         'author': ev['creator'],
         'headline': ev['title'],
-        'content': '', #content is available only for paid users
+        'content': '',  # content is available only for paid users
         'created_at': ev['pubDate'].replace(' ', 'T'),
         'image': ev['source_icon'],
         'source': ev['source_name'],
         'summary': ev['description'],
         'url': ev['link']
-        } for ev in news]
+    } for ev in news]
     return news_raw
+
 
 def get_news_from_alpaca(symbol, daysBefore=3):
     today, three_days_prior = get_dates(daysBefore)
     news = api.get_news(
         symbol=f"{symbol}/USD", start=three_days_prior, end=today
     )
-    
+
     news_raw = [{
         'author': [ev.__dict__['_raw']['author']],
         'headline': ev.__dict__['_raw']['headline'],
@@ -62,20 +73,55 @@ def get_news_from_alpaca(symbol, daysBefore=3):
         'source': ev.__dict__['_raw']['source'],
         'summary': ev.__dict__['_raw']['summary'],
         'url': ev.__dict__['_raw']['url']
-        } for ev in news]
+    } for ev in news]
     return news_raw
+
+
+def get_news_from_rss(symbol):
+    aggregated_news = []
+
+    search_terms = [s.strip().lower() for s in symbol.split(',')]
+
+    for url in RSS_FEEDS:
+        try:
+            feed = feedparser.parse(url)
+            for entry in feed.entries:
+                content_text = (
+                        entry.title + " " + getattr(entry, 'summary', getattr(entry, 'description', ''))).lower()
+                if any(term in content_text for term in search_terms):
+                    published_date = getattr(entry, 'published', str(datetime.now()))
+
+                    aggregated_news.append({
+                        'author': getattr(entry, 'author', 'Unknown'),
+                        'headline': entry.title,
+                        'content': getattr(entry, 'summary', getattr(entry, 'description', '')),
+                        'created_at': published_date,
+                        'image': '',
+                        'source': feed.feed.get('title', 'RSS Source'),
+                        'summary': getattr(entry, 'summary', ''),
+                        'url': entry.link
+                    })
+
+        except Exception as e:
+            print(f"Failed to parse RSS {url}: {e}")
+            continue
+
+    return aggregated_news
+
 
 def get_sentiment(symbol, daysBefore=3):
     result = []
     result.extend(get_news_from_alpaca(symbol, daysBefore))
     result.extend(get_news_from_newsdataio(symbol))
+    result.extend(get_news_from_rss(symbol))
     return result
+
 
 def estimate_sentiment(news):
     if news and isinstance(news[0], dict):
         news = [
             # (n.get('headline', '') + ' ' + n.get('content', '') + ' ' + n.get('summary', '')).strip()
-            (n.get('headline', '')).strip() #use headline only because trainmoing is very slow
+            (n.get('headline', '')).strip()  # use headline only because trainmoing is very slow
             for n in news
         ]
 
@@ -96,14 +142,15 @@ def estimate_sentiment(news):
     else:
         return 0, "negative"
 
+
 if __name__ == "__main__":
-    #test with fresh news
+    # test with fresh news
     news = get_sentiment("BTC,bitcoin")
     tensor, sentiment = estimate_sentiment(news)
     print(news)
     print(tensor, sentiment)
 
-    #test with predefined news
+    # test with predefined news
     test_sentences = [
         "Investors are pessimistic about the upcoming earnings report.",
         "The stock price surged after negative market news.",
