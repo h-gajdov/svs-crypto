@@ -10,8 +10,11 @@
         </nav>
         <div class="horizontal-center">
             <div class="search-wrapper horizontal-center">
-                <input type="text" placeholder="Search for a symbol..."/>
-                <button class="plain-button" type="submit">
+                <input id="symbolInput" required name="symbol" list="coins" placeholder="Search for a symbol...">
+                <datalist id="coins">
+                    <option th:each="symbol : ${symbols}" th:value="${symbol}"></option>
+                </datalist>
+                <button class="plain-button" type="button" onclick="submitSymbol()">
                     <i class="fa-solid fa-magnifying-glass fa-1_5x icon"></i>
                 </button>
             </div>
@@ -29,5 +32,11 @@
         document.querySelector("#menu-button").addEventListener("click", (e) => {
             document.querySelector("#dropdown-menu").classList.toggle("dropdown-menu")
         })
+        function submitSymbol() {
+            const symbol = document.getElementById('symbolInput').value.toUpperCase();
+            if(symbol) {
+                window.location.href = `/details/${symbol}`;
+            }
+        }
     </script>
 </header>

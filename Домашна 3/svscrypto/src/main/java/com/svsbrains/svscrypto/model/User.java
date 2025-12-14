@@ -3,16 +3,12 @@ package com.svsbrains.svscrypto.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 //@NoArgsConstructor
 @Entity
@@ -67,7 +63,25 @@ public class User {
     }
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> coins;
+    private List<String> coins = new ArrayList<>();
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> historyCoins = new ArrayList<>();
+
+
+    public List<String> getHistoryCoins() {
+        return historyCoins;
+    }
+
+    public void setHistoryCoins(List<String> historyCoins) {
+        this.historyCoins = historyCoins;
+    }
+
+    public void addHistoryCoin(String s){
+        this.historyCoins.remove(s);
+        this.historyCoins.add(s);
+    }
+
     public User(){
         this.username="";
         this.first_name="";
@@ -75,6 +89,7 @@ public class User {
         this.email="";
         this.password="";
         this.coins=new LinkedList<>();
+        this.historyCoins=new LinkedList<>();
     }
 
     public User(String username, String firstName, String lastName, String email, String password) {
@@ -84,6 +99,7 @@ public class User {
         this.email=email;
         this.password=password;
         this.coins=new LinkedList<>();
+        this.historyCoins=new LinkedList<>();
     }
 
     public void removeCoin(String c){

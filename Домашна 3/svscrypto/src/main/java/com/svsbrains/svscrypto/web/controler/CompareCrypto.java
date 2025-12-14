@@ -47,6 +47,7 @@ public class CompareCrypto {
 
         List<String> symbols = coinService.getAllSymbols();
         symbols.removeAll(currentSymbols);
+
         model.addAttribute("days", days);
         model.addAttribute("marketData", marketData);
         model.addAttribute("symbols", symbols);

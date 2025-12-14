@@ -3,6 +3,7 @@ package com.svsbrains.svscrypto.web.controler;
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
 import com.svsbrains.svscrypto.model.User;
+import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
 import jakarta.servlet.http.HttpSession;
@@ -22,10 +23,12 @@ import java.util.Map;
 public class DetailedViewController {
     private final DailyDataService dailyDataService;
     private final MarketDataService marketDataService;
+    private final CoinService coinService;
 
-    public DetailedViewController(DailyDataService dailyDataService, MarketDataService marketDataService) {
+    public DetailedViewController(DailyDataService dailyDataService, MarketDataService marketDataService,CoinService coinService) {
         this.dailyDataService = dailyDataService;
         this.marketDataService = marketDataService;
+        this.coinService=coinService;
     }
 
     @GetMapping("/{symbol}")
@@ -43,6 +46,13 @@ public class DetailedViewController {
 
         User u=(User)httpSession.getAttribute("user");
         model.addAttribute("user",u);
+
+        if(u!=null){
+            u.addHistoryCoin(symbol);
+        }
+
+        List<String> symbols = coinService.getAllSymbols();
+        model.addAttribute("symbols",symbols);
 
         return "master-template";
     }
@@ -63,6 +73,9 @@ public class DetailedViewController {
         List<Double> values = data.stream()
                 .map(MarketData::getOpen)
                 .toList();
+
+        List<String> symbols = coinService.getAllSymbols();
+        model.addAttribute("symbols",symbols);
 
         model.addAttribute("timestamps", timestamps);
         model.addAttribute("values", values);

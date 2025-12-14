@@ -5,8 +5,10 @@ import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.repository.UserRepository;
 import com.svsbrains.svscrypto.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 public class UserSeviceImpl implements UserService {
     private final UserRepository userRepository;
 
@@ -30,7 +32,6 @@ public class UserSeviceImpl implements UserService {
     public User addCoinToList(String username, String c) {
         User u=userRepository.getUserByUsername(username);
         u.addCoin(c);
-        userRepository.save(u);
         return u;
     }
 
@@ -38,7 +39,13 @@ public class UserSeviceImpl implements UserService {
     public User deleteCoinFromList(String username, String c) {
         User u=userRepository.getUserByUsername(username);
         u.removeCoin(c);
-        userRepository.save(u);
+        return u;
+    }
+
+    @Override
+    public User addHistoryCoin(String username,String s) {
+        User u=userRepository.getUserByUsername(username);
+        u.addHistoryCoin(s);
         return u;
     }
 }

@@ -3,6 +3,7 @@ package com.svsbrains.svscrypto.web.controler;
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
 import com.svsbrains.svscrypto.model.User;
+import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
 import com.svsbrains.svscrypto.service.UserService;
@@ -26,12 +27,14 @@ public class UserController {
     private final HttpSession httpSession;
     private final DailyDataService dailyDataService;
     private final MarketDataService marketDataService;
+    private final CoinService coinService;
 
-    public UserController(UserService userService, HttpSession httpSession,DailyDataService dailyDataService,MarketDataService marketDataService) {
+    public UserController(UserService userService, HttpSession httpSession,DailyDataService dailyDataService,MarketDataService marketDataService, CoinService coinService) {
         this.userService = userService;
         this.httpSession = httpSession;
         this.dailyDataService=dailyDataService;
         this.marketDataService=marketDataService;
+        this.coinService=coinService;
     }
 
     @GetMapping("/login")
@@ -84,7 +87,10 @@ public class UserController {
             sparklineData.put(coin.getSymbol(), res);
         }
 
-        model.addAttribute("user",httpSession.getAttribute("user"));
+        List<String> symbols = coinService.getAllSymbols();
+        model.addAttribute("symbols",symbols);
+
+        model.addAttribute("user",(User) httpSession.getAttribute("user"));
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);
         return "master-template";
