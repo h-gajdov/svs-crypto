@@ -229,6 +229,28 @@
         <div id="news-container"></div>
     </div>
 
+    <div class="wrapper mkt-stat">
+        <div id="metrics-container" >
+            <div class="cell"><span class="grey-text">RSI</span><span id="rsi"></span></div>
+            <div class="cell"><span class="grey-text">MACD</span><span id="macd"></span></div>
+            <div class="cell"><span class="grey-text">MACD Signal</span><span id="macd_signal"></span></div>
+
+            <div class="cell"><span class="grey-text">Stoch K</span><span id="stoch_k"></span></div>
+            <div class="cell"><span class="grey-text">Stoch D</span><span id="stoch_d"></span></div>
+
+            <div class="cell"><span class="grey-text">ADX</span><span id="adx"></span></div>
+            <div class="cell"><span class="grey-text">CCI</span><span id="cci"></span></div>
+
+            <div class="cell"><span class="grey-text">SMA 20</span><span id="sma20"></span></div>
+            <div class="cell"><span class="grey-text">EMA 20</span><span id="ema20"></span></div>
+            <div class="cell"><span class="grey-text">WMA 20</span><span id="wma20"></span></div>
+
+            <div class="cell"><span class="grey-text">BB Upper</span><span id="bb_upper"></span></div>
+            <div class="cell"><span class="grey-text">BB Middle</span><span id="bb_middle"></span></div>
+            <div class="cell"><span class="grey-text">BB Lower</span><span id="bb_lower"></span></div>
+        </div>
+    </div>
+
     <div class="wrapper mkt-stat" id="whale-alerts">
         <span>Whale alerts</span>
         <div id="whale-container"></div>
@@ -467,6 +489,30 @@
         });
 
         document.addEventListener("DOMContentLoaded", (e) => {
+            fetch(`/api/indicators?symbol=${symbol.replaceAll('"','')}`)
+                .then(res => res.json())
+                .then(data => {
+                    function formatValue(val) {
+                        return val !== null ? val.toFixed(2) : "-";
+                    }
+
+                    document.querySelector("#rsi").innerText = formatValue(indicators.RSI);
+                    document.querySelector("#macd").innerText = formatValue(indicators.MACD);
+                    document.querySelector("#macd_signal").innerText = formatValue(indicators.MACD_signal);
+                    document.querySelector("#stoch_k").innerText = formatValue(indicators.STOCH_K);
+                    document.querySelector("#stoch_d").innerText = formatValue(indicators.STOCH_D);
+                    document.querySelector("#adx").innerText = formatValue(indicators.ADX);
+                    document.querySelector("#cci").innerText = formatValue(indicators.CCI);
+                    document.querySelector("#sma_20").innerText = formatValue(indicators.SMA_20);
+                    document.querySelector("#ema_20").innerText = formatValue(indicators.EMA_20);
+                    document.querySelector("#wma_20").innerText = formatValue(indicators.WMA_20);
+                    document.querySelector("#bb_middle").innerText = formatValue(indicators.BB_middle);
+                    document.querySelector("#bb_upper").innerText = formatValue(indicators.BB_upper);
+                    document.querySelector("#bb_lower").innerText = formatValue(indicators.BB_lower);
+                    document.querySelector("#vma_20").innerText = formatValue(indicators.VMA_20);
+                });
+
+
             fetch(`/technical-analysis?symbol=${symbol.replaceAll('"','')}`)
                 .then(res => res.json())
                 .then(data => {

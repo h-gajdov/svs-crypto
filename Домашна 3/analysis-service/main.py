@@ -17,6 +17,10 @@ def analyze_all():
 def get_analyze_symbol(symbol):
     return analyze_symbol(symbol)
 
+@app.get("/identificators/{symbol}")
+def get_indentificators(symbol):
+    return get_symbol_indicators(symbol)
+
 @app.get("/check-connection")
 def check_connection():
     return {"status": "FastAPI is running"}

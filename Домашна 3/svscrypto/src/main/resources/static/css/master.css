@@ -801,3 +801,15 @@ h2,p,span{
 .ta-buy { color: #22c55e; }
 .ta-sell { color: #ef4444; }
 .ta-hold { color: #eab308; }
+
+#metrics-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+#metrics-container .cell {
+    display: flex;
+    flex-direction: column;
+    min-width: 120px;
+}
