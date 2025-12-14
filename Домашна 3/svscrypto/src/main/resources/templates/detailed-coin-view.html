@@ -407,6 +407,8 @@
                 let text = data[i]['text'];
                 let amounts = data[i]['amounts'];
 
+                text = text.charAt(0).toUpperCase() + text.slice(1); //capitalize first letter
+
                 let alertDiv = `<div class="whale-entry">
                     <span class="whale-time">${formatted}</span>
                     <span class="whale-text">${text}</span>
