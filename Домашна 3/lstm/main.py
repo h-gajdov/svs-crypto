@@ -13,6 +13,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_percentage_error, r2_score
 from fastapi import Query
 from dotenv import load_dotenv
+import uvicorn
+import traceback
 
 load_dotenv("../../.env")
 
@@ -25,6 +27,7 @@ host = os.getenv("DB_HOST")
 port = os.getenv("DB_PORT")
 
 DB_CONNECTION_STRING = f"postgresql://{user}:{password}@{host}:{port}/{db}"
+engine = create_engine(DB_CONNECTION_STRING)
 
 # Params
 LOOKBACK_WINDOW = 60
@@ -66,7 +69,6 @@ class PredictionResponse(BaseModel):
 
 
 def get_data_from_db(symbol: str):
-    engine = create_engine(DB_CONNECTION_STRING)
     query = f"""
         SELECT open, high, low, close, volume, timestamp 
         FROM market_data 
@@ -232,11 +234,9 @@ def predict_price(symbol: str = Query()):
         }
 
     except Exception as e:
-        import traceback
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
