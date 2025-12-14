@@ -189,6 +189,27 @@
         </div>
     </div>
 
+    <div class="wrapper mkt-stat" id="technical-analysis">
+        <span>Technical Analysis</span>
+
+        <div class="ta-grid">
+            <div class="ta-box">
+                <span class="ta-title">1D</span>
+                <ul id="ta-1d"></ul>
+            </div>
+
+            <div class="ta-box">
+                <span class="ta-title">1W</span>
+                <ul id="ta-1w"></ul>
+            </div>
+
+            <div class="ta-box">
+                <span class="ta-title">1M</span>
+                <ul id="ta-1m"></ul>
+            </div>
+        </div>
+    </div>
+
     <div class="wrapper mkt-stat">
         <span>Exchange flows</span>
         <div id="exchange-flow-table">
@@ -447,6 +468,27 @@
         });
 
         document.addEventListener("DOMContentLoaded", (e) => {
+            fetch(`/technical-analysis?symbol=${symbol.replaceAll('"','')}`)
+                .then(res => res.json())
+                .then(data => {
+                    renderTA("ta-1d", data["1D"]);
+                    renderTA("ta-1w", data["1W"]);
+                    renderTA("ta-1m", data["1M"]);
+                });
+
+            function renderTA(elementId, signals) {
+                const ul = document.getElementById(elementId);
+                ul.innerHTML = "";
+
+                signals.forEach(s => {
+                    let cls = "ta-hold";
+                    if (s.startsWith("BUY")) cls = "ta-buy";
+                    if (s.startsWith("SELL")) cls = "ta-sell";
+
+                    ul.innerHTML += `<li class="${cls}">${s}</li>`;
+                });
+            }
+
             fetch('/api/on-chain/whale-movements').then(response => {
                 return response.json();
             }).then(data => {

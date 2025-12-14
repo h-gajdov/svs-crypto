@@ -5,8 +5,17 @@ from sentiment.sentiment_analysis import *
 from onchain.onchain_metrics import  *
 from lstm.lstm import *
 from fastapi import FastAPI, Query
+from technicalAnalysis.analysis import *
 
 app = FastAPI()
+
+@app.get("/technicalAnalysis/all")
+def analyze_all():
+    return analyze_all_cryptos()
+
+@app.get("/analysis/{symbol}")
+def analyze_symbol(symbol):
+    return analyze_symbol(symbol)
 
 @app.get("/check-connection")
 def check_connection():
