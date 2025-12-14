@@ -777,3 +777,8 @@ h2,p,span{
     height: 28px;
     border-radius: 100%;
 }
+
+#on-chain-prediction-wrapper {
+    display: flex;
+    justify-content: space-between;
+}

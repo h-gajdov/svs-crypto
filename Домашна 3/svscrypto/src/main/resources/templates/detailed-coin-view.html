@@ -175,8 +175,16 @@
                 <span id="tvl_value"></span><br><br>
                 <span class="metrics-label grey-text">NVT</span><br>
                 <span id="nvt_value"></span><br><br>
-                <span class="metrics-label grey-text">MVRV</span><br>
-                <span id="mvrv_value"></span>
+                <div id="on-chain-prediction-wrapper">
+                    <div>
+                        <span class="metrics-label grey-text">MVRV</span><br>
+                        <span id="mvrv_value"></span>
+                    </div>
+                    <div>
+                        <span class="metrics-label">Signal: <span id="signal-label">/</span></span><br>
+                        <span class="grey-text">Score: <span id="signal-score">0.0</span></span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -195,7 +203,7 @@
     <div class="wrapper mkt-stat" id="news-section">
         <div style="display: flex; justify-content: space-between;" class="mkt-stat">
             <span th:text="${'News for ' + coin.getName()}"></span>
-            <span id="sentiment-label">Prediction: <span>neutral</span></span>
+            <span id="sentiment-label">Sentiment: <span>neutral</span></span>
         </div>
         <div id="news-container"></div>
     </div>
@@ -211,7 +219,7 @@
         const chartDiv = document.getElementById('data-graph');
 
         let pricePrediction;
-        let onchainIndicator;
+        let allMetricsData;
 
         let timestamps = [[${timestamps}]]?.map(Number) || [];
         let values = [[${values}]]?.map(Number) || [];
@@ -295,13 +303,13 @@
         }
 
         function displayOnChainMetrics() {
-            document.querySelector("#active_addresses_count").innerText = formatLargeNumber(onchainIndicator['AdrActCnt']);
-            document.querySelector("#transactions_count").innerText = formatLargeNumber(onchainIndicator['TxCnt']);
-            document.querySelector("#hashrate_value").innerText = formatHashRate(onchainIndicator['HashRate']);
-            document.querySelector("#tvl_value").innerText = formatLargeNumber(onchainIndicator['tvl']);
-            document.querySelector("#nvt_value").innerText = formatLargeNumber(onchainIndicator['nvt']);
-            document.querySelector("#mvrv_value").innerText = formatLargeNumber(onchainIndicator['CapMVRVCur']);
-            displayExchangeFlows(onchainIndicator['exchange_flow']['data'])
+            document.querySelector("#active_addresses_count").innerText = formatLargeNumber(allMetricsData['AdrActCnt']);
+            document.querySelector("#transactions_count").innerText = formatLargeNumber(allMetricsData['TxCnt']);
+            document.querySelector("#hashrate_value").innerText = formatHashRate(allMetricsData['HashRate']);
+            document.querySelector("#tvl_value").innerText = formatLargeNumber(allMetricsData['tvl']);
+            document.querySelector("#nvt_value").innerText = formatLargeNumber(allMetricsData['nvt']);
+            document.querySelector("#mvrv_value").innerText = formatLargeNumber(allMetricsData['CapMVRVCur']);
+            displayExchangeFlows(allMetricsData['exchange_flow']['data'])
         }
 
         function displayExchangeFlows(exchangeFlows) {
@@ -391,7 +399,6 @@
         }
 
         function displayWhaleAlerts(data) {
-            console.log(data);
             let alertSection = document.querySelector("#whale-container")
 
             for(let i = 0; i < data.length; i++) {
@@ -408,6 +415,11 @@
 
                 alertSection.innerHTML += alertDiv;
             }
+        }
+
+        function displayOnChainPrediction(data) {
+            document.querySelector('#signal-label').innerText = data['signal'];
+            document.querySelector('#signal-score').innerText = formatLargeNumber(data['combined_score']);
         }
 
         //Animation for thinking
@@ -448,8 +460,14 @@
             fetch(`/api/on-chain/metrics?symbol=${symbol.replaceAll('"', '')}`).then(response => {
                 return response.json();
             }).then(data => {
-                onchainIndicator = data;
+                allMetricsData = data;
                 displayOnChainMetrics();
+            })
+
+            fetch(`/api/on-chain/sentiment?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+                return response.json();
+            }).then(data => {
+                displayOnChainPrediction(data);
             })
 
             fetch(`/api/prediction?symbol=${symbol.replaceAll('"', '')}`).then(response => {
