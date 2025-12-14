@@ -200,6 +200,11 @@
         <div id="news-container"></div>
     </div>
 
+    <div class="wrapper mkt-stat" id="whale-alerts">
+        <span>Whale alerts</span>
+        <div id="whale-container"></div>
+    </div>
+
     <script th:inline="javascript">
         /*<![CDATA[*/
         const symbol = '[[${coin.symbol}]]';
@@ -319,8 +324,6 @@
         }
 
         function displayNews(news) {
-            console.log(news);
-
             document.querySelector('#sentiment-label span').innerText = news['sentiment']
 
             let newsArr = news['news'];
@@ -333,10 +336,13 @@
                 let summary = newsArr[i]['summary'];
                 let image = newsArr[i]['image'];
                 let url = newsArr[i]['url'];
+                let date = new Date(newsArr[i]['created_at']);
+                let formatted = date.toLocaleDateString() + " " + date.toLocaleTimeString();
 
                 let entryDiv = `<div class="news-entry">
                     <span class="news-heading">${headline}</span>
                     <span class="news-summary">${summary}</span>
+                    <span class="news-source">Posted at: ${formatted}</span>
                     <div style="display: flex; justify-content: space-between;">
                         <div class="news-content-wrapper">
                             <section>
@@ -353,6 +359,54 @@
                 </div>`
 
                 newsSection.innerHTML += entryDiv;
+            }
+        }
+
+        function getAmountsDiv(amounts) {
+            let result = document.createElement('div');
+            result.classList.add("whale-amounts");
+
+            for(let i = 0; i < amounts.length; i++) {
+                let symbol = amounts[i]['symbol'];
+                let amount = amounts[i]['amount'];
+                let value = amounts[i]['value_usd'];
+
+                let whamDiv = `
+                <div class="wh-am">
+                    <div class="wh-symbol-wrapper">
+                        <span class="am-symbol">Symbol: ${symbol}</span>
+                        <img src="https://img.logo.dev/crypto/${symbol}?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
+                            <button class="btn btn-primary" onclick="window.open('/details/${symbol}', '_blank')">
+                                View coin
+                            </button>
+                    </div>
+                    <span class="am-amount">Amount: ${formatLargeNumber(amount)}</span>
+                    <span class="am-value">Value: ${formatLargeNumber(value)}$</span>
+                </div>`
+
+                result.innerHTML += whamDiv;
+            }
+
+            return result;
+        }
+
+        function displayWhaleAlerts(data) {
+            console.log(data);
+            let alertSection = document.querySelector("#whale-container")
+
+            for(let i = 0; i < data.length; i++) {
+                let date = new Date(data[i]['time']);
+                let formatted = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+                let text = data[i]['text'];
+                let amounts = data[i]['amounts'];
+
+                let alertDiv = `<div class="whale-entry">
+                    <span class="whale-time">${formatted}</span>
+                    <span class="whale-text">${text}</span>
+                    ${getAmountsDiv(amounts).outerHTML}
+                </div>`
+
+                alertSection.innerHTML += alertDiv;
             }
         }
 
@@ -376,8 +430,15 @@
             }
             e.target.remove()
             displayPrediction()
-        })
+        });
+
         document.addEventListener("DOMContentLoaded", (e) => {
+            fetch('/api/on-chain/whale-movements').then(response => {
+                return response.json();
+            }).then(data => {
+                displayWhaleAlerts(data);
+            });
+
             fetch(`/api/on-chain/news?symbol=${symbol.replaceAll('"', '')}`).then(response => {
                 return response.json();
             }).then(data => {

@@ -3,12 +3,15 @@ package com.svsbrains.svscrypto.web.controler;
 import com.svsbrains.svscrypto.model.dto.EstimateNewsDto;
 import com.svsbrains.svscrypto.model.dto.OnChainMetricsDto;
 import com.svsbrains.svscrypto.model.dto.OnChainSentimentDto;
+import com.svsbrains.svscrypto.model.dto.WhaleMovementDto;
 import com.svsbrains.svscrypto.service.OnChainService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/on-chain")
@@ -22,6 +25,17 @@ public class OnChainDataController {
     @GetMapping("/metrics")
     public ResponseEntity<OnChainMetricsDto> getAllMetricsFromSymbol(@RequestParam String symbol) {
         OnChainMetricsDto data = onChainService.getAllMetrics(symbol);
+
+        if (data != null) {
+            return ResponseEntity.ok(data);
+        } else {
+            return ResponseEntity.status(503).build();
+        }
+    }
+
+    @GetMapping("/whale-movements")
+    public ResponseEntity<List<WhaleMovementDto>> getWhaleMovements() {
+        List<WhaleMovementDto> data = onChainService.getWhaleMovements();
 
         if (data != null) {
             return ResponseEntity.ok(data);

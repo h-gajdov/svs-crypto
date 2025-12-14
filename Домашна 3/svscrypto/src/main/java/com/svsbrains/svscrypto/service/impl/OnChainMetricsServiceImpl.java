@@ -3,10 +3,15 @@ package com.svsbrains.svscrypto.service.impl;
 import com.svsbrains.svscrypto.model.dto.EstimateNewsDto;
 import com.svsbrains.svscrypto.model.dto.OnChainMetricsDto;
 import com.svsbrains.svscrypto.model.dto.OnChainSentimentDto;
+import com.svsbrains.svscrypto.model.dto.WhaleMovementDto;
 import com.svsbrains.svscrypto.service.OnChainService;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 
 @Service
 public class OnChainMetricsServiceImpl implements OnChainService {
@@ -15,6 +20,7 @@ public class OnChainMetricsServiceImpl implements OnChainService {
     private final String GET_ALL_METRICS = "http://localhost:8000/metrics";
     private final String GET_SENTIMENT_INDICATOR = "http://localhost:8000/get-indicator-onchain";
     private final String GET_NEWS = "http://localhost:8000/estimate-news";
+    private final String GET_WHALE_MOVEMENTS = "http://localhost:8000/whale-movements";
 
     public OnChainMetricsServiceImpl(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -59,6 +65,24 @@ public class OnChainMetricsServiceImpl implements OnChainService {
         } catch (Exception e) {
             System.err.println("Communication error with python: " + e.getMessage());
             return null;
+        }
+    }
+
+    @Override
+    public List<WhaleMovementDto> getWhaleMovements() {
+        try {
+            ResponseEntity<List<WhaleMovementDto>> response =
+                    restTemplate.exchange(
+                            GET_WHALE_MOVEMENTS,
+                            HttpMethod.GET,
+                            null,
+                            new ParameterizedTypeReference<List<WhaleMovementDto>>() {}
+                    );
+
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("Communication error with python: " + e.getMessage());
+            return List.of();
         }
     }
 }

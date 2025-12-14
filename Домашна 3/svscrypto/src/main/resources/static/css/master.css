@@ -744,3 +744,36 @@ h2,p,span{
 .news-author, .news-source {
     font-size: 0.8em;
 }
+
+#whale-alerts {
+    margin-top: 1em;
+}
+
+.whale-entry {
+    border-radius: 7px;
+    background: var(--border-color);
+    padding: 10px;
+    transition: all 0.3s ease;
+    margin-top: 0.5em;
+}
+
+.whale-entry:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.whale-entry span {
+    display: block;
+}
+
+.whale-entry .wh-symbol-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.whale-entry img {
+    width: 28px;
+    height: 28px;
+    border-radius: 100%;
+}
