@@ -151,33 +151,49 @@ def parse_number(s):
     else:
         return float(s)
 
+
 def get_exchange_flow(symbol):
-    url = f'https://www.coinglass.com/currencies/{symbol}?type=spot'
-    driver.get(url)
-    element = WebDriverWait(driver, 30).until(
-        EC.presence_of_element_located((By.XPATH, "//button[text()='Spot Flows']"))
-    )
-    driver.execute_script("arguments[0].click();", element)
+    default_timeframes = [
+        "5 minute", "15 minute", "30 minute", "1 hour", "4 hour", "8 hour",
+        "12 hour", "24 hour", "3 day", "5 day", "7 day", "10 day", "15 day",
+        "30 day", "40 day", "50 day", "60 day", "90 day", "120 day",
+        "150 day", "180 day", "1 Year"
+    ]
 
-    def rows_loaded(driver):
-        rows = driver.find_elements(By.CSS_SELECTOR, '.cg-style-a2wtpa tbody tr')
-        return rows if len(rows) >= 48 and rows[1].text else False
+    try:
+        url = f'https://www.coinglass.com/currencies/{symbol}?type=spot'
+        driver.get(url)
+        element = WebDriverWait(driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, "//button[text()='Spot Flows']"))
+        )
+        driver.execute_script("arguments[0].click();", element)
 
-    WebDriverWait(driver, 30).until(rows_loaded)
+        def rows_loaded(driver):
+            rows = driver.find_elements(By.CSS_SELECTOR, '.cg-style-a2wtpa tbody tr')
+            return rows if len(rows) >= 48 and rows[1].text else False
 
-    soup = BeautifulSoup(driver.page_source, 'html.parser')
-    rows = soup.select('.cg-style-a2wtpa tbody tr')[1:23] #30 is maxmimum amount of seconds to wait else it throws TimeoutException
-    result = []
-    for row in rows:
-        cells = row.find_all('td')
-        netflow = parse_number(cells[3].text)
-        timeframe = cells[0].text
-        result.append({"timeframe": timeframe, 'netflow': netflow})
+        WebDriverWait(driver, 30).until(rows_loaded)
 
-    return {
-        'asset': symbol,
-        'data': result
-    }
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+        rows = soup.select('.cg-style-a2wtpa tbody tr')[1:23]
+        result = []
+        for row in rows:
+            cells = row.find_all('td')
+            netflow = parse_number(cells[3].text)
+            timeframe = cells[0].text
+            result.append({"timeframe": timeframe, "netflow": netflow})
+
+        found_timeframes = [d['timeframe'] for d in result]
+        for tf in default_timeframes:
+            if tf not in found_timeframes:
+                result.append({"timeframe": tf, "netflow": 0})
+
+        return {"asset": symbol, "data": result}
+
+    except Exception:
+        # Return all zeros if anything goes wrong
+        result = [{"timeframe": tf, "netflow": 0} for tf in default_timeframes]
+        return {"asset": symbol, "data": result}
 
 def get_all_metrics(symbol):
     metrics = 'AdrActCnt,TxCnt,HashRate,CapMVRVCur'
@@ -187,7 +203,6 @@ def get_all_metrics(symbol):
     result['nvt'] = get_nvt(symbol)['nvt']
     result['tvl'] = get_tvl(symbol)['tvl']
     result['coin_id'] = get_coin_id(symbol)['coin_id']
-    result['exchange_flow'] = get_exchange_flow(symbol)
 
     return result
 

@@ -1,0 +1,36 @@
+.grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 2rem;
+    align-items: end;
+}
+
+.grid-col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.grid-col form {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.grid-col input,
+.grid-col select {
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .grid-2col {
+        grid-template-columns: 1fr;
+    }
+
+    .grid-col form {
+        flex-direction: column;
+    }
+
+    .grid-col button {
+        width: 100%;
+    }
+}

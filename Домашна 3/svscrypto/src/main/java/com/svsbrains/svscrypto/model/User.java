@@ -14,28 +14,16 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+//@NoArgsConstructor
 @Entity
 @Table(name = "app_user")
 public class User {
-    @ElementCollection(fetch = FetchType.EAGER)
-    private List<String> coins;
-
-    public User(String username, String firstName, String lastName, String email, String password) {
-        this.username=username;
-        this.first_name=firstName;
-        this.last_name=lastName;
-        this.email=email;
-        this.password=password;
-        this.coins=new LinkedList<>();
+    public List<String> getCoins() {
+        return coins;
     }
 
-    public void removeCoin(String c){
-        this.coins.remove(c);
-    }
-
-    public void addCoin(String c){
-        this.coins.add(c);
+    public void setCoins(List<String> coins) {
+        this.coins = coins;
     }
 
     public @NotNull String getUsername() {
@@ -78,13 +66,34 @@ public class User {
         this.password = password;
     }
 
-    public List<String> getCoins() {
-        return coins;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> coins;
+    public User(){
+        this.username="";
+        this.first_name="";
+        this.last_name="";
+        this.email="";
+        this.password="";
+        this.coins=new LinkedList<>();
     }
 
-    public void setCoins(List<String> coins) {
-        this.coins = coins;
+    public User(String username, String firstName, String lastName, String email, String password) {
+        this.username=username;
+        this.first_name=firstName;
+        this.last_name=lastName;
+        this.email=email;
+        this.password=password;
+        this.coins=new LinkedList<>();
     }
+
+    public void removeCoin(String c){
+        this.coins.remove(c);
+    }
+
+    public void addCoin(String c){
+        this.coins.add(c);
+    }
+
 
     public boolean hasCoin(String symbol) {
         if (coins == null) return false;

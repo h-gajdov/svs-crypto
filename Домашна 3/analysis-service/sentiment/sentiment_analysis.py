@@ -8,8 +8,7 @@ from datetime import datetime, timedelta
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import feedparser
 
-dotenv_path = os.path.abspath(os.path.join(os.getcwd(), "..", "..", ".env"))
-load_dotenv(dotenv_path)
+load_dotenv('../../.env')
 
 RSS_FEEDS = [
     "https://cointelegraph.com/rss",

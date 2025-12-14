@@ -27,6 +27,14 @@ public class DailyData {
         this.symbol = symbol;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Coin getCoin() {
         return coin;
     }
@@ -41,6 +49,14 @@ public class DailyData {
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public Double getMarket_cap() {
+        return market_cap;
+    }
+
+    public void setMarket_cap(Double market_cap) {
+        this.market_cap = market_cap;
     }
 
     public Double getLast_price() {
@@ -73,6 +89,14 @@ public class DailyData {
 
     public void setLow_24h(Double low_24h) {
         this.low_24h = low_24h;
+    }
+
+    public Double getWeeklyChange() {
+        return weeklyChange;
+    }
+
+    public void setWeeklyChange(Double weeklyChange) {
+        this.weeklyChange = weeklyChange;
     }
 
     public Double getMonthlyChange() {
