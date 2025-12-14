@@ -20,7 +20,6 @@ def get_analyze_symbol(symbol):
 def get_indentificators(symbol):
     return get_symbol_indicators(symbol)
 
->>>>>>> Stashed changes
 @app.get("/check-connection")
 def check_connection():
     return {"status": "FastAPI is running"}
