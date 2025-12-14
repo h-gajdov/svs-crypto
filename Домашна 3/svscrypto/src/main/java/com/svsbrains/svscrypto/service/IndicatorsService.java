@@ -1,7 +1,7 @@
 package com.svsbrains.svscrypto.service;
 
-import com.svsbrains.svscrypto.model.dto.SymbolIndicators;
+import com.svsbrains.svscrypto.model.dto.SymbolIndicatorsDto;
 
 public interface IndicatorsService {
-    public SymbolIndicators getIndicators(String symbol);
+    public SymbolIndicatorsDto getIndicators(String symbol);
 }

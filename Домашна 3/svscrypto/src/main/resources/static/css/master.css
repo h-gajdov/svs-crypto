@@ -452,13 +452,16 @@ button {
 }
 
 .mkt-stat .cell {
-    background: #F3F4F6;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
     padding: 20px;
     border-radius: 20px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 5px;
+
+    transition: all 0.3s ease;
 }
 
 .metric-wrapper {
@@ -713,7 +716,7 @@ h2,p,span{
     margin-top: 0.5em;
 }
 
-.news-entry:hover, .whale-entry:hover {
+.news-entry:hover, .whale-entry:hover, .cell:hover {
     transform: scale(1.01);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }

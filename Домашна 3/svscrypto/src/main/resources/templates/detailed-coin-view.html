@@ -244,6 +244,7 @@
             <div class="cell"><span class="grey-text">SMA 20</span><span id="sma20"></span></div>
             <div class="cell"><span class="grey-text">EMA 20</span><span id="ema20"></span></div>
             <div class="cell"><span class="grey-text">WMA 20</span><span id="wma20"></span></div>
+            <div class="cell"><span class="grey-text">VMA 20</span><span id="vma20"></span></div>
 
             <div class="cell"><span class="grey-text">BB Upper</span><span id="bb_upper"></span></div>
             <div class="cell"><span class="grey-text">BB Middle</span><span id="bb_middle"></span></div>
@@ -495,21 +496,21 @@
                     function formatValue(val) {
                         return val !== null ? val.toFixed(2) : "-";
                     }
-
-                    document.querySelector("#rsi").innerText = formatValue(indicators.RSI);
-                    document.querySelector("#macd").innerText = formatValue(indicators.MACD);
-                    document.querySelector("#macd_signal").innerText = formatValue(indicators.MACD_signal);
-                    document.querySelector("#stoch_k").innerText = formatValue(indicators.STOCH_K);
-                    document.querySelector("#stoch_d").innerText = formatValue(indicators.STOCH_D);
-                    document.querySelector("#adx").innerText = formatValue(indicators.ADX);
-                    document.querySelector("#cci").innerText = formatValue(indicators.CCI);
-                    document.querySelector("#sma_20").innerText = formatValue(indicators.SMA_20);
-                    document.querySelector("#ema_20").innerText = formatValue(indicators.EMA_20);
-                    document.querySelector("#wma_20").innerText = formatValue(indicators.WMA_20);
-                    document.querySelector("#bb_middle").innerText = formatValue(indicators.BB_middle);
-                    document.querySelector("#bb_upper").innerText = formatValue(indicators.BB_upper);
-                    document.querySelector("#bb_lower").innerText = formatValue(indicators.BB_lower);
-                    document.querySelector("#vma_20").innerText = formatValue(indicators.VMA_20);
+                    console.log(data)
+                    document.querySelector("#rsi").innerText = formatLargeNumber(data['RSI']);
+                    document.querySelector("#macd").innerText = formatLargeNumber(data['MACD']);
+                    document.querySelector("#macd_signal").innerText = formatLargeNumber(data['MACD_signal']);
+                    document.querySelector("#stoch_k").innerText = formatLargeNumber(data['STOCH_K']);
+                    document.querySelector("#stoch_d").innerText = formatLargeNumber(data['STOCH_D']);
+                    document.querySelector("#adx").innerText = formatLargeNumber(data['ADX']);
+                    document.querySelector("#cci").innerText = formatLargeNumber(data['CCI']);
+                    document.querySelector("#sma20").innerText = formatLargeNumber(data['SMA_20']);
+                    document.querySelector("#ema20").innerText = formatLargeNumber(data['EMA_20']);
+                    document.querySelector("#wma20").innerText = formatLargeNumber(data['WMA_20']);
+                    document.querySelector("#bb_middle").innerText = formatLargeNumber(data['BB_middle']);
+                    document.querySelector("#bb_upper").innerText = formatLargeNumber(data['BB_upper']);
+                    document.querySelector("#bb_lower").innerText = formatLargeNumber(data['BB_lower']);
+                    document.querySelector("#vma20").innerText = formatLargeNumber(data['VMA_20']);
                 });
 
 

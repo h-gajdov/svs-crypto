@@ -40,20 +40,41 @@ def get_dates(daysBefore=3):
 
 
 def get_news_from_newsdataio(symbol):
-    url = f'https://newsdata.io/api/1/latest?apikey={NEWS_DATA_API_KEY}&qInTitle={symbol}&language=en&video=0'
-    response = requests.get(url)
-    news = response.json()['results']
+    url = (
+        f"https://newsdata.io/api/1/latest"
+        f"?apikey={NEWS_DATA_API_KEY}&qInTitle={symbol}&language=en&video=0"
+    )
 
-    news_raw = [{
-        'author': ev['creator'],
-        'headline': ev['title'],
-        'content': '',  # content is available only for paid users
-        'created_at': ev['pubDate'].replace(' ', 'T'),
-        'image': ev['source_icon'],
-        'source': ev['source_name'],
-        'summary': ev['description'],
-        'url': ev['link']
-    } for ev in news]
+    try:
+        response = requests.get(url, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+    except (requests.RequestException, ValueError):
+        return []
+
+    news = data.get("results")
+    if not isinstance(news, list):
+        return []
+
+    if data['status'] == 'error':
+        return []
+
+    news_raw = []
+    for ev in news:
+        if not isinstance(ev, dict):
+            continue
+
+        news_raw.append({
+            "author": [ev.get("creator")] or [""],
+            "headline": ev.get("title") or "",
+            "content": "",  # paid-only field
+            "created_at": (ev.get("pubDate") or "").replace(" ", "T"),
+            "image": ev.get("source_icon") or "",
+            "source": ev.get("source_name") or "",
+            "summary": ev.get("description") or "",
+            "url": ev.get("link") or ""
+        })
+
     return news_raw
 
 
@@ -91,7 +112,7 @@ def get_news_from_rss(symbol):
                     published_date = getattr(entry, 'published', str(datetime.now()))
 
                     aggregated_news.append({
-                        'author': getattr(entry, 'author', 'Unknown'),
+                        'author': [getattr(entry, 'author', 'Unknown')],
                         'headline': entry.title,
                         'content': getattr(entry, 'summary', getattr(entry, 'description', '')),
                         'created_at': published_date,
