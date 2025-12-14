@@ -1,4 +1,5 @@
 from technicalAnalysis.generateSignals import generate_signals
+from technicalAnalysis.indicators import add_indicators
 
 def timeframe_analysis(df, timeframe):
     df_tf = df.resample(timeframe).agg({

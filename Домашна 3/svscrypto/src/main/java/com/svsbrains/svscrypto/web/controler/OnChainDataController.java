@@ -1,9 +1,6 @@
 package com.svsbrains.svscrypto.web.controler;
 
-import com.svsbrains.svscrypto.model.dto.EstimateNewsDto;
-import com.svsbrains.svscrypto.model.dto.OnChainMetricsDto;
-import com.svsbrains.svscrypto.model.dto.OnChainSentimentDto;
-import com.svsbrains.svscrypto.model.dto.WhaleMovementDto;
+import com.svsbrains.svscrypto.model.dto.*;
 import com.svsbrains.svscrypto.service.OnChainService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +33,17 @@ public class OnChainDataController {
     @GetMapping("/whale-movements")
     public ResponseEntity<List<WhaleMovementDto>> getWhaleMovements() {
         List<WhaleMovementDto> data = onChainService.getWhaleMovements();
+
+        if (data != null) {
+            return ResponseEntity.ok(data);
+        } else {
+            return ResponseEntity.status(503).build();
+        }
+    }
+
+    @GetMapping("/exchange-flows")
+    public ResponseEntity<ExchangeFlowDto> getExchangeFlows(@RequestParam String symbol) {
+        ExchangeFlowDto data = onChainService.getExchangeFlows(symbol);
 
         if (data != null) {
             return ResponseEntity.ok(data);

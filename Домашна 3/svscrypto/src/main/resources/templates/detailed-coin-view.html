@@ -330,7 +330,6 @@
             document.querySelector("#tvl_value").innerText = formatLargeNumber(allMetricsData['tvl']);
             document.querySelector("#nvt_value").innerText = formatLargeNumber(allMetricsData['nvt']);
             document.querySelector("#mvrv_value").innerText = formatLargeNumber(allMetricsData['CapMVRVCur']);
-            displayExchangeFlows(allMetricsData['exchange_flow']['data'])
         }
 
         function displayExchangeFlows(exchangeFlows) {
@@ -494,6 +493,13 @@
             }).then(data => {
                 displayWhaleAlerts(data);
             });
+
+            fetch(`/api/on-chain/exchange-flows?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+                return response.json();
+            }).then(data => {
+                console.log(data);
+                displayExchangeFlows(data['data']);
+            })
 
             fetch(`/api/on-chain/news?symbol=${symbol.replaceAll('"', '')}`).then(response => {
                 return response.json();

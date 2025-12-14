@@ -1,9 +1,6 @@
 package com.svsbrains.svscrypto.service;
 
-import com.svsbrains.svscrypto.model.dto.EstimateNewsDto;
-import com.svsbrains.svscrypto.model.dto.OnChainMetricsDto;
-import com.svsbrains.svscrypto.model.dto.OnChainSentimentDto;
-import com.svsbrains.svscrypto.model.dto.WhaleMovementDto;
+import com.svsbrains.svscrypto.model.dto.*;
 
 import java.util.List;
 
@@ -13,6 +10,8 @@ public interface OnChainService {
     OnChainSentimentDto getSentimentFromMetrics(String symbol);
 
     EstimateNewsDto estimateNews(String symbol);
-
+    
+    ExchangeFlowDto getExchangeFlows(String symbol);
+    
     List<WhaleMovementDto> getWhaleMovements();
 }
