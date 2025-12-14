@@ -439,7 +439,7 @@ button {
     flex: 1;
 }
 
-#market-statistics .mkt-stat > span {
+.mkt-stat > span {
     font-size: 20px;
     margin-bottom: 10px;
 }
@@ -626,7 +626,7 @@ main {
 }
 
 section {
-    background-color: var(--bg-secondary);
+    /*background-color: var(--bg-secondary);*/
 }
 
 a {
@@ -662,8 +662,142 @@ h2,p,span{
     color: var(--text-color);
 }
 
+#exchange-flow-table {
+    display: flex;
+    flex-direction: column;
+    padding: 0 12%;
+    margin-top: 1em;
+    user-select: none;
+}
 
+#exchange-flow-table .exchange-row {
+    display: flex;
+    justify-content: space-between;
+}
 
+#exchange-flow-table .header {
+    font-weight: 500;
+}
 
+.exchange-row {
+    border-bottom: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    padding: 3px 10px;
+}
 
+.exchange-row:not(:first-child):hover {
+    background: var(--border-color);
+}
 
+.exchange-row:last-child {
+    border-bottom: none;
+}
+
+.exchange-row span {
+    width: 33%;
+}
+
+.exchange-row span:nth-child(3) {text-align: right;}
+.exchange-row span:nth-child(2) {text-align: center;}
+
+#news-section {
+    margin-top: 1em;
+}
+
+.news-entry, .whale-entry {
+    border-radius: 7px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    transition: all 0.3s ease;
+    margin-top: 0.5em;
+}
+
+.news-entry:hover, .whale-entry:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.news-entry span {
+    display: block;
+}
+
+.news-entry img {
+    border-radius: 100%;
+    width: 32px;
+    height: 32px;
+}
+
+.news-heading {
+    font-weight: 700;
+}
+
+.news-content-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.news-heading {
+    font-size: 1.05em;
+}
+
+.news-author, .news-source {
+    font-size: 0.8em;
+}
+
+#whale-alerts {
+    margin-top: 1em;
+}
+
+.whale-entry span {
+    display: block;
+}
+
+.whale-entry .wh-symbol-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.whale-entry img {
+    width: 28px;
+    height: 28px;
+    border-radius: 100%;
+}
+
+#on-chain-prediction-wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ta-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.ta-box {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 10px;
+
+    transition: all 0.3s ease;
+}
+
+.ta-box:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.ta-title {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.ta-buy { color: #22c55e; }
+.ta-sell { color: #ef4444; }
+.ta-hold { color: #eab308; }
