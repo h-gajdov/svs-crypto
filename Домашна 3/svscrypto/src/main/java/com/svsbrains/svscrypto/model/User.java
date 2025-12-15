@@ -14,6 +14,55 @@ import java.util.*;
 @Entity
 @Table(name = "app_user")
 public class User {
+    @Id
+    @Column(unique = true)
+    @NotNull
+    private String username;
+    private String first_name;
+    private String last_name;
+
+    @Email
+    private String email;
+
+    @NotNull
+    private String password;
+
+    private boolean enabled = false;
+
+    public User() {
+        this.username = "";
+        this.first_name = "";
+        this.last_name = "";
+        this.email = "";
+        this.password = "";
+        this.coins = new LinkedList<>();
+        this.historyCoins = new LinkedList<>();
+    }
+
+    public User(String username, String firstName, String lastName, String email, String password) {
+        this.username = username;
+        this.first_name = firstName;
+        this.last_name = lastName;
+        this.email = email;
+        this.password = password;
+        this.coins = new LinkedList<>();
+        this.historyCoins = new LinkedList<>();
+    }
+
+    public void removeCoin(String c) {
+        this.coins.remove(c);
+    }
+
+    public void addCoin(String c) {
+        this.coins.add(c);
+    }
+
+
+    public boolean hasCoin(String symbol) {
+        if (coins == null) return false;
+        return coins.stream().anyMatch(c -> c.equals(symbol));
+    }
+
     public List<String> getCoins() {
         return coins;
     }
@@ -77,56 +126,9 @@ public class User {
         this.historyCoins = historyCoins;
     }
 
-    public void addHistoryCoin(String s){
+    public void addHistoryCoin(String s) {
         this.historyCoins.remove(s);
         this.historyCoins.add(s);
     }
-
-    public User(){
-        this.username="";
-        this.first_name="";
-        this.last_name="";
-        this.email="";
-        this.password="";
-        this.coins=new LinkedList<>();
-        this.historyCoins=new LinkedList<>();
-    }
-
-    public User(String username, String firstName, String lastName, String email, String password) {
-        this.username=username;
-        this.first_name=firstName;
-        this.last_name=lastName;
-        this.email=email;
-        this.password=password;
-        this.coins=new LinkedList<>();
-        this.historyCoins=new LinkedList<>();
-    }
-
-    public void removeCoin(String c){
-        this.coins.remove(c);
-    }
-
-    public void addCoin(String c){
-        this.coins.add(c);
-    }
-
-
-    public boolean hasCoin(String symbol) {
-        if (coins == null) return false;
-        return coins.stream().anyMatch(c -> c.equals(symbol));
-    }
-
-    @Id
-    @Column(unique = true)
-    @NotNull
-    private String username;
-    private String first_name;
-    private String last_name;
-
-    @Email
-    private String email;
-
-    @NotNull
-    private String password;
 
 }

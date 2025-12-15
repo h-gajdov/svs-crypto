@@ -1,0 +1,18 @@
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;"
+     xmlns="http://www.w3.org/1999/html">
+    <div class="card shadow p-4" style="max-width: 400px; width: 100%;">
+        <h3 class="text-center mb-4">Verify Mail</h3>
+        <form action="/verify" method="post">
+            <div class="mb-3">
+                <label class="form-label">Enter PIN:</label>
+                <input class="form-control" type="text" name="pin" required>
+            </div>
+
+            <button class="btn btn-primary w-100" type="submit">Verify</button>
+
+            <div th:if="${error}" th:text="${error}" style="color:red"></div>
+        </form>
+    </div>
+</div>
+
+
