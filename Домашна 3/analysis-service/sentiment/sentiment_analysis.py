@@ -65,7 +65,7 @@ def get_news_from_newsdataio(symbol):
             continue
 
         news_raw.append({
-            "author": [ev.get("creator")] or [""],
+            "author": ev.get("creator") or [""],
             "headline": ev.get("title") or "",
             "content": "",  # paid-only field
             "created_at": (ev.get("pubDate") or "").replace(" ", "T"),

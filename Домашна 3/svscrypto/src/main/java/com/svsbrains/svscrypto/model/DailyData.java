@@ -191,6 +191,10 @@ public class DailyData {
     }
 
     public static String formatNumber(double number) {
+        if (!Double.isFinite(number)) {
+            return "0.00";
+        }
+
         if (number >= 1_000_000_000) {
             return String.format("%.2fB", number / 1_000_000_000);
         } else if (number >= 1_000_000) {

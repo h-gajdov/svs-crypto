@@ -159,7 +159,7 @@
                 <span class="page-btn"
                       th:if="${pageNum > 4}">
                 ...
-            </span>
+                </span>
 
                 <a th:each="i : ${#numbers.sequence(
             T(java.lang.Math).max(1, pageNum - 2),
@@ -172,7 +172,7 @@
                 <span class="page-btn"
                       th:if="${pageNum < totalNumberOfPages - 3}">
                 ...
-            </span>
+                </span>
 
                 <a class="page-btn"
                    th:if="${pageNum < totalNumberOfPages - 2}"
@@ -183,7 +183,7 @@
                 <a class="next-page-btn"
                    th:if="${pageNum < totalNumberOfPages}"
                    th:href="@{/dashboard(pageNum=${pageNum + 1})}">
-                    >
+                    &gt
                 </a>
             </div>
 
