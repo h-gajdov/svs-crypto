@@ -29,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User signInUser(String username, String first_name, String last_name, String email, String password) {
+        if(userRepository.findByEmail(email) != null){
+            throw new UsernameNotFoundException("Email already in use");
+        }
         User user = new User(username, first_name, last_name, email, passwordEncoder.encode(password));
         userRepository.save(user);
         return user;

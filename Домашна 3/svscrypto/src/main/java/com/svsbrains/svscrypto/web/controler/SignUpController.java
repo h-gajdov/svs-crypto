@@ -31,6 +31,7 @@ public class SignUpController {
                              @RequestParam String email, @RequestParam String username,
                              @RequestParam String password, Model model) {
         User user = userService.signInUser(username, firstname, lastname, email, password);
+        userService.sendVerificationMail(user);
         model.addAttribute("email", user.getEmail());
         return "redirect:/verify";
     }
