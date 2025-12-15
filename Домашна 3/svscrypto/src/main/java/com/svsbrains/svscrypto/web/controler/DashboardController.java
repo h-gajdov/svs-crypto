@@ -9,6 +9,7 @@ import com.svsbrains.svscrypto.service.MarketDataService;
 import com.svsbrains.svscrypto.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,15 +41,16 @@ public class DashboardController {
     }
 
     @GetMapping({"/", "/dashboard"})
-    public String getDashboard(Model model, HttpSession httpSession) {
+    public String getDashboard(Model model, HttpSession httpSession, @RequestParam(required = false) Integer pageNum) {
         model.addAttribute("bodyContent", "dashboard");
-        List<DailyData> topPrice = dailyDataService.getTopByPrice(10);
+        if(pageNum == null || pageNum <= 0) pageNum = 1;
+        Page<DailyData> topPrice = dailyDataService.getTopByPrice(pageNum - 1, 10);
         List<DailyData> top3Gain = dailyDataService.getTopByGain(3);
         List<DailyData> top3New = dailyDataService.getTopNew(3);
         List<DailyData> top3Volume = dailyDataService.getTopByVolume(3);
 
         //TODO: Refactor this
-        topPrice.forEach(coin -> {
+        topPrice.getContent().forEach(coin -> {
             double monthlyChange = dailyDataService.getMonthlyChange(coin.getSymbol());
             MarketData threeMonthsBefore = marketDataService.getKDaysDataOfSymbol(coin.getSymbol(), 90).getLast();
             double threeMonthsChange = dailyDataService.getChangeFromMarketData(coin.getSymbol(), threeMonthsBefore);
@@ -68,8 +70,10 @@ public class DashboardController {
 
         List<String> symbols = coinService.getAllSymbols();
         model.addAttribute("symbols",symbols);
+        model.addAttribute("totalNumberOfPages", topPrice.getTotalPages());
 
-        model.addAttribute("top3Price", topPrice.subList(0, 3));
+        model.addAttribute("pageNum", pageNum);
+        model.addAttribute("top3Price", topPrice.getContent().subList(0, 3));
         model.addAttribute("top3Volume", top3Volume);
         model.addAttribute("top3New", top3New);
         model.addAttribute("top3Gain", top3Gain);

@@ -2,6 +2,8 @@ package com.svsbrains.svscrypto.repository;
 
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,7 +15,7 @@ public interface DailyDataRepository extends JpaRepository<DailyData, Long> {
     Optional<DailyData> findBySymbol(String symbol);
 
     @Query("SELECT d FROM DailyData d ORDER BY d.market_cap DESC")
-    List<DailyData> findTopPrices(org.springframework.data.domain.Pageable pageable);
+    Page<DailyData> findTopPrices(Pageable pageable);
 
     @Query("SELECT d FROM DailyData d " +
             "ORDER BY " +
@@ -23,10 +25,10 @@ public interface DailyDataRepository extends JpaRepository<DailyData, Long> {
             "  WHEN d.last_price = d.high_24h THEN ((d.last_price - d.low_24h) / d.low_24h) " +
             "  ELSE ((d.last_price - d.high_24h) / d.high_24h) " +
             "END DESC")
-    List<DailyData> findTopGains(org.springframework.data.domain.Pageable pageable);
+    List<DailyData> findTopGains(Pageable pageable);
 
     @Query("SELECT d FROM DailyData d ORDER BY d.volume_24h DESC")
-    List<DailyData> findTopVolumes(org.springframework.data.domain.Pageable pageable);
+    List<DailyData> findTopVolumes(Pageable pageable);
 
     @Query("""
         SELECT 

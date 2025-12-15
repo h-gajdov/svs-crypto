@@ -2,6 +2,7 @@ package com.svsbrains.svscrypto.service;
 
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +10,7 @@ import java.util.Optional;
 public interface DailyDataService {
     Optional<DailyData> getBySymbol(String symbol);
 
-    List<DailyData> getTopByPrice(int k);
+    Page<DailyData> getTopByPrice(int pageNum, int pageSize);
 
     List<DailyData> getTopNew(int k);
 

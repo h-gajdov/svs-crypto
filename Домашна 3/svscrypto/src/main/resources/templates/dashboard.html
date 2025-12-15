@@ -115,7 +115,7 @@
                         </form>
                     </td>
                     <td class="sticky-col column-1" th:if="${user==null}"></td>
-                    <td class="table-row-count sticky-col column-2" th:text="${iterStat.index + 1} + '.'"></td>
+                    <td class="table-row-count sticky-col column-2" th:text="${(iterStat.index + 1) + ((pageNum - 1) * 10)} + '.'"></td>
                     <td class="sticky-col column-3">
                         <div class="table-coin-label">
                             <img class="small-logo"
@@ -143,15 +143,15 @@
             </table>
         </div>
         <div class="pagination">
-            <div class="prev-page-btn grey-text"><</div>
+            <a class="prev-page-btn" th:href="${'/dashboard?pageNum=' + (pageNum - 1)}"><</a>
             <div class="page-btn selected-page">1</div>
             <div class="page-btn">2</div>
             <div class="page-btn">3</div>
             <div class="page-btn">4</div>
             <div class="page-btn">5</div>
             <div class="page-btn">...</div>
-            <div class="page-btn">10</div>
-            <div class="next-page-btn">></div>
+            <div class="page-btn" th:text="${totalNumberOfPages}"></div>
+            <a class="next-page-btn" th:href="${'/dashboard?pageNum=' + (pageNum + 1)}">></a>
         </div>
     </div>
 
