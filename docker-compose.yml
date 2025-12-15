@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     volumes:
-      - ./init_db:/docker-entrypoint-initdb.d
+      - ./Домашна 1/init_db:/docker-entrypoint-initdb.d
   adminer:
     image: adminer
     restart: always

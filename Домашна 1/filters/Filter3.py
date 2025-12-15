@@ -126,7 +126,7 @@ class FillDatabaseFilter(Filter):
         csv_buffer.seek(0)
 
         db.copy_expert(
-            """COPY daily_data(symbol, timestamp, last_price, volume_24h, high_24h, low_24h)
+            """COPY daily_data(symbol, name, timestamp, market_cap, last_price, volume_24h, high_24h, low_24h)
                FROM STDIN WITH CSV HEADER""",
             csv_buffer
         )

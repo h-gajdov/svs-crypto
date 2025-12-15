@@ -1,0 +1,44 @@
+<div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="log-register-form card shadow p-4" style="max-width: 400px; width: 100%;">
+
+        <h3 class="text-center mb-4">Login</h3>
+
+        <form th:action="@{/signin}" method="post">
+
+            <div class="mb-3">
+                <label class="form-label">First name</label>
+                <input type="text" class="form-control" name="firstname" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Last name</label>
+                <input type="text" class="form-control" name="lastname" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" name="email" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Username</label>
+                <input type="text" class="form-control" name="username" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input pattern="^(?=.*\d)(?=.*[\W_]).{8,}$" type="password" class="form-control" name="password" required>
+            </div>
+
+            <div th:if="${param.error}" class="alert alert-danger py-2">
+                Invalid username or password.
+            </div>
+
+            <div th:if="${param.logout}" class="alert alert-success py-2">
+                You have been logged out.
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">Create</button>
+        </form>
+    </div>
+</div>

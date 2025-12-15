@@ -1,0 +1,54 @@
+<header xmlns:th="http://www.thymeleaf.org">
+    <div>
+        <nav class="horizontal-center">
+            <button id="menu-button"><i class="fa-solid fa-bars"></i></button>
+            <a href="/" class="logo">
+                <img th:src="@{/images/svs-logo.png}" alt="logo">
+                <p>SVSCRYPTO</p>
+            </a>
+            <div th:replace="fragments/menu :: menu(menuClass='menu horizontal-center', menuId='main-menu')"></div>
+        </nav>
+        <div class="horizontal-center">
+            <div class="search-wrapper horizontal-center">
+                <input id="symbolInput" required name="symbol" list="coins" placeholder="Search for a symbol...">
+                <datalist id="coins">
+                    <option th:each="symbol : ${symbols}" th:value="${symbol}"></option>
+                </datalist>
+                <button class="plain-button" type="button" onclick="submitSymbol()">
+                    <i class="fa-solid fa-magnifying-glass fa-1_5x icon"></i>
+                </button>
+            </div>
+            <a href="/login" class="icon">
+                <i class="fa-regular fa-circle-user fa-1_5x icon"></i>
+            </a>
+            <a class="theme-toggle" href="javascript:void(0)">
+                <i id="theme-icon" class="fa-regular fa-moon fa-1_5x"></i>
+            </a>
+        </div>
+    </div>
+    <div th:replace="fragments/menu :: menu(menuClass='hidden', menuId='dropdown-menu')"></div>
+
+    <script>
+        document.querySelector("#menu-button").addEventListener("click", (e) => {
+            document.querySelector("#dropdown-menu").classList.toggle("dropdown-menu")
+        })
+        function submitSymbol() {
+            const symbol = document.getElementById('symbolInput').value.toUpperCase();
+            if(symbol) {
+                window.location.href = `/details/${symbol}`;
+            }
+        }
+
+        //search when enter is pressed
+        const input = document.getElementById("symbolInput");
+        const datalist = document.getElementById("coins");
+
+        input.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                const value = input.value;
+                const options = Array.from(datalist.options).map(opt => opt.value);
+                if (options.includes(value)) submitSymbol();
+            }
+        });
+    </script>
+</header>
