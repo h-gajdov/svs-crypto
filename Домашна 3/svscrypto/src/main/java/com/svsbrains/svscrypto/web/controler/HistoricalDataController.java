@@ -64,7 +64,7 @@ public class HistoricalDataController {
         model.addAttribute("user",httpSession.getAttribute("user"));
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);
-
+        model.addAttribute("pageTitle", "Search history");
         return "master-template";
     }
 }

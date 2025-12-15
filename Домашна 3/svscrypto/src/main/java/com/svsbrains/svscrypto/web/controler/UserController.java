@@ -40,6 +40,7 @@ public class UserController {
     @GetMapping("/login")
     public String logIn(Model model) {
         model.addAttribute("bodyContent", "log-in-form");
+        model.addAttribute("pageTitle", "Log in");
         return "master-template";
     }
 
@@ -87,6 +88,7 @@ public class UserController {
         model.addAttribute("user", (User) httpSession.getAttribute("user"));
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);
+        model.addAttribute("pageTitle", "My Watchlist");
         return "master-template";
     }
 

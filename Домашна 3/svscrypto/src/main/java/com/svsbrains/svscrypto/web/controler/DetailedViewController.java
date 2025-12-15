@@ -53,7 +53,7 @@ public class DetailedViewController {
 
         List<String> symbols = coinService.getAllSymbols();
         model.addAttribute("symbols",symbols);
-
+        model.addAttribute("pageTitle", symbol);
         return "master-template";
     }
 

@@ -1072,3 +1072,8 @@ input, select {
         font-size: 13px;
     }
 }
+
+.verify-card {
+    background: var(--bg-secondary) !important;
+    color: var(--text-color) !important;
+}

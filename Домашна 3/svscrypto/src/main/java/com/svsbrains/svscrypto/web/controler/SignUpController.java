@@ -23,6 +23,7 @@ public class SignUpController {
     @GetMapping("/signin")
     public String signIn(Model model) {
         model.addAttribute("bodyContent", "sign-in-form");
+        model.addAttribute("pageTitle", "Register");
         return "master-template";
     }
 
@@ -43,6 +44,7 @@ public class SignUpController {
         }
 
         model.addAttribute("bodyContent", "verification-form");
+        model.addAttribute("pageTitle", "Verify Mail");
         return "master-template";
     }
 

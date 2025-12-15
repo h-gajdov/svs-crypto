@@ -52,7 +52,7 @@ public class CompareCrypto {
         model.addAttribute("marketData", marketData);
         model.addAttribute("symbols", symbols);
         model.addAttribute("bodyContent", "compare-crypto");
-
+        model.addAttribute("pageTitle", "Compare Coins");
         return "master-template";
     }
 

@@ -1,9 +1,11 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8"/>
-    <title>Products</title>
+    <title th:if="${pageTitle != null}" th:text="${pageTitle}"></title>
+    <title th:if="${pageTitle == null}">Title not set!</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/e59232f0a1.js" crossorigin="anonymous"></script>
+    <link rel="icon" href="/images/svs-logo.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap"

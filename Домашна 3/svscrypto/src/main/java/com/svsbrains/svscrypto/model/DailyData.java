@@ -201,8 +201,12 @@ public class DailyData {
             return String.format("%.2fM", number / 1_000_000);
         } else if (number >= 1_000) {
             return String.format("%.2fK", number / 1_000);
-        } else {
-            return String.format("%.2f", number);
         }
+
+        if (Math.abs(number) < 0.001 && number != 0) {
+            return String.format("%.2e", number);
+        }
+
+        return String.format("%.2f", number);
     }
 }

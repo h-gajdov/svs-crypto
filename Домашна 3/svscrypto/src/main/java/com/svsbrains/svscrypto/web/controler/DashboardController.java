@@ -75,6 +75,7 @@ public class DashboardController {
         model.addAttribute("top3Gain", top3Gain);
         model.addAttribute("tableCoins", topMarketCap);
         model.addAttribute("sparklineData", sparklineData);
+        model.addAttribute("pageTitle", "Dashboard");
         return "master-template";
     }
 }
