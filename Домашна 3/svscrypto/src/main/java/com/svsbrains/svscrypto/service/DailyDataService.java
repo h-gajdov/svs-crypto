@@ -10,7 +10,9 @@ import java.util.Optional;
 public interface DailyDataService {
     Optional<DailyData> getBySymbol(String symbol);
 
-    Page<DailyData> getTopByPrice(int pageNum, int pageSize);
+    Page<DailyData> getTopByMarketCap(int pageNum, int pageSize);
+
+    List<DailyData> getTopByPrice(int k);
 
     List<DailyData> getTopNew(int k);
 

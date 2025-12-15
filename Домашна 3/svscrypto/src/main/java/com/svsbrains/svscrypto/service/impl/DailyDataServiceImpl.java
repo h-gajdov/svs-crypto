@@ -3,7 +3,6 @@ package com.svsbrains.svscrypto.service.impl;
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
 import com.svsbrains.svscrypto.repository.DailyDataRepository;
-import com.svsbrains.svscrypto.repository.MarketDataRepository;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
 import org.springframework.data.domain.Page;
@@ -30,8 +29,13 @@ public class DailyDataServiceImpl implements DailyDataService {
     }
 
     @Override
-    public Page<DailyData> getTopByPrice(int pageNum, int pageSize) {
-        return dailyDataRepository.findTopPrices(PageRequest.of(pageNum, pageSize));
+    public Page<DailyData> getTopByMarketCap(int pageNum, int pageSize) {
+        return dailyDataRepository.findTopMarketCap(PageRequest.of(pageNum, pageSize));
+    }
+
+    @Override
+    public List<DailyData> getTopByPrice(int k) {
+        return dailyDataRepository.findTopPrices(PageRequest.of(0, k));
     }
 
     @Override

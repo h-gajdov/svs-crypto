@@ -166,19 +166,43 @@
             <span>On Chain metrics</span><br>
             <div id="on-chain-div">
                 <span class="metrics-label grey-text">Active addresses</span><br>
-                <span id="active_addresses_count"></span><br><br>
+                <span id="active_addresses_count">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
                 <span class="metrics-label grey-text">Transactions</span><br>
-                <span id="transactions_count"></span><br><br>
+                <span id="transactions_count">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
                 <span class="metrics-label grey-text">Hashrate</span><br>
-                <span id="hashrate_value"></span><br><br>
+                <span id="hashrate_value">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
                 <span class="metrics-label grey-text">TVL</span><br>
-                <span id="tvl_value"></span><br><br>
+                <span id="tvl_value">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
                 <span class="metrics-label grey-text">NVT</span><br>
-                <span id="nvt_value"></span><br><br>
+                <span id="nvt_value">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
                 <div id="on-chain-prediction-wrapper">
                     <div>
                         <span class="metrics-label grey-text">MVRV</span><br>
-                        <span id="mvrv_value"></span>
+                        <span id="mvrv_value">
+                            <span class="spinner-wrapper" style="display: block;">
+                                <span class="spinner"></span>
+                            </span>
+                        </span>
                     </div>
                     <div>
                         <span class="metrics-label">Signal: <span id="signal-label">/</span></span><br>
@@ -195,16 +219,25 @@
         <div class="ta-grid">
             <div class="ta-box">
                 <span class="ta-title">1D</span>
+                <div class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </div>
                 <ul id="ta-1d"></ul>
             </div>
 
             <div class="ta-box">
                 <span class="ta-title">1W</span>
+                <div class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </div>
                 <ul id="ta-1w"></ul>
             </div>
 
             <div class="ta-box">
                 <span class="ta-title">1M</span>
+                <div class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </div>
                 <ul id="ta-1m"></ul>
             </div>
         </div>
@@ -218,6 +251,10 @@
                 <span>Netflow</span>
                 <span>Timeframe</span>
             </div>
+
+            <div class="spinner-wrapper">
+                <span class="spinner"></span>
+            </div>
         </div>
     </div>
 
@@ -226,35 +263,99 @@
             <span th:text="${'News for ' + coin.getName()}"></span>
             <span id="sentiment-label">Sentiment: <span>neutral</span></span>
         </div>
-        <div id="news-container"></div>
+        <div id="news-container">
+            <div class="spinner-wrapper">
+                <span class="spinner"></span>
+            </div>
+        </div>
     </div>
 
     <div class="wrapper mkt-stat">
         <div id="metrics-container" >
-            <div class="cell"><span class="grey-text">RSI</span><span id="rsi"></span></div>
-            <div class="cell"><span class="grey-text">MACD</span><span id="macd"></span></div>
-            <div class="cell"><span class="grey-text">MACD Signal</span><span id="macd_signal"></span></div>
+            <div class="cell"><span class="grey-text">RSI</span><span id="rsi">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">MACD</span><span id="macd">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">MACD Signal</span><span id="macd_signal">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
 
-            <div class="cell"><span class="grey-text">Stoch K</span><span id="stoch_k"></span></div>
-            <div class="cell"><span class="grey-text">Stoch D</span><span id="stoch_d"></span></div>
+            <div class="cell"><span class="grey-text">Stoch K</span><span id="stoch_k">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">Stoch D</span><span id="stoch_d">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
 
-            <div class="cell"><span class="grey-text">ADX</span><span id="adx"></span></div>
-            <div class="cell"><span class="grey-text">CCI</span><span id="cci"></span></div>
+            <div class="cell"><span class="grey-text">ADX</span><span id="adx">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">CCI</span><span id="cci">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
 
-            <div class="cell"><span class="grey-text">SMA 20</span><span id="sma20"></span></div>
-            <div class="cell"><span class="grey-text">EMA 20</span><span id="ema20"></span></div>
-            <div class="cell"><span class="grey-text">WMA 20</span><span id="wma20"></span></div>
-            <div class="cell"><span class="grey-text">VMA 20</span><span id="vma20"></span></div>
+            <div class="cell"><span class="grey-text">SMA 20</span><span id="sma20">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">EMA 20</span><span id="ema20">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">WMA 20</span><span id="wma20">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">VMA 20</span><span id="vma20">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
 
-            <div class="cell"><span class="grey-text">BB Upper</span><span id="bb_upper"></span></div>
-            <div class="cell"><span class="grey-text">BB Middle</span><span id="bb_middle"></span></div>
-            <div class="cell"><span class="grey-text">BB Lower</span><span id="bb_lower"></span></div>
+            <div class="cell"><span class="grey-text">BB Upper</span><span id="bb_upper">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">BB Middle</span><span id="bb_middle">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">BB Lower</span><span id="bb_lower">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
         </div>
     </div>
 
     <div class="wrapper mkt-stat" id="whale-alerts">
         <span>Whale alerts</span>
-        <div id="whale-container"></div>
+        <div id="whale-container">
+            <div class="spinner-wrapper">
+                <span class="spinner"></span>
+            </div>
+        </div>
     </div>
 
     <script th:inline="javascript">
@@ -357,6 +458,8 @@
 
         function displayExchangeFlows(exchangeFlows) {
             let table = document.querySelector('#exchange-flow-table');
+
+            table.removeChild(table.querySelector('.spinner-wrapper')); //this is to remove the loading spinner;
             for(let i = 0; i < exchangeFlows.length; i++) {
                 let timeframe = exchangeFlows[i]['timeframe']
                 let netflow = exchangeFlows[i]['netflow'];
@@ -379,6 +482,7 @@
 
             let newsArr = news['news'];
             let newsSection = document.querySelector("#news-container")
+            newsSection.innerHTML = ""; //this is to remove the loading spinner;
 
             for(let i = 0; i < Math.min(newsArr.length, 5); i++) {
                 let author = newsArr[i]['author'][0];
@@ -443,6 +547,7 @@
 
         function displayWhaleAlerts(data) {
             let alertSection = document.querySelector("#whale-container")
+            alertSection.innerHTML = ""; //this is to remove the loading spinner;
 
             for(let i = 0; i < data.length; i++) {
                 let date = new Date(data[i]['time']);
@@ -524,6 +629,7 @@
 
             function renderTA(elementId, signals) {
                 const ul = document.getElementById(elementId);
+                ul.parentNode.removeChild(ul.parentNode.querySelector('.spinner-wrapper'));
                 ul.innerHTML = "";
 
                 signals.forEach(s => {

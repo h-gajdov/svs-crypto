@@ -1,7 +1,6 @@
 package com.svsbrains.svscrypto.repository;
 
 import com.svsbrains.svscrypto.model.DailyData;
-import com.svsbrains.svscrypto.model.MarketData;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,7 +14,10 @@ public interface DailyDataRepository extends JpaRepository<DailyData, Long> {
     Optional<DailyData> findBySymbol(String symbol);
 
     @Query("SELECT d FROM DailyData d ORDER BY d.market_cap DESC")
-    Page<DailyData> findTopPrices(Pageable pageable);
+    Page<DailyData> findTopMarketCap(Pageable pageable);
+
+    @Query("SELECT d FROM DailyData d ORDER BY d.last_price DESC")
+    List<DailyData> findTopPrices(Pageable pageable);
 
     @Query("SELECT d FROM DailyData d " +
             "ORDER BY " +
