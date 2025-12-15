@@ -38,5 +38,17 @@
                 window.location.href = `/details/${symbol}`;
             }
         }
+
+        //search when enter is pressed
+        const input = document.getElementById("symbolInput");
+        const datalist = document.getElementById("coins");
+
+        input.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                const value = input.value;
+                const options = Array.from(datalist.options).map(opt => opt.value);
+                if (options.includes(value)) submitSymbol();
+            }
+        });
     </script>
 </header>

@@ -32,6 +32,9 @@ header > div:first-child {
     width: 100%;
     position: static !important;
     gap: 4px;
+
+    background: var(--bg-color) !important;
+    color: var(--text-color) !important;
 }
 
 .dropdown-menu a {
@@ -435,6 +438,7 @@ a.page-btn:not(.selected-page):hover {
     align-items: center;
     gap: 15px;
     font-size: 32px;
+    flex-wrap: wrap;
 }
 
 .coin-label-left-section .coin-name {
@@ -468,6 +472,7 @@ a.page-btn:not(.selected-page):hover {
 .coin-heading-info {
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
 
 .detailed-view-wrapper {
@@ -497,11 +502,13 @@ a.page-btn:not(.selected-page):hover {
     display: flex;
     justify-content: space-between;
     font-size: 16px;
+    flex-wrap: wrap;
 }
 
 .graph-section {
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 .graph-section .graph-btn {
@@ -523,7 +530,7 @@ a.page-btn:not(.selected-page):hover {
 
 .graph-btn-selected {
     background: #155DFC !important;
-    color: white;
+    color: white !important;
 }
 
 .download-graph-container {
@@ -735,7 +742,7 @@ thead .sticky-col {
     --bs-heading-color: #fdf9f9;
     --grey-text: #6C6C6C;
     --dashboard-table-hover-effect: #f3f4f6;
-    --graph-btn-details-view: #f3f4f6;
+    --graph-btn-details-view: #e0e0e0;
     --slider-track: #e9ecef;
 }
 
@@ -829,7 +836,7 @@ h2,p,span{
 }
 
 .exchange-row:not(:first-child):hover {
-    background: var(--border-color);
+    background: var(--dashboard-table-hover-effect);
 }
 
 .exchange-row:last-child {
@@ -1000,4 +1007,68 @@ input, select {
     background: var(--bg-color) !important;
     color: var(--text-color) !important;
     border-color: var(--border-color) !important;
+}
+
+@media only screen and (max-width: 600px) {
+    .main-section {
+        margin: 1em 2em;
+    }
+
+    .sticky-col {
+        background: var(--bg-secondary);
+    }
+
+    .pagination {
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .pagination-pages {
+        justify-content: center;
+        gap: 4px;
+        flex-wrap: wrap;
+    }
+
+    .page-jump-form {
+        width: 100%;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .page-jump-input {
+        width: 50px;
+        padding: 4px;
+        font-size: 12px;
+    }
+
+    .page-jump-btn {
+        padding: 4px 6px;
+        font-size: 12px;
+    }
+
+    .prev-page-btn,
+    .next-page-btn,
+    .page-btn {
+        padding: 4px 6px;
+        font-size: 12px;
+    }
+
+    #market-statistics {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #metrics-container .cell {
+        flex: 1;
+    }
+
+    .ta-grid {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #exchange-flow-table {
+        padding: 0;
+        font-size: 13px;
+    }
 }
