@@ -1,0 +1,739 @@
+<section xmlns:th="http://www.thymeleaf.org">
+    <form th:action="@{'/dashboard'}" th:method="get">
+        <button class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#8B8B8B">
+                <path d="m313-440 224 224-57 56-320-320 320-320 57 56-224 224h487v80H313Z"/>
+            </svg>
+            <span>Back</span>
+        </button>
+    </form>
+
+    <div class="coin-label-container">
+        <div class="coin-label-left-section">
+            <img class="large-logo"
+                 th:src="${'https://img.logo.dev/crypto/' + coin.getSymbol() + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'}">
+            <span class="coin-name" th:text="${coin.getName()}"></span>
+            <span class="coin-symbol grey-text" th:text="${coin.getSymbol()}"></span>
+        </div>
+        <div th:if="${user!=null}">
+            <form th:if="${!user.hasCoin(coin.symbol)}" th:action="@{/addCoinToUser}" method="post">
+                <input type="hidden" name="username" th:value="${user.username}"/>
+                <input type="hidden" name="symbol" th:value="${coin.symbol}"/>
+                <button type="submit" class="add-to-favorites-btn">Add coin to favorites</button>
+            </form>
+            <form th:if="${user.hasCoin(coin.symbol)}" th:action="@{/deleteCoinFromUser}" method="post">
+                <input type="hidden" name="username" th:value="${user.username}"/>
+                <input type="hidden" name="symbol" th:value="${coin.symbol}"/>
+                <button type="submit" class="add-to-favorites-btn">Remove coin from favorites</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="wrapper detailed-view-wrapper">
+        <div class="coin-heading-info">
+            <div class="coin-info">
+                <span class="heading">Rank</span>
+                <span class="data" th:text="${'#' + rank}"></span>
+            </div>
+            <div class="coin-info">
+                <span class="heading">Current Price</span>
+                <span class="data" th:text="${'$' + coin.getFormattedLastPrice()}"></span>
+                <span th:class="${coin.getChangePercent() < 0} ? 'change-negative' : 'change-positive'"
+                      th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}"></span>
+            </div>
+            <div class="coin-info">
+                <span class="heading">24H High</span>
+                <span class="data" th:text="${'$' + coin.getFormattedHigh()}"></span>
+            </div>
+            <div class="coin-info">
+                <span class="heading">24H Volume</span>
+                <span class="data" th:text="${coin.getFormattedVolume()}"></span>
+                <span class="vol-mkt-pct grey-text"
+                      th:text="${'(24H - 24L) / 24L = %' + coin.getFormattedHighLowRate()}"></span>
+            </div>
+        </div>
+        <div class="graph-btns">
+            <div class="graph-section">
+                <button class="graph-btn timeframe-btn" data-time="30">1M</button>
+                <button class="graph-btn timeframe-btn" data-time="90">3M</button>
+                <button class="graph-btn timeframe-btn" data-time="180">6M</button>
+                <button class="graph-btn timeframe-btn" data-time="365">1Y</button>
+                <button class="graph-btn timeframe-btn" data-time="1825">5Y</button>
+                <button class="graph-btn timeframe-btn graph-btn-selected" data-time="max">MAX</button>
+            </div>
+            <div class="graph-section">
+                <span class="graph-btn graph-btn-selected" data-field="price">Price</span>
+                <span class="graph-btn" data-field="open">Open</span>
+                <span class="graph-btn" data-field="high">High</span>
+                <span class="graph-btn" data-field="low">Low</span>
+                <span class="graph-btn" data-field="close">Close</span>
+                <span class="graph-btn" data-field="volume">Volume</span>
+            </div>
+        </div>
+        <div class="download-graph-container">
+            <div id="download-graph-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="#fff">
+                    <path d="M480-320 280-520l56-58 104 104v-326h80v326l104-104 56 58-200 200ZM240-160q-33 0-56.5-23.5T160-240v-120h80v120h480v-120h80v120q0 33-23.5 56.5T720-160H240Z"/>
+                </svg>
+                <span>Download Graph</span>
+            </div>
+        </div>
+        <div id="data-graph" style="width: 100%; height: 430px;"></div>
+    </div>
+
+    <div id="market-statistics">
+        <div class="wrapper mkt-stat">
+            <span>Market Statistics</span>
+            <div class="grid">
+                <div class="cell">
+                    <span class="grey-text">24H High</span>
+                    <span class="change-positive" th:text="${'$' + coin.getFormattedHigh()}"></span>
+                </div>
+                <div class="cell">
+                    <span class="grey-text">24H Low</span>
+                    <span class="change-negative" th:text="${'$' + coin.getFormattedLow()}"></span>
+                </div>
+                <div class="cell">
+                    <span class="grey-text">All-Time High</span>
+                    <span th:text="${'$' + allTimeHigh.getFormattedHigh()}"></span>
+                    <span th:class="${allTimeHighChange < 0} ? 'change-negative' : 'change-positive'"
+                          th:text="${(allTimeHighChange < 0 ? '▼ ' : '▲ ') + allTimeHighChangeFormatted + '%'}"></span>
+                </div>
+                <div class="cell">
+                    <span class="grey-text">All-Time Low</span>
+                    <span th:text="${'$' + allTimeLow.getFormattedLow()}"></span>
+                    <span th:class="${allTimeLowChange < 0} ? 'change-negative' : 'change-positive'"
+                          th:text="${(allTimeLowChange < 0 ? '▼ ' : '▲ ') + allTimeLowChangeFormatted + '%'}"></span>
+                </div>
+            </div>
+        </div>
+        <div id="price-performance" class="wrapper mkt-stat">
+            <span>Price Performance</span>
+            <div class="sliders-container">
+                <div class="metric-wrapper">
+                    <div class="metric-label-container">
+                        <span class="metric-label grey-text">24 Hours</span>
+                        <span th:class="${coin.getChangePercent() < 0} ? 'metric-change change-negative' : 'metric-change change-positive'"
+                              th:text="${(coin.getChangePercent() < 0 ? '▼ ' : '▲ ') + coin.getFormattedChange() + '%'}"></span>
+                    </div>
+
+                    <div class="slider-track">
+                        <div class="slider-fill"
+                             th:style="${'width: ' + (coin.getChangePercent() < 0 ? -coin.getChangePercent() : coin.getChangePercent() ) + '%; background: ' + (coin.getChangePercent() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
+                    </div>
+                </div>
+                <div class="metric-wrapper">
+                    <div class="metric-label-container">
+                        <span class="metric-label grey-text">7 Days</span>
+                        <span th:class="${coin.getWeeklyChange() < 0} ? 'metric-change change-negative' : 'metric-change change-positive'"
+                              th:text="${(coin.getWeeklyChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedWeeklyChange() + '%'}"></span>
+                    </div>
+
+                    <div class="slider-track">
+                        <div class="slider-fill"
+                             th:style="${'width: ' + (coin.getWeeklyChange() < 0 ? -coin.getWeeklyChange() : coin.getWeeklyChange()) + '%; background: ' + (coin.getWeeklyChange() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
+                    </div>
+                </div>
+                <div class="metric-wrapper">
+                    <div class="metric-label-container">
+                        <span class="metric-label grey-text">30 Days</span>
+                        <span th:class="${coin.getMonthlyChange() < 0} ? 'metric-change change-negative' : 'metric-change change-positive'"
+                              th:text="${(coin.getMonthlyChange() < 0 ? '▼ ' : '▲ ') + coin.getFormattedMonthlyChange() + '%'}"></span>
+                    </div>
+
+                    <div class="slider-track">
+                        <div class="slider-fill"
+                             th:style="${'width: ' + (coin.getMonthlyChange() < 0 ? -coin.getMonthlyChange() : coin.getMonthlyChange()) + '%; background: ' + (coin.getMonthlyChange() < 0 ? 'red; !important' : '#47cf6d; !important')}"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="wrapper mkt-stat">
+            <span>Price Prediction</span><br>
+            <div id="prediction-div" class="hidden">
+                <span class="metric-label grey-text">Tomorrow Close Price</span><br>
+                <span id="predicted_next_close_price"></span><br><br>
+                <span class="metric-label grey-text">Mean Absolute Percentage Error (MAPE)</span><br>
+                <span id="MAPE"></span><br><br>
+                <span class="metric-label grey-text">Root Mean Square Error (RMSE)</span><br>
+                <span id="RMSE"></span><br><br>
+                <span class="metric-label grey-text">R<sup>2</sup> Score</span><br>
+                <span id="R2"></span><br>
+            </div>
+            <button class="btn btn-primary" id="get-prediction-btn">Get Prediction</button>
+        </div>
+        <div class="wrapper mkt-stat">
+            <span>On Chain metrics</span><br>
+            <div id="on-chain-div">
+                <span class="metrics-label grey-text">Active addresses</span><br>
+                <span id="active_addresses_count">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
+                <span class="metrics-label grey-text">Transactions</span><br>
+                <span id="transactions_count">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
+                <span class="metrics-label grey-text">Hashrate</span><br>
+                <span id="hashrate_value">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
+                <span class="metrics-label grey-text">TVL</span><br>
+                <span id="tvl_value">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
+                <span class="metrics-label grey-text">NVT</span><br>
+                <span id="nvt_value">
+                    <span class="spinner-wrapper" style="display: block;">
+                        <span class="spinner"></span>
+                    </span>
+                </span><br><br>
+                <div id="on-chain-prediction-wrapper">
+                    <div>
+                        <span class="metrics-label grey-text">MVRV</span><br>
+                        <span id="mvrv_value">
+                            <span class="spinner-wrapper" style="display: block;">
+                                <span class="spinner"></span>
+                            </span>
+                        </span>
+                    </div>
+                    <div>
+                        <span class="metrics-label">Signal: <span id="signal-label">/</span></span><br>
+                        <span class="grey-text">Score: <span id="signal-score">0.0</span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper mkt-stat" id="technical-analysis">
+        <span>Technical Analysis</span>
+
+        <div class="ta-grid">
+            <div class="ta-box">
+                <span class="ta-title">1D</span>
+                <div class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </div>
+                <ul id="ta-1d"></ul>
+            </div>
+
+            <div class="ta-box">
+                <span class="ta-title">1W</span>
+                <div class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </div>
+                <ul id="ta-1w"></ul>
+            </div>
+
+            <div class="ta-box">
+                <span class="ta-title">1M</span>
+                <div class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </div>
+                <ul id="ta-1m"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper mkt-stat">
+        <span>Exchange flows</span>
+        <div id="exchange-flow-table">
+            <div class="header exchange-row">
+                <span>Symbol</span>
+                <span>Netflow</span>
+                <span>Timeframe</span>
+            </div>
+
+            <div class="spinner-wrapper">
+                <span class="spinner"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper mkt-stat" id="news-section">
+        <div style="display: flex; justify-content: space-between;" class="mkt-stat">
+            <span th:text="${'News for ' + coin.getName()}"></span>
+            <span id="sentiment-label">Sentiment: <span>neutral</span></span>
+        </div>
+        <div id="news-container">
+            <div class="spinner-wrapper">
+                <span class="spinner"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper mkt-stat">
+        <div id="metrics-container" >
+            <div class="cell"><span class="grey-text">RSI</span><span id="rsi">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">MACD</span><span id="macd">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">MACD Signal</span><span id="macd_signal">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+
+            <div class="cell"><span class="grey-text">Stoch K</span><span id="stoch_k">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">Stoch D</span><span id="stoch_d">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+
+            <div class="cell"><span class="grey-text">ADX</span><span id="adx">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">CCI</span><span id="cci">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+
+            <div class="cell"><span class="grey-text">SMA 20</span><span id="sma20">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">EMA 20</span><span id="ema20">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">WMA 20</span><span id="wma20">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">VMA 20</span><span id="vma20">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+
+            <div class="cell"><span class="grey-text">BB Upper</span><span id="bb_upper">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">BB Middle</span><span id="bb_middle">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+            <div class="cell"><span class="grey-text">BB Lower</span><span id="bb_lower">
+                <span class="spinner-wrapper">
+                    <span class="spinner"></span>
+                </span>
+            </span></div>
+        </div>
+    </div>
+
+    <div class="wrapper mkt-stat" id="whale-alerts">
+        <span>Whale alerts</span>
+        <div id="whale-container">
+            <div class="spinner-wrapper">
+                <span class="spinner"></span>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        const symbol = '[[${coin.symbol}]]';
+        const chartDiv = document.getElementById('data-graph');
+
+        let pricePrediction;
+        let allMetricsData;
+
+        let timestamps = [[${timestamps}]]?.map(Number) || [];
+        let values = [[${values}]]?.map(Number) || [];
+        let dates = timestamps.map(ts => new Date(ts * 1000));
+
+        let currentField = "price";
+        let currentTime = "max";
+        let dataCache = {timestamps, values};
+
+        let layout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+
+            margin: {t: 20, r: 20, l: 60, b: 80},
+            yaxis: {tickformat: '$,', autorange: true},
+            xaxis: {tickangle: -45, type: 'date', tickformat: "%d %b", nticks: 10}
+        };
+
+        function getTraceForField(field, dates, values) {
+            if (field === "price") {
+                return {
+                    x: dates,
+                    y: values,
+                    type: 'scatter',
+                    mode: 'lines',
+                    fill: 'tozeroy',
+                    line: {color: '#4A90E2'}
+                };
+            }
+
+            const colors = values.map((v, i) => i === 0 ? '#47cf6d' : (v >= values[i - 1] ? '#47cf6d' : '#ff4d4d'));
+            return {
+                x: dates,
+                y: values,
+                type: 'bar',
+                marker: {color: colors}
+            };
+        }
+
+        Plotly.newPlot(chartDiv, [getTraceForField(currentField, dates, values)], layout, {responsive: true});
+
+        let predictionInterval;
+        let counter = 0
+
+        function predictionIntervalHandler() {
+            if (!pricePrediction) {
+                thinkingAnimation()
+                return
+            }
+            counter = 0
+            clearInterval(predictionInterval)
+            document.querySelector("#thinking").remove()
+            displayPrediction()
+        }
+
+        function displayPrediction() {
+
+            document.querySelector("#predicted_next_close_price").innerText = pricePrediction["predicted_next_close_price"] + "$ (USD)"
+            for (let key in pricePrediction["metrics"]) {
+                document.querySelector(`#${key}`).innerText = pricePrediction["metrics"][key]
+            }
+
+            document.querySelector("#prediction-div").classList.remove("hidden")
+        }
+
+        function formatHashRate(hashRate) {
+            if (hashRate >= 1e12) return (hashRate / 1e12).toFixed(2) + " TH/s";
+            if (hashRate >= 1e9)  return (hashRate / 1e9).toFixed(2) + " GH/s";
+            if (hashRate >= 1e6)  return (hashRate / 1e6).toFixed(2) + " MH/s";
+            if (hashRate >= 1e3)  return (hashRate / 1e3).toFixed(2) + " kH/s";
+            return hashRate + " H/s";
+        }
+
+        function formatLargeNumber(value) {
+            const absValue = Math.abs(value);
+            let formatted;
+
+            if (absValue >= 1e9) formatted = (absValue / 1e9).toFixed(2) + "B";
+            else if (absValue >= 1e6) formatted = (absValue / 1e6).toFixed(2) + "M";
+            else if (absValue >= 1e3) formatted = (absValue / 1e3).toFixed(2) + "K";
+            else formatted = absValue.toFixed(2);
+
+            return value < 0 ? "-" + formatted : formatted;
+        }
+
+        function displayOnChainMetrics() {
+            document.querySelector("#active_addresses_count").innerText = formatLargeNumber(allMetricsData['AdrActCnt']);
+            document.querySelector("#transactions_count").innerText = formatLargeNumber(allMetricsData['TxCnt']);
+            document.querySelector("#hashrate_value").innerText = formatHashRate(allMetricsData['HashRate']);
+            document.querySelector("#tvl_value").innerText = formatLargeNumber(allMetricsData['tvl']);
+            document.querySelector("#nvt_value").innerText = formatLargeNumber(allMetricsData['nvt']);
+            document.querySelector("#mvrv_value").innerText = formatLargeNumber(allMetricsData['CapMVRVCur']);
+        }
+
+        function displayExchangeFlows(exchangeFlows) {
+            let table = document.querySelector('#exchange-flow-table');
+
+            table.removeChild(table.querySelector('.spinner-wrapper')); //this is to remove the loading spinner;
+            for(let i = 0; i < exchangeFlows.length; i++) {
+                let timeframe = exchangeFlows[i]['timeframe']
+                let netflow = exchangeFlows[i]['netflow'];
+                let arrow = netflow < 0 ? '▼ ' : '▲ ';
+                let colorClass = netflow < 0 ? 'change-negative' : 'change-positive';
+
+                let flowElement = `
+                <div class="exchange-row">
+                <span>${symbol.replaceAll('"', '')}</span>
+                <span class="${colorClass}">${arrow}${formatLargeNumber(netflow)} $</span>
+                <span>${timeframe}</span>
+                </div>
+                `;
+                table.innerHTML += flowElement
+            }
+        }
+
+        function displayNews(news) {
+            document.querySelector('#sentiment-label span').innerText = news['sentiment']
+
+            let newsArr = news['news'];
+            let newsSection = document.querySelector("#news-container")
+            newsSection.innerHTML = ""; //this is to remove the loading spinner;
+
+            for(let i = 0; i < Math.min(newsArr.length, 5); i++) {
+                let author = newsArr[i]['author'][0];
+                let headline = newsArr[i]['headline'];
+                let source = newsArr[i]['source'];
+                let summary = newsArr[i]['summary'];
+                let image = newsArr[i]['image'];
+                let url = newsArr[i]['url'];
+                let date = new Date(newsArr[i]['created_at']);
+                let formatted = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+
+                let entryDiv = `<div class="news-entry">
+                    <span class="news-heading">${headline}</span>
+                    <span class="news-summary">${summary}</span>
+                    <span class="news-source">Posted at: ${formatted}</span>
+                    <div style="display: flex; justify-content: space-between;">
+                        <div class="news-content-wrapper">
+                            <section>
+                                <span class="news-author">Author: ${author}</span>
+                                <span class="news-source">Source: ${source}</span>
+                            </section>
+
+                            <img src="${image}">
+                        </div>
+                        <button class="btn btn-primary" onclick="window.open('${url}', '_blank')">
+                            View more
+                        </button>
+                    </div>
+                </div>`
+
+                newsSection.innerHTML += entryDiv;
+            }
+        }
+
+        function getAmountsDiv(amounts) {
+            let result = document.createElement('div');
+            result.classList.add("whale-amounts");
+
+            for(let i = 0; i < amounts.length; i++) {
+                let symbol = amounts[i]['symbol'];
+                let amount = amounts[i]['amount'];
+                let value = amounts[i]['value_usd'];
+
+                let whamDiv = `
+                <div class="wh-am">
+                    <div class="wh-symbol-wrapper">
+                        <span class="am-symbol">Symbol: ${symbol}</span>
+                        <img src="https://img.logo.dev/crypto/${symbol}?token=pk_Eik_EQB_QCOrBDpPKu6RYQ">
+                            <button class="btn btn-primary" onclick="window.open('/details/${symbol}', '_blank')">
+                                View coin
+                            </button>
+                    </div>
+                    <span class="am-amount">Amount: ${formatLargeNumber(amount)}</span>
+                    <span class="am-value">Value: ${formatLargeNumber(value)}$</span>
+                </div>`
+
+                result.innerHTML += whamDiv;
+            }
+
+            return result;
+        }
+
+        function displayWhaleAlerts(data) {
+            let alertSection = document.querySelector("#whale-container")
+            alertSection.innerHTML = ""; //this is to remove the loading spinner;
+
+            for(let i = 0; i < data.length; i++) {
+                let date = new Date(data[i]['time']);
+                let formatted = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+                let text = data[i]['text'];
+                let amounts = data[i]['amounts'];
+
+                text = text.charAt(0).toUpperCase() + text.slice(1); //capitalize first letter
+
+                let alertDiv = `<div class="whale-entry">
+                    <span class="whale-time">${formatted}</span>
+                    <span class="whale-text">${text}</span>
+                    ${getAmountsDiv(amounts).outerHTML}
+                </div>`
+
+                alertSection.innerHTML += alertDiv;
+            }
+        }
+
+        function displayOnChainPrediction(data) {
+            document.querySelector('#signal-label').innerText = data['signal'];
+            document.querySelector('#signal-score').innerText = formatLargeNumber(data['combined_score']);
+        }
+
+        //Animation for thinking
+        function thinkingAnimation() {
+            const thinkingParagraph = document.querySelector("#thinking");
+            thinkingParagraph.innerText = "Thinking" + ".".repeat(++counter % 4)
+        }
+
+        //Prediction Button
+        document.querySelector("#get-prediction-btn").addEventListener("click", (e) => {
+
+            if (!pricePrediction) {
+                e.target.insertAdjacentHTML("afterend", `
+                        <p id="thinking">Thinking</p>
+                    `)
+                thinkingAnimation()
+                e.target.remove()
+                predictionInterval = setInterval(predictionIntervalHandler, 500)
+                return
+            }
+            e.target.remove()
+            displayPrediction()
+        });
+
+        document.addEventListener("DOMContentLoaded", (e) => {
+            fetch(`/api/indicators?symbol=${symbol.replaceAll('"','')}`)
+                .then(res => res.json())
+                .then(data => {
+                    function formatValue(val) {
+                        return val !== null ? val.toFixed(2) : "-";
+                    }
+                    console.log(data)
+                    document.querySelector("#rsi").innerText = formatLargeNumber(data['RSI']);
+                    document.querySelector("#macd").innerText = formatLargeNumber(data['MACD']);
+                    document.querySelector("#macd_signal").innerText = formatLargeNumber(data['MACD_signal']);
+                    document.querySelector("#stoch_k").innerText = formatLargeNumber(data['STOCH_K']);
+                    document.querySelector("#stoch_d").innerText = formatLargeNumber(data['STOCH_D']);
+                    document.querySelector("#adx").innerText = formatLargeNumber(data['ADX']);
+                    document.querySelector("#cci").innerText = formatLargeNumber(data['CCI']);
+                    document.querySelector("#sma20").innerText = formatLargeNumber(data['SMA_20']);
+                    document.querySelector("#ema20").innerText = formatLargeNumber(data['EMA_20']);
+                    document.querySelector("#wma20").innerText = formatLargeNumber(data['WMA_20']);
+                    document.querySelector("#bb_middle").innerText = formatLargeNumber(data['BB_middle']);
+                    document.querySelector("#bb_upper").innerText = formatLargeNumber(data['BB_upper']);
+                    document.querySelector("#bb_lower").innerText = formatLargeNumber(data['BB_lower']);
+                    document.querySelector("#vma20").innerText = formatLargeNumber(data['VMA_20']);
+                });
+
+
+            fetch(`/technical-analysis?symbol=${symbol.replaceAll('"','')}`)
+                .then(res => res.json())
+                .then(data => {
+                    renderTA("ta-1d", data["1D"]);
+                    renderTA("ta-1w", data["1W"]);
+                    renderTA("ta-1m", data["1M"]);
+                });
+
+            function renderTA(elementId, signals) {
+                const ul = document.getElementById(elementId);
+                ul.parentNode.removeChild(ul.parentNode.querySelector('.spinner-wrapper'));
+                ul.innerHTML = "";
+
+                signals.forEach(s => {
+                    let cls = "ta-hold";
+                    if (s.startsWith("BUY")) cls = "ta-buy";
+                    if (s.startsWith("SELL")) cls = "ta-sell";
+
+                    ul.innerHTML += `<li class="${cls}">${s}</li>`;
+                });
+            }
+
+            fetch('/api/on-chain/whale-movements').then(response => {
+                return response.json();
+            }).then(data => {
+                displayWhaleAlerts(data);
+            });
+
+            fetch(`/api/on-chain/exchange-flows?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+                return response.json();
+            }).then(data => {
+                console.log(data);
+                displayExchangeFlows(data['data']);
+            })
+
+            fetch(`/api/on-chain/news?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+                return response.json();
+            }).then(data => {
+                displayNews(data);
+            })
+
+            fetch(`/api/on-chain/metrics?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+                return response.json();
+            }).then(data => {
+                allMetricsData = data;
+                displayOnChainMetrics();
+            })
+
+            fetch(`/api/on-chain/sentiment?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+                return response.json();
+            }).then(data => {
+                displayOnChainPrediction(data);
+            })
+
+            fetch(`/api/prediction?symbol=${symbol.replaceAll('"', '')}`).then(response => {
+                return response.json();
+            }).then(data => {
+                pricePrediction = data
+            })
+        })
+
+        document.querySelectorAll('.timeframe-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                currentTime = btn.dataset.time;
+
+                document.querySelectorAll('.timeframe-btn').forEach(b => b.classList.remove('graph-btn-selected'));
+                btn.classList.add('graph-btn-selected');
+
+                fetch(`/details/${symbol.replaceAll('"', '')}/plot/${currentTime}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dataCache = data;
+                        dates = data.timestamps.map(ts => new Date(ts * 1000));
+                        values = data.values;
+
+                        const trace = getTraceForField(currentField, dates, values);
+                        Plotly.react(chartDiv, [trace], layout);
+                    })
+                    .catch(err => console.error('Error fetching plot data:', err));
+            });
+        });
+
+        document.querySelectorAll('[data-field]').forEach(btn => {
+            btn.classList.add('field-btn');
+
+            btn.addEventListener('click', () => {
+                currentField = btn.dataset.field.toLowerCase();
+                currentTime = document.querySelector('.graph-btn.timeframe-btn.graph-btn-selected').dataset.time;
+
+                console.log(currentField);
+                console.log(currentTime);
+
+                document.querySelectorAll('.field-btn').forEach(b => b.classList.remove('graph-btn-selected'));
+                btn.classList.add('graph-btn-selected');
+
+                dates = dataCache.timestamps.map(ts => new Date(ts * 1000));
+                values = dataCache.values;
+
+                fetch(`/details/${symbol.replaceAll('"', '')}/plot/${currentTime}?field=${currentField}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        dataCache = data;
+                        dates = data.timestamps.map(ts => new Date(ts * 1000));
+                        values = data.values;
+
+                        const trace = getTraceForField(currentField, dates, values);
+                        Plotly.react(chartDiv, [trace], layout);
+                    })
+                    .catch(err => console.error('Error fetching plot data:', err));
+            });
+        });
+        /*]]>*/
+    </script>
+</section>

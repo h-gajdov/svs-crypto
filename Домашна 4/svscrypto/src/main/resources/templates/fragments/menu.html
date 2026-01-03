@@ -1,0 +1,13 @@
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="menu(menuClass, menuId)" th:id="${menuId}"
+     th:class="${menuClass}">
+    <a href="/dashboard">Dashboard</a>
+    <a href="/compare-coins">Compare Coins</a>
+    <a href="/historical-data">Search History</a>
+    <a href="/watchlist">My Watchlist</a>
+    <div class="horizontal-center" th:if="${menuId} == 'dropdown-menu'">
+        <input style="flex: 1" type="text" placeholder="Search for a symbol..."/>
+        <button class="plain-button" type="submit">
+            <i class="fa-solid fa-magnifying-glass fa-1_5x" style="color: #444;"></i>
+        </button>
+    </div>
+</div>
