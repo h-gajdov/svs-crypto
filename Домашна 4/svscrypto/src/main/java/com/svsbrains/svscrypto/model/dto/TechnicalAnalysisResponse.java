@@ -2,12 +2,11 @@ package com.svsbrains.svscrypto.model.dto;
 
 import java.util.List;
 
-public class TechnicalAnalysis {
+public class TechnicalAnalysisResponse {
     private List<String> day1;
     private List<String> week1;
     private List<String> month1;
 
-    // Getters and Setters
     public List<String> getDay1() { return day1; }
     public void setDay1(List<String> day1) { this.day1 = day1; }
 

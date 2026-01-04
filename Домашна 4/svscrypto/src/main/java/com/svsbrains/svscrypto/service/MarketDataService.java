@@ -23,4 +23,6 @@ public interface MarketDataService {
     Optional<MarketData> getAllTimeHigh(String symbol);
 
     Optional<MarketData> getAllTimeLow(String symbol);
+
+    List<List<MarketData>> getMarketDataForSymbols(List<String> symbols, int days);
 }

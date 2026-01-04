@@ -10,7 +10,6 @@ import java.util.*;
 @Getter
 @Setter
 @AllArgsConstructor
-//@NoArgsConstructor
 @Entity
 @Table(name = "app_user")
 public class User {

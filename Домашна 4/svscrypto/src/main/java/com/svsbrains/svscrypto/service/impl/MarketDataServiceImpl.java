@@ -8,6 +8,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.*;
 
 @Service
@@ -58,5 +60,24 @@ public class MarketDataServiceImpl implements MarketDataService {
     @Override
     public Optional<MarketData> getAllTimeLow(String symbol) {
         return marketDataRepository.findFirstBySymbolOrderByLowAsc(symbol);
+    }
+
+    @Override
+    public List<List<MarketData>> getMarketDataForSymbols(List<String> symbols, int days) {
+        long timestamp = calculateTimestamp(days);
+
+        return symbols.stream()
+                .map(this::getBySymbol)
+                .map(list -> list.stream()
+                        .filter(m -> m.getTimestamp() >= timestamp)
+                        .toList())
+                .toList();
+    }
+
+    private long calculateTimestamp(int days) {
+        return LocalDate.now()
+                .minusDays(days)
+                .atStartOfDay(ZoneOffset.UTC)
+                .toEpochSecond();
     }
 }
