@@ -2,7 +2,6 @@ package com.svsbrains.svscrypto.service.impl;
 
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
-import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.DetailedCoinViewService;
@@ -26,16 +25,20 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
         this.coinService = coinService;
     }
 
-    @Override
-    public Map<String, Object> buildDetailedView(String symbol) {
-        DailyData coin = dailyDataService.getBySymbol(symbol).get();
-
-        //TODO: Refactor this
+    private void enrichWithChanges(DailyData coin) {
         double monthlyChange = dailyDataService.getMonthlyChange(coin.getSymbol());
         MarketData weekBefore = marketDataService.getKDaysDataOfSymbol(coin.getSymbol(), 7).getLast();
         double weeklyChange = dailyDataService.getChangeFromMarketData(coin.getSymbol(), weekBefore);
         coin.setMonthlyChange(monthlyChange);
         coin.setWeeklyChange(weeklyChange);
+    }
+
+    @Override
+    public Map<String, Object> buildDetailedView(String symbol) {
+        DailyData dailyDataCoin = dailyDataService.getBySymbol(symbol)
+                .orElseThrow(() -> new IllegalArgumentException("Coin not found"));
+
+        enrichWithChanges(dailyDataCoin);
 
         Map<String, Object> model=new HashMap<>();
 
@@ -81,14 +84,7 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
         }
 
         List<Long> timestamps = data.stream().map(MarketData::getTimestamp).toList();
-        List<Double> values = data.stream().map(md -> switch(field) {
-            case "open" -> md.getOpen();
-            case "high" -> md.getHigh();
-            case "low" -> md.getLow();
-            case "close" -> md.getClose();
-            case "volume" -> md.getVolume();
-            default -> md.getOpen();
-        }).toList();
+        List<Double> values = data.stream().map(md ->extractField(md,field)).toList();
 
         Map<String, Object> response = new HashMap<>();
 
@@ -96,5 +92,15 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
         response.put("values", values);
 
         return response;
+    }
+
+    private double extractField(MarketData md, String field) {
+        return switch (field) {
+            case "high" -> md.getHigh();
+            case "low" -> md.getLow();
+            case "close" -> md.getClose();
+            case "volume" -> md.getVolume();
+            default -> md.getOpen();
+        };
     }
 }
