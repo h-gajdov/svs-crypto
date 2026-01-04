@@ -88,7 +88,7 @@ public class OnChainMetricsServiceImpl implements OnChainService {
                             GET_WHALE_MOVEMENTS,
                             HttpMethod.GET,
                             null,
-                            new ParameterizedTypeReference<List<WhaleMovementDto>>() {}
+                            new ParameterizedTypeReference<>() {}
                     );
 
             return response.getBody();

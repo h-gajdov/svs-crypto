@@ -6,7 +6,6 @@ import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
-import com.svsbrains.svscrypto.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,14 +19,12 @@ import java.util.Map;
 @Controller
 @RequestMapping("/historical-data")
 public class HistoricalDataController {
-    private final UserService userService;
     private final HttpSession httpSession;
     private final DailyDataService dailyDataService;
     private final MarketDataService marketDataService;
     private final CoinService coinService;
 
-    public HistoricalDataController(UserService userService, HttpSession httpSession, DailyDataService dailyDataService,CoinService coinService, MarketDataService marketDataService) {
-        this.userService = userService;
+    public HistoricalDataController(HttpSession httpSession, DailyDataService dailyDataService,CoinService coinService, MarketDataService marketDataService) {
         this.httpSession = httpSession;
         this.dailyDataService = dailyDataService;
         this.marketDataService = marketDataService;

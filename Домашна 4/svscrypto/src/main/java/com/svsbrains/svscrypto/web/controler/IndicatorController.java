@@ -1,6 +1,5 @@
 package com.svsbrains.svscrypto.web.controler;
 
-import com.svsbrains.svscrypto.model.dto.EstimateNewsDto;
 import com.svsbrains.svscrypto.model.dto.SymbolIndicatorsDto;
 import com.svsbrains.svscrypto.service.IndicatorsService;
 import org.springframework.http.ResponseEntity;
