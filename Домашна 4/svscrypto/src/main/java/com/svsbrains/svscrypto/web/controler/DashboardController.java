@@ -30,10 +30,11 @@ public class DashboardController {
                                 HttpSession session,
                                 @RequestParam(defaultValue = "1") int pageNum) {
 
-        Page<DailyData> topMarketCap =
-                dashboardService.getDashboardMarketCap(pageNum - 1, PAGE_SIZE);
+        Page<DailyData> topMarketCap = dashboardService.getDashboardMarketCap(pageNum - 1, PAGE_SIZE);
 
-        model.addAttribute("user", getUser(session));
+        User user=(User) session.getAttribute("user");
+        model.addAttribute("user",user);
+
         model.addAttribute("symbols", coinService.getAllSymbols());
 
         model.addAttribute("pageNum", pageNum);
@@ -45,16 +46,11 @@ public class DashboardController {
         model.addAttribute("top3Gain", dashboardService.getTopByGain());
 
         model.addAttribute("tableCoins", topMarketCap);
-        model.addAttribute("sparklineData",
-                dashboardService.getSparklineData(topMarketCap));
+        model.addAttribute("sparklineData", dashboardService.getSparklineData(topMarketCap));
 
         model.addAttribute("bodyContent", "dashboard");
         model.addAttribute("pageTitle", "Dashboard");
 
         return "master-template";
-    }
-
-    private User getUser(HttpSession session) {
-        return (User) session.getAttribute("user");
     }
 }
