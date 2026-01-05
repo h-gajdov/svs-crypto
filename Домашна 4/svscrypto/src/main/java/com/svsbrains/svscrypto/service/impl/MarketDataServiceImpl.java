@@ -16,7 +16,7 @@ import java.util.*;
 public class MarketDataServiceImpl implements MarketDataService {
     private final MarketDataRepository marketDataRepository;
 
-    public MarketDataServiceImpl(MarketDataRepository marketDataRepository, DailyDataRepository dailyDataRepository) {
+    public MarketDataServiceImpl(MarketDataRepository marketDataRepository) {
         this.marketDataRepository = marketDataRepository;
     }
 
