@@ -1,5 +1,5 @@
-from technicalAnalysis.generateSignals import generate_signals
-from technicalAnalysis.indicators import add_indicators
+from technicalAnalysis.strategies import TechnicalAnalyzer
+
 
 def timeframe_analysis(df, timeframe):
     df_tf = df.resample(timeframe).agg({
@@ -10,5 +10,5 @@ def timeframe_analysis(df, timeframe):
         "volume": "sum"
     }).dropna()
 
-    df_tf = add_indicators(df_tf)
-    return generate_signals(df_tf)
+    analyzer = TechnicalAnalyzer()
+    return analyzer.analyze(df_tf)
