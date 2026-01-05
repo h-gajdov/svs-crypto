@@ -13,6 +13,7 @@ app = FastAPI()
 
 metrics_cache = TTLCache(maxsize=500, ttl=600)# 10 min
 news_cache = TTLCache(maxsize=300, ttl=1800)# 30 min
+news_sentiment_cache = TTLCache(maxsize=300, ttl=1800)
 analysis_cache = TTLCache(maxsize=300, ttl=300)# 5 min
 onchain_indicator_cache = TTLCache(maxsize=200, ttl=300)# 5 min
 whale_cache = TTLCache(maxsize=100, ttl=120)# 2 min
@@ -29,6 +30,12 @@ def cached_all_metrics(symbol):
 @cached(news_cache)
 def cached_news(symbol):
     return get_sentiment(symbol + ',' + get_coin_id(symbol)['coin_id'])
+
+@cached(news_sentiment_cache)
+def cached_news_sentiment(symbol):
+    news = cached_news(symbol)
+    prob, sentiment = estimate_sentiment(news)
+    return prob, sentiment
 
 @cached(analysis_cache)
 def cached_analyze_symbol(symbol):
@@ -61,7 +68,7 @@ def get_news(symbol):
 @app.get("/estimate-news/{symbol}")
 def estimate_news_for_symbol(symbol):
     news = cached_news(symbol)
-    tensor, sentiment = estimate_sentiment(news)
+    tensor, sentiment = cached_news_sentiment(symbol)
     return {
         "symbol": symbol,
         "news": news,
