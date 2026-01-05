@@ -35,8 +35,7 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
 
     @Override
     public Map<String, Object> buildDetailedView(String symbol) {
-        DailyData dailyDataCoin = dailyDataService.getBySymbol(symbol)
-                .orElseThrow(() -> new IllegalArgumentException("Coin not found"));
+        DailyData dailyDataCoin = dailyDataService.getBySymbol(symbol);
 
         enrichWithChanges(dailyDataCoin);
 
@@ -44,7 +43,7 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
 
         MarketData allTimeLow = marketDataService.getAllTimeLow(symbol).get();
         MarketData allTimeHigh = marketDataService.getAllTimeHigh(symbol).get();
-        DailyData dailyData = dailyDataService.getBySymbol(symbol).get();
+        DailyData dailyData = dailyDataService.getBySymbol(symbol);
 
         double allTimeLowChange = ((dailyData.getLast_price() - allTimeLow.getLow()) / allTimeLow.getLow()) * 100;
         double allTimeHighChange = ((dailyData.getLast_price() - allTimeHigh.getHigh()) / allTimeHigh.getHigh()) * 100;

@@ -38,7 +38,7 @@ public class HistoricalDataController {
 
         model.addAttribute("bodyContent","history");
 
-        List<DailyData> topPrice = u.getHistoryCoins().stream().map(symbol->dailyDataService.getBySymbol(symbol).orElse(null)).toList();
+        List<DailyData> topPrice = u.getHistoryCoins().stream().map(dailyDataService::getBySymbol).toList();
 
         topPrice.forEach(coin -> {
             double monthlyChange = dailyDataService.getMonthlyChange(coin.getSymbol());

@@ -64,7 +64,7 @@ public class UserController {
 
         if (u == null) return "redirect:/login";
 
-        List<DailyData> topPrice = u.getCoins().stream().map(symbol -> dailyDataService.getBySymbol(symbol).orElse(null)).toList();
+        List<DailyData> topPrice = u.getCoins().stream().map(dailyDataService::getBySymbol).toList();
 
 
         topPrice.forEach(coin -> {
