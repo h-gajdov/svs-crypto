@@ -7,24 +7,24 @@ import com.svsbrains.svscrypto.service.VerificationTokenService;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VerificationTokenImpl implements VerificationTokenService {
+public class VerificationTokenServiceImpl implements VerificationTokenService {
     private final VerificationTokenRepository verificationTokenRepository;
 
-    public VerificationTokenImpl(VerificationTokenRepository verificationTokenRepository) {
+    public VerificationTokenServiceImpl(VerificationTokenRepository verificationTokenRepository) {
         this.verificationTokenRepository = verificationTokenRepository;
     }
 
     @Override
     public VerificationToken save(VerificationToken verificationToken) {
-        if (verificationTokenRepository.findByUser(verificationToken.getUser()) != null) {
-            verificationTokenRepository.delete(verificationTokenRepository.findByUser(verificationToken.getUser()));
-            verificationTokenRepository.flush();
+        VerificationToken existing = findByUser(verificationToken.getUser());
+        if (existing != null) {
+            verificationTokenRepository.delete(existing);
         }
         return verificationTokenRepository.save(verificationToken);
     }
 
     @Override
     public VerificationToken findByUser(User user) {
-        return verificationTokenRepository.findByUser(user);
+        return verificationTokenRepository.findByUser(user).orElse(null);
     }
 }
