@@ -1,6 +1,7 @@
 package com.svsbrains.svscrypto.service.impl;
 
 import com.svsbrains.svscrypto.model.MarketData;
+import com.svsbrains.svscrypto.model.exceptions.MarketDataNotFoundException;
 import com.svsbrains.svscrypto.repository.DailyDataRepository;
 import com.svsbrains.svscrypto.repository.MarketDataRepository;
 import com.svsbrains.svscrypto.service.MarketDataService;
@@ -26,24 +27,8 @@ public class MarketDataServiceImpl implements MarketDataService {
     }
 
     @Override
-    public MarketData getById(Long id) {
-        return marketDataRepository.findById(id).orElse(null);
-    }
-
-    @Override
     public List<MarketData> getAllFirstTimestamp() {
         return marketDataRepository.findAllSymbolsFirstTimestamp();
-    }
-
-    @Override
-    public Optional<MarketData> getFirstTimestamp(String symbol) {
-        return marketDataRepository.findFirstBySymbolOrderByTimestampAsc(symbol);
-    }
-
-    @Override
-    public List<MarketData> getMonthDataOfSymbol(String symbol) {
-        Pageable limit = PageRequest.of(0, 30);
-        return marketDataRepository.findLastNDaysBySymbol(symbol, limit);
     }
 
     @Override
@@ -53,13 +38,13 @@ public class MarketDataServiceImpl implements MarketDataService {
     }
 
     @Override
-    public Optional<MarketData> getAllTimeHigh(String symbol) {
-        return marketDataRepository.findFirstBySymbolOrderByHighDesc(symbol);
+    public MarketData getAllTimeHigh(String symbol) {
+        return marketDataRepository.findFirstBySymbolOrderByHighDesc(symbol).orElseThrow(() -> new MarketDataNotFoundException(symbol));
     }
 
     @Override
-    public Optional<MarketData> getAllTimeLow(String symbol) {
-        return marketDataRepository.findFirstBySymbolOrderByLowAsc(symbol);
+    public MarketData getAllTimeLow(String symbol) {
+        return marketDataRepository.findFirstBySymbolOrderByLowAsc(symbol).orElseThrow(() -> new MarketDataNotFoundException(symbol));
     }
 
     @Override

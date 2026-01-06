@@ -71,7 +71,7 @@ public class DailyDataServiceImpl implements DailyDataService {
     @Override
     public double getMonthlyChange(String symbol) {
         DailyData coin = getBySymbol(symbol);
-        MarketData monthBefore = marketDataService.getMonthDataOfSymbol(symbol).getLast();
+        MarketData monthBefore = marketDataService.getKDaysDataOfSymbol(symbol, 30).getLast();
         return coin.getChangePercent(monthBefore.getLow());
     }
 

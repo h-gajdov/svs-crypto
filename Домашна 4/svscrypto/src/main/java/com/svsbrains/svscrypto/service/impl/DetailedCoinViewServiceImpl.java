@@ -41,12 +41,11 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
 
         Map<String, Object> model=new HashMap<>();
 
-        MarketData allTimeLow = marketDataService.getAllTimeLow(symbol).get();
-        MarketData allTimeHigh = marketDataService.getAllTimeHigh(symbol).get();
-        DailyData dailyData = dailyDataService.getBySymbol(symbol);
+        MarketData allTimeLow = marketDataService.getAllTimeLow(symbol);
+        MarketData allTimeHigh = marketDataService.getAllTimeHigh(symbol);
 
-        double allTimeLowChange = ((dailyData.getLast_price() - allTimeLow.getLow()) / allTimeLow.getLow()) * 100;
-        double allTimeHighChange = ((dailyData.getLast_price() - allTimeHigh.getHigh()) / allTimeHigh.getHigh()) * 100;
+        double allTimeLowChange = ((dailyDataCoin.getLast_price() - allTimeLow.getLow()) / allTimeLow.getLow()) * 100;
+        double allTimeHighChange = ((dailyDataCoin.getLast_price() - allTimeHigh.getHigh()) / allTimeHigh.getHigh()) * 100;
 
         List<MarketData> data = marketDataService.getBySymbol(symbol);
 
@@ -61,7 +60,7 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
         model.put("timestamps", timestamps);
         model.put("values", values);
         model.put("rank", dailyDataService.getRankOfSymbol(symbol));
-        model.put("coin", dailyData);
+        model.put("coin", dailyDataCoin);
         model.put("allTimeHigh", allTimeHigh);
         model.put("allTimeLow", allTimeLow);
         model.put("allTimeLowChange", allTimeLowChange);
