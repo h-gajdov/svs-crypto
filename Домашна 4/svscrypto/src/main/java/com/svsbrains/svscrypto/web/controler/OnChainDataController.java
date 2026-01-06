@@ -10,6 +10,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.svsbrains.svscrypto.util.ResponseUtils.respondOrServiceUnavailable;
+
+/**
+ * REST controller that exposes endpoints for retrieving on-chain cryptocurrency data.
+ * <p>
+ * This controller provides endpoints for metrics, whale movements, exchange flows,
+ * news sentiment estimates, and aggregated sentiment indicators for a given cryptocurrency symbol.
+ * Responses are automatically wrapped using {@link com.svsbrains.svscrypto.util.ResponseUtils#respondOrServiceUnavailable(Object)},
+ * returning HTTP 200 OK if data is present or HTTP 503 Service Unavailable if the data is missing.
+ * </p>
+ * <p>
+ * All endpoints are prefixed with <code>/api/on-chain</code>.
+ * </p>
+ */
 @RestController
 @RequestMapping("/api/on-chain")
 public class OnChainDataController {
@@ -21,56 +35,26 @@ public class OnChainDataController {
 
     @GetMapping("/metrics")
     public ResponseEntity<OnChainMetricsDto> getAllMetricsFromSymbol(@RequestParam String symbol) {
-        OnChainMetricsDto data = onChainService.getAllMetrics(symbol);
-
-        if (data != null) {
-            return ResponseEntity.ok(data);
-        } else {
-            return ResponseEntity.status(503).build();
-        }
+        return respondOrServiceUnavailable(onChainService.getAllMetrics(symbol));
     }
 
     @GetMapping("/whale-movements")
     public ResponseEntity<List<WhaleMovementDto>> getWhaleMovements() {
-        List<WhaleMovementDto> data = onChainService.getWhaleMovements();
-
-        if (data != null) {
-            return ResponseEntity.ok(data);
-        } else {
-            return ResponseEntity.status(503).build();
-        }
+        return respondOrServiceUnavailable(onChainService.getWhaleMovements());
     }
 
     @GetMapping("/exchange-flows")
     public ResponseEntity<ExchangeFlowDto> getExchangeFlows(@RequestParam String symbol) {
-        ExchangeFlowDto data = onChainService.getExchangeFlows(symbol);
-
-        if (data != null) {
-            return ResponseEntity.ok(data);
-        } else {
-            return ResponseEntity.status(503).build();
-        }
+        return respondOrServiceUnavailable(onChainService.getExchangeFlows(symbol));
     }
 
     @GetMapping("/news")
     public ResponseEntity<EstimateNewsDto> getNewsEstimate(@RequestParam String symbol) {
-        EstimateNewsDto data = onChainService.estimateNews(symbol);
-
-        if (data != null) {
-            return ResponseEntity.ok(data);
-        } else {
-            return ResponseEntity.status(503).build();
-        }
+        return respondOrServiceUnavailable(onChainService.estimateNews(symbol));
     }
 
     @GetMapping("/sentiment")
-    public ResponseEntity<OnChainSentimentDto> getSentimentFromSymbol(@RequestParam String symbol) {
-        OnChainSentimentDto data = onChainService.getSentimentFromMetrics(symbol);
-
-        if (data != null) {
-            return ResponseEntity.ok(data);
-        } else {
-            return ResponseEntity.status(503).build();
-        }
+    public ResponseEntity<OnChainSentimentDto> getSentimentFromMetrics(@RequestParam String symbol) {
+        return respondOrServiceUnavailable(onChainService.getSentimentFromMetrics(symbol));
     }
 }

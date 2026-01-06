@@ -5,6 +5,7 @@ import com.svsbrains.svscrypto.model.MarketData;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -91,4 +92,8 @@ public interface DailyDataService {
      * @return the rank of the cryptocurrency (1 = highest market cap)
      */
     int getRankOfSymbol(String symbol);
+
+    void setCoinsChanges(List<DailyData> coins);
+
+    Map<String, List<Double>> getSparklineData(List<DailyData> coins);
 }

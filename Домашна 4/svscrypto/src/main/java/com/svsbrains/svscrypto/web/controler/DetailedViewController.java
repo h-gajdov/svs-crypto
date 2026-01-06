@@ -12,6 +12,13 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+/**
+ * Controller responsible for displaying detailed information about a specific cryptocurrency.
+ * <p>
+ * This controller handles both the detailed coin view page and retrieving plot data for charts.
+ * It supports tracking search history for authenticated users.
+ * </p>
+ */
 @Controller
 @RequestMapping("/details")
 public class DetailedViewController {
@@ -26,6 +33,22 @@ public class DetailedViewController {
         this.userService = userService;
     }
 
+    /**
+     * Handles GET requests to display the detailed view of a specific cryptocurrency.
+     * <p>
+     * Prepares the model with:
+     * - all detailed coin data from {@link DetailedCoinViewService},
+     * - currently authenticated user information (if logged in),
+     * - updates the user's search history,
+     * - list of all available symbols,
+     * - the page title for the template.
+     * </p>
+     *
+     * @param symbol      the cryptocurrency symbol to display (e.g., "BTC")
+     * @param userDetails the currently authenticated user, if any
+     * @param model       the model used to pass attributes to the Thymeleaf template
+     * @return the name of the Thymeleaf template to render ("master-template")
+     */
     @GetMapping("/{symbol}")
     public String showDetails(@PathVariable String symbol,
                               @AuthenticationPrincipal UserDetails userDetails,
@@ -33,7 +56,7 @@ public class DetailedViewController {
 
         model.addAllAttributes(detailedCoinViewService.buildDetailedView(symbol));
         if(userDetails != null) {
-            User user = userService.findByUsername(userDetails.getUsername());
+            User user = userService.getCurrentUser(userDetails);
             model.addAttribute("user",user);
             userService.addCoinToSearchHistory(user.getUsername(), symbol);
         }
@@ -43,6 +66,14 @@ public class DetailedViewController {
         return "master-template";
     }
 
+    /**
+     * Handles GET requests to retrieve plot data for a specific cryptocurrency over a given timeframe.
+     *
+     * @param symbol the cryptocurrency symbol (e.g., "BTC")
+     * @param time   the timeframe for the plot (e.g., "1D", "1W", "1M")
+     * @param field  the field to plot (default: "open")
+     * @return a map containing the plot data (timestamps and values)
+     */
     @GetMapping("/{symbol}/plot/{time}")
     @ResponseBody
     public Map<String, Object> getPlotData(@PathVariable String symbol, @PathVariable String time, @RequestParam(defaultValue = "open") String field) {

@@ -1,10 +1,8 @@
 package com.svsbrains.svscrypto.web.controler;
 
 import com.svsbrains.svscrypto.model.DailyData;
-import com.svsbrains.svscrypto.model.MarketData;
 import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.DailyDataService;
-import com.svsbrains.svscrypto.service.MarketDataService;
 import com.svsbrains.svscrypto.service.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,45 +11,40 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller responsible for displaying the historical cryptocurrency data
+ * of a logged-in user.
+ * <p>
+ * This controller handles requests to the "/historical-data" endpoint,
+ * retrieves the user's search history, calculates coin performance metrics
+ * (monthly change, 3-month change), generates weekly sparkline data for charts,
+ * and prepares the model for rendering the history page.
+ * </p>
+ */
 @Controller
 @RequestMapping("/historical-data")
 public class HistoricalDataController {
     private final DailyDataService dailyDataService;
-    private final MarketDataService marketDataService;
     private final UserService userService;
 
-    public HistoricalDataController(DailyDataService dailyDataService, MarketDataService marketDataService, UserService userService) {
+    public HistoricalDataController(DailyDataService dailyDataService, UserService userService) {
         this.dailyDataService = dailyDataService;
-        this.marketDataService = marketDataService;
         this.userService = userService;
     }
 
     @GetMapping
     public String getHistory(Model model,
                              @AuthenticationPrincipal UserDetails userDetails){
-        User user = userService.findByUsername(userDetails.getUsername());
+        User user = userService.getCurrentUser(userDetails);
         model.addAttribute("bodyContent","history");
 
         List<DailyData> topPrice = userService.getSearchHistory(user.getUsername());
+        dailyDataService.setCoinsChanges(topPrice);
 
-        topPrice.forEach(coin -> {
-            double monthlyChange = dailyDataService.getMonthlyChange(coin.getSymbol());
-            MarketData threeMonthsBefore = marketDataService.getKDaysDataOfSymbol(coin.getSymbol(), 90).getLast();
-            double threeMonthsChange = dailyDataService.getChangeFromMarketData(coin.getSymbol(), threeMonthsBefore);
-            coin.setMonthlyChange(monthlyChange);
-            coin.setThreeMonthsChange(threeMonthsChange);
-        });
-
-        Map<String, List<Double>> sparklineData = new HashMap<>();
-        for (DailyData coin : topPrice) {
-            List<MarketData> weekly = marketDataService.getKDaysDataOfSymbol(coin.getSymbol(), 7);
-            List<Double> res = weekly.stream().map(MarketData::getOpen).toList();
-            sparklineData.put(coin.getSymbol(), res);
-        }
+        Map<String, List<Double>> sparklineData = dailyDataService.getSparklineData(topPrice);
 
         model.addAttribute("user", user);
         model.addAttribute("tableCoins", topPrice);

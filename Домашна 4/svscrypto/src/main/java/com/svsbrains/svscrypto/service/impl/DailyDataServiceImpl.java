@@ -10,9 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class DailyDataServiceImpl implements DailyDataService {
@@ -84,5 +82,27 @@ public class DailyDataServiceImpl implements DailyDataService {
     @Override
     public int getRankOfSymbol(String symbol) {
         return dailyDataRepository.findRankBySymbol(symbol);
+    }
+
+    @Override
+    public void setCoinsChanges(List<DailyData> coins) {
+        coins.forEach(coin -> {
+            double monthlyChange = getMonthlyChange(coin.getSymbol());
+            MarketData threeMonthsBefore = marketDataService.getKDaysDataOfSymbol(coin.getSymbol(), 90).getLast();
+            double threeMonthsChange = getChangeFromMarketData(coin.getSymbol(), threeMonthsBefore);
+            coin.setMonthlyChange(monthlyChange);
+            coin.setThreeMonthsChange(threeMonthsChange);
+        });
+    }
+
+    @Override
+    public Map<String, List<Double>> getSparklineData(List<DailyData> coins) {
+        Map<String, List<Double>> sparklineData = new HashMap<>();
+        for (DailyData coin : coins) {
+            List<MarketData> weekly = marketDataService.getKDaysDataOfSymbol(coin.getSymbol(), 7);
+            List<Double> res = weekly.stream().map(MarketData::getOpen).toList();
+            sparklineData.put(coin.getSymbol(), res);
+        }
+        return sparklineData;
     }
 }

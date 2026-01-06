@@ -41,7 +41,7 @@ public interface OnChainService {
     OnChainSentimentDto getSentimentFromMetrics(String symbol);
 
     /**
-     * Estimates news impact or sentiment for the specified cryptocurrency symbol.
+     * Estimates news sentiment for the specified cryptocurrency symbol.
      *
      * @param symbol the cryptocurrency symbol
      * @return an {@link EstimateNewsDto} containing the estimated news analysis,
