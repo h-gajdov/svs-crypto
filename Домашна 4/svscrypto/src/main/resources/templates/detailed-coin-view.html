@@ -16,12 +16,12 @@
             <span class="coin-symbol grey-text" th:text="${coin.getSymbol()}"></span>
         </div>
         <div th:if="${user!=null}">
-            <form th:if="${!user.hasCoin(coin.symbol)}" th:action="@{/addCoinToUser}" method="post">
+            <form th:if="${!user.hasCoin(coin.symbol)}" action="/add-coin-to-watchlist" method="post">
                 <input type="hidden" name="username" th:value="${user.username}"/>
                 <input type="hidden" name="symbol" th:value="${coin.symbol}"/>
                 <button type="submit" class="add-to-favorites-btn">Add coin to favorites</button>
             </form>
-            <form th:if="${user.hasCoin(coin.symbol)}" th:action="@{/deleteCoinFromUser}" method="post">
+            <form th:if="${user.hasCoin(coin.symbol)}" action="/delete-coin-from-watchlist" method="post">
                 <input type="hidden" name="username" th:value="${user.username}"/>
                 <input type="hidden" name="symbol" th:value="${coin.symbol}"/>
                 <button type="submit" class="add-to-favorites-btn">Remove coin from favorites</button>

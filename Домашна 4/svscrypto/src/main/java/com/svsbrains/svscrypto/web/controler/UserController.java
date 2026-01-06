@@ -69,16 +69,16 @@ public class UserController {
         return "master-template";
     }
 
-    @PostMapping("/addCoinToUser")
-    public String addCoin(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession, HttpServletRequest request) {
+    @PostMapping("/add-coin-to-watchlist")
+    public String addCoinToWatchlist(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession, HttpServletRequest request) {
         User u = userService.addCoinToList(username, symbol);
         httpSession.setAttribute("user", u);
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/dashboard");
     }
 
-    @PostMapping("/deleteCoinFromUser")
-    public String removeCoin(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession, HttpServletRequest request) {
+    @PostMapping("/delete-coin-from-watchlist")
+    public String deleteCoinFromWatchlist(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession, HttpServletRequest request) {
         User u = userService.deleteCoinFromList(username, symbol);
         httpSession.setAttribute("user", u);
         String referer = request.getHeader("Referer");
