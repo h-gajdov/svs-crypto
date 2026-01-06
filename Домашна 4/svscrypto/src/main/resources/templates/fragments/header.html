@@ -1,4 +1,4 @@
-<header xmlns:th="http://www.thymeleaf.org">
+<header xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
     <div>
         <nav class="horizontal-center">
             <button id="menu-button"><i class="fa-solid fa-bars"></i></button>
@@ -18,8 +18,11 @@
                     <i class="fa-solid fa-magnifying-glass fa-1_5x icon"></i>
                 </button>
             </div>
-            <a href="/login" class="icon">
-                <i class="fa-regular fa-circle-user fa-1_5x icon"></i>
+            <a sec:authorize="isAnonymous()" href="/login" class="icon">
+                <i class="fa-solid fa-right-to-bracket fa-1_5x icon"></i>
+            </a>
+            <a sec:authorize="isAuthenticated()" href="/logout" class="icon">
+                <i class="fa-solid fa-right-from-bracket fa-1_5x icon"></i>
             </a>
             <a class="theme-toggle" href="javascript:void(0)">
                 <i id="theme-icon" class="fa-regular fa-moon fa-1_5x"></i>

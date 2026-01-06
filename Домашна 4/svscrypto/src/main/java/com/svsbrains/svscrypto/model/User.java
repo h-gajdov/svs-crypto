@@ -1,9 +1,12 @@
 package com.svsbrains.svscrypto.model;
 
+import com.svsbrains.svscrypto.model.enums.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.*;
 
@@ -12,7 +15,7 @@ import java.util.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "app_user")
-public class User {
+public class User implements UserDetails {
     @Id
     @Column(unique = true)
     @NotNull
@@ -27,6 +30,10 @@ public class User {
     private String password;
 
     private boolean enabled = false;
+
+    @Enumerated(value = EnumType.STRING)
+    private Role role = Role.ROLE_USER;
+
 
     public User() {
         this.username = "";
@@ -74,6 +81,21 @@ public class User {
         return username;
     }
 
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
     public void setUsername(@NotNull String username) {
         this.username = username;
     }
@@ -100,6 +122,13 @@ public class User {
 
     public void setEmail(@Email String email) {
         this.email = email;
+    }
+
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singletonList(role);
     }
 
     public @NotNull String getPassword() {

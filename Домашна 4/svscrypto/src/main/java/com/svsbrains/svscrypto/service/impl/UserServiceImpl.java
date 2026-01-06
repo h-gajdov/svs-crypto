@@ -7,6 +7,7 @@ import com.svsbrains.svscrypto.service.EmailService;
 import com.svsbrains.svscrypto.service.UserService;
 import com.svsbrains.svscrypto.service.VerificationTokenService;
 import com.svsbrains.svscrypto.util.PinGenerator;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User signInUser(String username, String first_name, String last_name, String email, String password) {
+    public User signUpUser(String username, String first_name, String last_name, String email, String password) {
         if(userRepository.findByEmail(email) != null){
             throw new UsernameNotFoundException("Email already in use");
         }
@@ -79,6 +80,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findByUsername(String username) {
+        return userRepository.findUserByUsername(username);
+    }
+
+    @Override
     public void sendVerificationMail(User user) {
         String pin = PinGenerator.generatePin();
         VerificationToken verificationToken = new VerificationToken(user, pin);
@@ -89,5 +95,10 @@ public class UserServiceImpl implements UserService {
                 "This code expires in 15 minutes.";
 
         emailService.sendSimpleMail(user.getEmail(), subject, body);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findUserByUsername(username);
     }
 }

@@ -1,9 +1,9 @@
 <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
     <div class="log-register-form card shadow p-4" style="max-width: 400px; width: 100%;">
 
-        <h3 class="text-center mb-4">Login</h3>
+        <h3 class="text-center mb-4">Sign Up</h3>
 
-        <form th:action="@{/signin}" method="post">
+        <form th:action="@{/signup}" method="post">
 
             <div class="mb-3">
                 <label class="form-label">First name</label>
@@ -39,6 +39,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary w-100">Create</button>
+            <p style="text-align: center">Already have an account? <a style="text-decoration: underline !important; color: #0F4ACB !important" href="/login">Log in</a></p>
         </form>
     </div>
 </div>
