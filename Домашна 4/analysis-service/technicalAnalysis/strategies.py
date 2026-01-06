@@ -26,7 +26,7 @@ class RsiStrategy(IndicatorStrategy):
     def interpret_signal(self, row: pd.Series) -> str:
         rsi_val = row.get("RSI")
         if pd.isna(rsi_val):
-            return "HOLD (No Data)"
+            return "HOLD (Insufficient Data)"
 
         if rsi_val < self.oversold:
             return "BUY (RSI oversold)"
@@ -77,7 +77,7 @@ class SmaStrategy(IndicatorStrategy):
         sma_val = row.get(col_name)
 
         if pd.isna(sma_val):
-            return "HOLD"
+            return "HOLD (Insufficient Data)"
 
         if price > sma_val:
             return f"BUY (Price > {col_name})"
@@ -98,7 +98,7 @@ class StochIndicator(IndicatorStrategy):
         val = row.get("STOCH_K")
 
         if pd.isna(val):
-            return "HOLD"
+            return "HOLD (Insufficient Data)"
 
         if val < 20:
             return "BUY (Stoch oversold)"
@@ -144,13 +144,13 @@ class BollingerBandsStrategy(IndicatorStrategy):
         lower = row.get("BB_lower")
         upper = row.get("BB_upper")
 
-        if pd.isna(lower) or pd.isna(upper): return "HOLD"
+        if pd.isna(lower) or pd.isna(upper): return "HOLD (Insufficient Data)"
 
         if price < lower:
             return "BUY (Below Bollinger Lower)"
         elif price > upper:
             return "SELL (Above Bollinger Upper)"
-        return "HOLD"
+        return "HOLD (Inside BB)"
 
 
 class CciStrategy(IndicatorStrategy):
@@ -160,12 +160,12 @@ class CciStrategy(IndicatorStrategy):
 
     def interpret_signal(self, row: pd.Series) -> str:
         val = row.get("CCI")
-        if pd.isna(val): return "HOLD"
+        if pd.isna(val): return "HOLD (Insufficient Data)"
         if val < -100:
             return "BUY (CCI oversold)"
         elif val > 100:
             return "SELL (CCI overbought)"
-        return "HOLD"
+        return "HOLD (CCI neutral)"
 
 
 class AdxStrategy(IndicatorStrategy):
@@ -182,7 +182,7 @@ class AdxStrategy(IndicatorStrategy):
 
     def interpret_signal(self, row: pd.Series) -> str:
         val = row.get("ADX")
-        if pd.isna(val): return "HOLD"
+        if pd.isna(val): return "HOLD (Insufficient Data)"
         if val > 25: return "STRONG TREND (ADX > 25)"
         return "WEAK TREND (ADX < 25)"
 
@@ -199,13 +199,13 @@ class WmaStrategy(IndicatorStrategy):
     def interpret_signal(self, row: pd.Series) -> str:
         price = row["close"]
         wma_val = row.get(self.col_name)
-        if pd.isna(wma_val): return "HOLD"
+        if pd.isna(wma_val): return "HOLD (Insufficient Data)"
 
         if price > wma_val:
             return f"BUY (Price > {self.col_name})"
         elif price < wma_val:
             return f"SELL (Price < {self.col_name})"
-        return "HOLD"
+        return f"HOLD (Price = {self.col_name})"
 
 
 class IndicatorFactory:

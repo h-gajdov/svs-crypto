@@ -520,6 +520,10 @@ a.page-btn:not(.selected-page):hover {
     transition: all 0.2s ease-in-out;
 }
 
+.graph-btn:hover {
+    cursor: pointer;
+}
+
 .graph-section .graph-btn:hover {
     background: #155DFC;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
