@@ -3,18 +3,17 @@ package com.svsbrains.svscrypto.web.controler;
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
 import com.svsbrains.svscrypto.model.User;
-import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
 import com.svsbrains.svscrypto.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.boot.Banner;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.HashMap;
@@ -24,17 +23,13 @@ import java.util.Map;
 @Controller
 public class UserController {
     private final UserService userService;
-    private final HttpSession httpSession;
     private final DailyDataService dailyDataService;
     private final MarketDataService marketDataService;
-    private final CoinService coinService;
 
-    public UserController(UserService userService, HttpSession httpSession, DailyDataService dailyDataService, MarketDataService marketDataService, CoinService coinService) {
+    public UserController(UserService userService, DailyDataService dailyDataService, MarketDataService marketDataService) {
         this.userService = userService;
-        this.httpSession = httpSession;
         this.dailyDataService = dailyDataService;
         this.marketDataService = marketDataService;
-        this.coinService = coinService;
     }
 
     @GetMapping("/login")
@@ -44,29 +39,14 @@ public class UserController {
         return "master-template";
     }
 
-//    @PostMapping("/login")
-//    public String logInUser(@RequestParam String username, @RequestParam String password, Model model) {
-//        User user = userService.logInUserByUsername(username, password);
-//        if (user == null) return "redirect:/login?error";
-//        if (!user.isEnabled()) {
-//            userService.sendVerificationMail(user);
-//            return "redirect:/verify";
-//        }
-//        httpSession.setAttribute("user", user);
-//        return "redirect:/dashboard";
-//    }
-
     @GetMapping("/watchlist")
-    public String getWatchList(Model model) {
+    public String getWatchList(Model model,
+                               @AuthenticationPrincipal UserDetails userDetails) {
         model.addAttribute("bodyContent", "user-list");
 
-        User u = (User) httpSession.getAttribute("user");
+        User user = userService.findByUsername(userDetails.getUsername());
 
-        if (u == null) return "redirect:/login";
-
-        List<DailyData> topPrice = u.getCoins().stream().map(dailyDataService::getBySymbol).toList();
-
-
+        List<DailyData> topPrice = user.getCoins().stream().map(dailyDataService::getBySymbol).toList();
         topPrice.forEach(coin -> {
             double monthlyChange = dailyDataService.getMonthlyChange(coin.getSymbol());
             MarketData threeMonthsBefore = marketDataService.getKDaysDataOfSymbol(coin.getSymbol(), 90).getLast();
@@ -82,10 +62,7 @@ public class UserController {
             sparklineData.put(coin.getSymbol(), res);
         }
 
-        List<String> symbols = coinService.getAllSymbols();
-        model.addAttribute("symbols", symbols);
-
-        model.addAttribute("user", (User) httpSession.getAttribute("user"));
+        model.addAttribute("user", user);
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);
         model.addAttribute("pageTitle", "My Watchlist");

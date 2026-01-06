@@ -3,7 +3,9 @@ package com.svsbrains.svscrypto.web.controler;
 import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DetailedCoinViewService;
-import jakarta.servlet.http.HttpSession;
+import com.svsbrains.svscrypto.service.UserService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,22 +18,24 @@ public class DetailedViewController {
 
     private final DetailedCoinViewService detailedCoinViewService;
     private final CoinService coinService;
+    private final UserService userService;
 
-    public DetailedViewController(DetailedCoinViewService detailedCoinViewService, CoinService coinService) {
+    public DetailedViewController(DetailedCoinViewService detailedCoinViewService, CoinService coinService, UserService userService) {
         this.detailedCoinViewService = detailedCoinViewService;
         this.coinService=coinService;
+        this.userService = userService;
     }
 
     @GetMapping("/{symbol}")
-    public String showDetails(@PathVariable String symbol, Model model, HttpSession httpSession) {
+    public String showDetails(@PathVariable String symbol,
+                              @AuthenticationPrincipal UserDetails userDetails,
+                              Model model) {
 
         model.addAllAttributes(detailedCoinViewService.buildDetailedView(symbol));
-
-        User user=(User)httpSession.getAttribute("user");
-        model.addAttribute("user",user);
-
-        if(user!=null){
-            user.addHistoryCoin(symbol);
+        if(userDetails != null) {
+            User user = userService.findByUsername(userDetails.getUsername());
+            model.addAttribute("user",user);
+            userService.addCoinToSearchHistory(user.getUsername(), symbol);
         }
 
         model.addAttribute("symbols",coinService.getAllSymbols());

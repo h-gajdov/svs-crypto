@@ -23,6 +23,8 @@ public class WebSecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/watchlist", "/historical-data")
+                        .authenticated()
                         .anyRequest().permitAll()
                 )
                 .formLogin(form -> form

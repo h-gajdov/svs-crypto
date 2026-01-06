@@ -1,8 +1,10 @@
 package com.svsbrains.svscrypto.service.impl;
 
+import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.model.VerificationToken;
 import com.svsbrains.svscrypto.repository.UserRepository;
+import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.EmailService;
 import com.svsbrains.svscrypto.service.UserService;
 import com.svsbrains.svscrypto.service.VerificationTokenService;
@@ -13,6 +15,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
@@ -20,12 +24,14 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final VerificationTokenService verificationTokenService;
     private final EmailService emailService;
+    private final DailyDataService dailyDataService;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, VerificationTokenService verificationTokenService, EmailService emailService) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, VerificationTokenService verificationTokenService, EmailService emailService, DailyDataService dailyDataService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.verificationTokenService = verificationTokenService;
         this.emailService = emailService;
+        this.dailyDataService = dailyDataService;
     }
 
     @Override
@@ -63,10 +69,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addHistoryCoin(String username, String s) {
-        User u = userRepository.getUserByUsername(username);
-        u.addHistoryCoin(s);
-        return u;
+    public User addCoinToSearchHistory(String username, String symbol) {
+        User user = userRepository.getUserByUsername(username);
+        user.addHistoryCoin(symbol);
+        return user;
+    }
+
+    @Override
+    public List<DailyData> getSearchHistory(String username) {
+        User user = findByUsername(username);
+        return user.getHistoryCoins().stream().map(dailyDataService::getBySymbol).toList();
     }
 
     @Override

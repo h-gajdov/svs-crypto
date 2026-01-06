@@ -4,8 +4,11 @@ import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DashboardService;
+import com.svsbrains.svscrypto.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,21 +21,26 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
     private final CoinService coinService;
+    private final UserService userService;
 
     public DashboardController(DashboardService dashboardService,
-                               CoinService coinService) {
+                               CoinService coinService, UserService userService) {
         this.dashboardService = dashboardService;
         this.coinService = coinService;
+        this.userService = userService;
     }
 
     @GetMapping({"/", "/dashboard"})
     public String showDashboard(Model model,
-                                HttpSession session,
+                                @AuthenticationPrincipal UserDetails userDetails,
                                 @RequestParam(defaultValue = "1") int pageNum) {
 
         Page<DailyData> topMarketCap = dashboardService.getDashboardMarketCap(pageNum - 1, PAGE_SIZE);
 
-        User user=(User) session.getAttribute("user");
+        User user = null;
+        if(userDetails != null) {
+            user = userService.findByUsername(userDetails.getUsername());
+        }
         model.addAttribute("user",user);
 
         model.addAttribute("symbols", coinService.getAllSymbols());

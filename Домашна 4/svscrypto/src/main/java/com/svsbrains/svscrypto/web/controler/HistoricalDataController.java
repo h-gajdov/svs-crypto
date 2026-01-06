@@ -3,10 +3,11 @@ package com.svsbrains.svscrypto.web.controler;
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
 import com.svsbrains.svscrypto.model.User;
-import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
-import jakarta.servlet.http.HttpSession;
+import com.svsbrains.svscrypto.service.UserService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,26 +20,23 @@ import java.util.Map;
 @Controller
 @RequestMapping("/historical-data")
 public class HistoricalDataController {
-    private final HttpSession httpSession;
     private final DailyDataService dailyDataService;
     private final MarketDataService marketDataService;
-    private final CoinService coinService;
+    private final UserService userService;
 
-    public HistoricalDataController(HttpSession httpSession, DailyDataService dailyDataService,CoinService coinService, MarketDataService marketDataService) {
-        this.httpSession = httpSession;
+    public HistoricalDataController(DailyDataService dailyDataService, MarketDataService marketDataService, UserService userService) {
         this.dailyDataService = dailyDataService;
         this.marketDataService = marketDataService;
-        this.coinService=coinService;
+        this.userService = userService;
     }
 
     @GetMapping
-    public String getHistory(Model model){
-        User u=(User)httpSession.getAttribute("user");
-        if(u==null) return "redirect:/login";
-
+    public String getHistory(Model model,
+                             @AuthenticationPrincipal UserDetails userDetails){
+        User user = userService.findByUsername(userDetails.getUsername());
         model.addAttribute("bodyContent","history");
 
-        List<DailyData> topPrice = u.getHistoryCoins().stream().map(dailyDataService::getBySymbol).toList();
+        List<DailyData> topPrice = userService.getSearchHistory(user.getUsername());
 
         topPrice.forEach(coin -> {
             double monthlyChange = dailyDataService.getMonthlyChange(coin.getSymbol());
@@ -55,10 +53,7 @@ public class HistoricalDataController {
             sparklineData.put(coin.getSymbol(), res);
         }
 
-        List<String> symbols = coinService.getAllSymbols();
-        model.addAttribute("symbols",symbols);
-
-        model.addAttribute("user",httpSession.getAttribute("user"));
+        model.addAttribute("user", user);
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);
         model.addAttribute("pageTitle", "Search history");

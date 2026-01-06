@@ -1,4 +1,4 @@
-<section xmlns:th="http://www.thymeleaf.org">
+<section xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
     <div class="page-title">
         <h2>Cryptocurrency Dashboard</h2>
         <p>Real-time market overview and price charts</p>
@@ -90,7 +90,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="coin, iterStat : ${tableCoins}" class="clickable-row" th:data-symbol="${coin.symbol}">
-                    <td class="sticky-col column-1" th:if="${user!=null}">
+                    <td class="sticky-col column-1" sec:authorize="isAuthenticated()">
                         <form th:if="${!user.hasCoin(coin.symbol)}" th:action="@{/addCoinToUser}" method="post">
                             <input type="hidden" name="username" th:value="${user.username}"/>
                             <input type="hidden" name="symbol" th:value="${coin.symbol}"/>
