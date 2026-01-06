@@ -26,7 +26,7 @@ public class AnalysisEngineEndpoints {
     private static final String GET_LSTM_PREDICTION = "/api/predict";
     private static final String GET_TECHNICAL_ANALYSIS_ENDPOINT = "/analysis";
 
-    /** Base URL for the Analysis Engine, injected from application properties */
+    /** Base URL for the Analysis Service, injected from application properties */
     @Value("${analysis.engine.base-url}")
     private String baseUrl;
 
@@ -111,5 +111,14 @@ public class AnalysisEngineEndpoints {
         return combineEndpointWithSymbol(GET_LSTM_PREDICTION, symbol);
     }
 
+    /**
+     * Returns the full URL for retrieving technical analysis for a specific cryptocurrency symbol.
+     * <p>
+     * This method appends the symbol (converted to uppercase) to the base technical analysis endpoint.
+     * The resulting URL can be used by clients to request technical indicator data for the given symbol.
+     *
+     * @param symbol the cryptocurrency symbol (e.g., "BTC", "ETH")
+     * @return the fully-qualified URL to call the technical analysis endpoint for the specified symbol
+     */
     public String analyzeSymbolEndpoint(String symbol) {return combineEndpointWithSymbol(GET_TECHNICAL_ANALYSIS_ENDPOINT, symbol);}
 }
