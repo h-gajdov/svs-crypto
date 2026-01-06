@@ -3,67 +3,61 @@ from technicalAnalysis.getSymbols import *
 from technicalAnalysis.indicators import *
 from technicalAnalysis.timeframeAnalysis import *
 
+from technicalAnalysis.strategies import TechnicalAnalyzer
+import pandas as pd
+
 def analyze_all_cryptos():
     symbols = get_all_symbols()
     results = {}
 
+    analyzer = TechnicalAnalyzer()
+
     for symbol in symbols:
         df = load_data(symbol)
-        df = add_indicators(df)
 
-        signals_1D = calculate_signals(df)
-        signals_1W = timeframe_analysis(df, "1W")
-        signals_1M = timeframe_analysis(df, "1M")
+        if df.empty:
+            continue
 
         results[symbol] = {
-            "1D": signals_1D,
-            "1W": signals_1W,
-            "1M": signals_1M
+            "1D": analyzer.analyze(df),
+            "1W": timeframe_analysis(df, "1W"),
+            "1M": timeframe_analysis(df, "1M")
         }
 
     return results
 
+
 def analyze_symbol(symbol):
     df = load_data(symbol)
-    df = add_indicators(df)
+    analyzer = TechnicalAnalyzer()
 
     return {
         "symbol": symbol,
-        "1D": calculate_signals(df),
+        "1D": analyzer.analyze(df),
         "1W": timeframe_analysis(df, "1W"),
         "1M": timeframe_analysis(df, "1M")
     }
 
+
 def get_symbol_indicators(symbol):
     df = load_data(symbol)
-    df = add_indicators(df)
-
     if df.empty:
         return {}
 
-    def get_last_value(column):
-        if column in df.columns:
-            col = df[column].dropna()
-            return float(col.iloc[-1]) if not col.empty else None
-        return None
+    analyzer = TechnicalAnalyzer()
+    for strategy in analyzer.strategies:
+        df = strategy.calculate(df)
 
-    return {
+    last_row = df.iloc[-1]
+    indicator_values = {
         "symbol": symbol,
-        "close": get_last_value("close"),
-        "RSI": get_last_value("RSI"),
-        "MACD": get_last_value("MACD"),
-        "MACD_signal": get_last_value("MACD_signal"),
-        "STOCH_K": get_last_value("STOCH_K"),
-        "STOCH_D": get_last_value("STOCH_D"),
-        "ADX": get_last_value("ADX"),
-        "CCI": get_last_value("CCI"),
-        "SMA_20": get_last_value("SMA_20"),
-        "EMA_20": get_last_value("EMA_20"),
-        "WMA_20": get_last_value("WMA_20"),
-        "BB_middle": get_last_value("BB_middle"),
-        "BB_upper": get_last_value("BB_upper"),
-        "BB_lower": get_last_value("BB_lower"),
-        "VMA_20": get_last_value("VMA_20")
+        "close": float(last_row["close"])
     }
+    for col in df.columns:
+        if col not in ['open', 'high', 'low', 'close', 'volume']:
+            val = last_row[col]
+            indicator_values[col] = float(val) if not pd.isna(val) else None
+
+    return indicator_values
 
 
