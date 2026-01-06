@@ -2,6 +2,7 @@ package com.svsbrains.svscrypto.service;
 
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -40,6 +41,8 @@ public interface UserService extends UserDetailsService {
     User save(User user);
 
     User findByUsername(String username);
+
+    User getCurrentUser(UserDetails userDetails);
 
     /**
      * Sends a verification email containing a one-time PIN

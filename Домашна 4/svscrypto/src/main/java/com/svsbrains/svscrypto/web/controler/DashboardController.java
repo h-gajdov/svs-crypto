@@ -2,10 +2,8 @@ package com.svsbrains.svscrypto.web.controler;
 
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.User;
-import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DashboardService;
 import com.svsbrains.svscrypto.service.UserService;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,36 +12,35 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+/**
+ * Controller responsible for handling the dashboard page.
+ * <p>
+ * This controller displays the main dashboard of the cryptocurrency application,
+ * including market data, top-performing coins, recent additions, and user-specific information.
+ * Pagination is supported for the main market cap table.
+ * </p>
+ */
 @Controller
 public class DashboardController {
-
-    private static final int PAGE_SIZE = 10;
-
     private final DashboardService dashboardService;
-    private final CoinService coinService;
     private final UserService userService;
 
     public DashboardController(DashboardService dashboardService,
-                               CoinService coinService, UserService userService) {
+                               UserService userService) {
         this.dashboardService = dashboardService;
-        this.coinService = coinService;
         this.userService = userService;
     }
 
     @GetMapping({"/", "/dashboard"})
-    public String showDashboard(Model model,
+    public String showDashboardPage(Model model,
                                 @AuthenticationPrincipal UserDetails userDetails,
-                                @RequestParam(defaultValue = "1") int pageNum) {
+                                @RequestParam(defaultValue = "1") int pageNum,
+                                @RequestParam(defaultValue = "10") int pageSize) {
 
-        Page<DailyData> topMarketCap = dashboardService.getDashboardMarketCap(pageNum - 1, PAGE_SIZE);
+        Page<DailyData> topMarketCap = dashboardService.getDashboardMarketCap(pageNum - 1, pageSize);
 
-        User user = null;
-        if(userDetails != null) {
-            user = userService.findByUsername(userDetails.getUsername());
-        }
+        User user = userService.getCurrentUser(userDetails);
         model.addAttribute("user",user);
-
-        model.addAttribute("symbols", coinService.getAllSymbols());
 
         model.addAttribute("pageNum", pageNum);
         model.addAttribute("totalNumberOfPages", topMarketCap.getTotalPages());

@@ -99,6 +99,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getCurrentUser(UserDetails userDetails) {
+        if(userDetails == null) return null;
+        return findByUsername(userDetails.getUsername());
+    }
+
+    @Override
     public void sendVerificationMail(User user) {
         String pin = PinGenerator.generatePin();
         VerificationToken verificationToken = new VerificationToken(user, pin);
