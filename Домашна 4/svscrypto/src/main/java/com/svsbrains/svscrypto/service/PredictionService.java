@@ -22,5 +22,5 @@ public interface PredictionService {
      * @return a {@link PredictionResponseDto} containing the predicted price data,
      *         or {@code null} if the Analysis Engine service is unavailable
      */
-    public PredictionResponseDto predictPrice(String symbol);
+    PredictionResponseDto predictPrice(String symbol);
 }

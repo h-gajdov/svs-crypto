@@ -3,6 +3,9 @@ package com.svsbrains.svscrypto.service.impl;
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.model.VerificationToken;
+import com.svsbrains.svscrypto.model.exceptions.EmailAlreadyUsedException;
+import com.svsbrains.svscrypto.model.exceptions.EmailNotFoundException;
+import com.svsbrains.svscrypto.model.exceptions.InvalidCredentialsException;
 import com.svsbrains.svscrypto.repository.UserRepository;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.EmailService;
@@ -35,44 +38,43 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User signUpUser(String username, String first_name, String last_name, String email, String password) {
-        if(userRepository.findByEmail(email) != null){
-            throw new UsernameNotFoundException("Email already in use");
+    public User signUpUser(String username, String firstName, String lastName, String email, String password) {
+        if(userRepository.findByEmail(email).isPresent()){
+            throw new EmailAlreadyUsedException(email);
         }
-        User user = new User(username, first_name, last_name, email, passwordEncoder.encode(password));
+        User user = new User(username, firstName, lastName, email, passwordEncoder.encode(password));
         userRepository.save(user);
         return user;
     }
 
     @Override
     public User logInUserByUsername(String username, String password) {
-        User user = userRepository.getUserByUsername(username);
+        User user = findByUsername(username);
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            //TODO: Change exception
-            throw new UsernameNotFoundException("Invalid username or password.");
+            throw new InvalidCredentialsException();
         }
         return user;
     }
 
     @Override
-    public User addCoinToList(String username, String c) {
-        User u = userRepository.getUserByUsername(username);
-        u.addCoin(c);
-        return u;
+    public User addCoinToWatchlist(String username, String symbol) {
+        User user = findByUsername(username);
+        user.addCoin(symbol);
+        return save(user);
     }
 
     @Override
-    public User deleteCoinFromList(String username, String c) {
-        User u = userRepository.getUserByUsername(username);
-        u.removeCoin(c);
-        return u;
+    public User removeCoinFromWatchlist(String username, String symbol) {
+        User user = findByUsername(username);
+        user.removeCoin(symbol);
+        return save(user);
     }
 
     @Override
     public User addCoinToSearchHistory(String username, String symbol) {
-        User user = userRepository.getUserByUsername(username);
+        User user = findByUsername(username);
         user.addHistoryCoin(symbol);
-        return user;
+        return save(user);
     }
 
     @Override
@@ -83,7 +85,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElseThrow(() -> new EmailNotFoundException(email));
     }
 
     @Override
@@ -93,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        return userRepository.findUserByUsername(username);
+        return userRepository.findUserByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
     }
 
     @Override
@@ -111,6 +113,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findUserByUsername(username);
+        return findByUsername(username);
     }
 }

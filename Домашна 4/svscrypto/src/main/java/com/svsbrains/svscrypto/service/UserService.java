@@ -6,17 +6,46 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
+/**
+ * Service responsible for managing {@link User} domain logic.
+ * <p>
+ * This service handles:
+ * <ul>
+ *     <li>User registration and authentication</li>
+ *     <li>User persistence and lookup</li>
+ *     <li>User activity such as watchlist and search history</li>
+ *     <li>Verification email dispatch</li>
+ * </ul>
+ *
+ * <p>
+ * It also extends {@link UserDetailsService} to integrate with Spring Security
+ * for authentication and authorization.
+ */
 public interface UserService extends UserDetailsService {
 
-    public User signUpUser(String username, String first_name, String last_name, String email, String password);
-    public User logInUserByUsername(String username, String password);
-    public User addCoinToList(String username, String c);
-    public User deleteCoinFromList(String username, String c);
-    public User addCoinToSearchHistory(String username, String symbol);
-    public List<DailyData> getSearchHistory(String username);
-    public User findByEmail(String email);
-    public User save(User user);
-    public User findByUsername(String username);
+    User signUpUser(String username, String firstName, String lastName, String email, String password);
 
+    User logInUserByUsername(String username, String password);
+
+    User addCoinToWatchlist(String username, String c);
+
+    User removeCoinFromWatchlist(String username, String c);
+
+    User addCoinToSearchHistory(String username, String symbol);
+
+    List<DailyData> getSearchHistory(String username);
+
+    User findByEmail(String email);
+
+    User save(User user);
+
+    User findByUsername(String username);
+
+    /**
+     * Sends a verification email containing a one-time PIN
+     * to the user's registered email address.
+     *
+     * @param user the user to verify
+     */
     void sendVerificationMail(User user);
 }

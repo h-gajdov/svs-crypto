@@ -71,7 +71,7 @@ public class UserController {
 
     @PostMapping("/add-coin-to-watchlist")
     public String addCoinToWatchlist(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession, HttpServletRequest request) {
-        User u = userService.addCoinToList(username, symbol);
+        User u = userService.addCoinToWatchlist(username, symbol);
         httpSession.setAttribute("user", u);
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/dashboard");
@@ -79,7 +79,7 @@ public class UserController {
 
     @PostMapping("/delete-coin-from-watchlist")
     public String deleteCoinFromWatchlist(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession, HttpServletRequest request) {
-        User u = userService.deleteCoinFromList(username, symbol);
+        User u = userService.removeCoinFromWatchlist(username, symbol);
         httpSession.setAttribute("user", u);
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/dashboard");

@@ -30,7 +30,7 @@ public class CustomUsernamePasswordAuthProvider implements AuthenticationProvide
             throw new BadCredentialsException("Empty username or password");
         }
 
-        UserDetails userDetails = this.userService.loadUserByUsername(username);
+        UserDetails userDetails = this.userService.findByUsername(username);
 
         if(!passwordEncoder.matches(password, userDetails.getPassword())){
             throw new BadCredentialsException("Wrong Credentials");

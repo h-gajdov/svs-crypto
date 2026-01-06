@@ -155,7 +155,7 @@ public class User implements UserDetails {
     }
 
     public void addHistoryCoin(String s) {
-        this.historyCoins.remove(s);
+        if(historyCoins.contains(s)) return;
         this.historyCoins.add(s);
     }
 
