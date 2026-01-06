@@ -1,34 +1,27 @@
 package com.svsbrains.svscrypto.service.impl;
 
+import com.svsbrains.svscrypto.client.AnalysisEngineClient;
+import com.svsbrains.svscrypto.client.AnalysisEngineEndpoints;
 import com.svsbrains.svscrypto.model.dto.SymbolAnalysisResponse;
-import com.svsbrains.svscrypto.repository.TechnicalAnalysisRepository;
 import com.svsbrains.svscrypto.service.TechnicalAnalysisService;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 public class TechnicalAnalysisServiceImpl implements TechnicalAnalysisService {
 
-    private final TechnicalAnalysisRepository repository;
-    private final RestTemplate restTemplate;
+    private final AnalysisEngineEndpoints endpoints;
+    private final AnalysisEngineClient client;
 
-    public TechnicalAnalysisServiceImpl(TechnicalAnalysisRepository repository, RestTemplate restTemplate) {
-        this.repository = repository;
-        this.restTemplate = restTemplate;
+    public TechnicalAnalysisServiceImpl(AnalysisEngineEndpoints endpoints, AnalysisEngineClient client) {
+        this.endpoints = endpoints;
+        this.client = client;
     }
 
-    public Map<String, Object> getTechnicalAnalysis(String symbol) {
-        String url = "http://localhost:8000/analysis/" + symbol;
-        return restTemplate.getForObject(url, Map.class);
-    }
-
-    public SymbolAnalysisResponse analyzeSymbol(String symbol) {
-        return repository.analyzeSymbol(symbol.toUpperCase());
-    }
-
-    public Map<String, Object> analyzeAll() {
-        return repository.analyzeAll();
+    @Override
+    public SymbolAnalysisResponse getTechnicalAnalysis(String symbol) {
+        return client.get(
+                endpoints.analyzeSymbolEndpoint(symbol),
+                SymbolAnalysisResponse.class
+        );
     }
 }

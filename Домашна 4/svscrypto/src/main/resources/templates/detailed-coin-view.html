@@ -244,33 +244,6 @@
     </div>
 
     <div class="wrapper mkt-stat">
-        <span>Exchange flows</span>
-        <div id="exchange-flow-table">
-            <div class="header exchange-row">
-                <span>Symbol</span>
-                <span>Netflow</span>
-                <span>Timeframe</span>
-            </div>
-
-            <div class="spinner-wrapper">
-                <span class="spinner"></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="wrapper mkt-stat" id="news-section">
-        <div style="display: flex; justify-content: space-between;" class="mkt-stat">
-            <span th:text="${'News for ' + coin.getName()}"></span>
-            <span id="sentiment-label">Sentiment: <span>neutral</span></span>
-        </div>
-        <div id="news-container">
-            <div class="spinner-wrapper">
-                <span class="spinner"></span>
-            </div>
-        </div>
-    </div>
-
-    <div class="wrapper mkt-stat">
         <div id="metrics-container">
             <div class="cell"><span class="grey-text">RSI</span><span id="rsi">
                 <span class="spinner-wrapper">
@@ -346,6 +319,33 @@
                     <span class="spinner"></span>
                 </span>
             </span></div>
+        </div>
+    </div>
+
+    <div class="wrapper mkt-stat">
+        <span>Exchange flows</span>
+        <div id="exchange-flow-table">
+            <div class="header exchange-row">
+                <span>Symbol</span>
+                <span>Netflow</span>
+                <span>Timeframe</span>
+            </div>
+
+            <div class="spinner-wrapper">
+                <span class="spinner"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper mkt-stat" id="news-section">
+        <div style="display: flex; justify-content: space-between;" class="mkt-stat">
+            <span th:text="${'News for ' + coin.getName()}"></span>
+            <span id="sentiment-label">Sentiment: <span>neutral</span></span>
+        </div>
+        <div id="news-container">
+            <div class="spinner-wrapper">
+                <span class="spinner"></span>
+            </div>
         </div>
     </div>
 

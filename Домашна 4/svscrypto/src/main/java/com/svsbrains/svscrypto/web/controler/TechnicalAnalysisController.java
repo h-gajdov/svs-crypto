@@ -20,22 +20,7 @@ public class TechnicalAnalysisController {
 
     @GetMapping("/technical-analysis")
     @ResponseBody
-    public Map<String, Object> getTA(@RequestParam String symbol) {
+    public SymbolAnalysisResponse getTA(@RequestParam String symbol) {
         return service.getTechnicalAnalysis(symbol);
     }
-
-    /*
-    @PostMapping("/analyze")
-    public String analyzeSymbol(@RequestParam String symbol, Model model) {
-        SymbolAnalysisResponse result = service.analyzeSymbol(symbol);
-        model.addAttribute("result", result);
-        return "technical-analysis";
-    }
-
-    @GetMapping("/analyze-all")
-    public String analyzeAll(Model model) {
-        Map<String, Object> results = service.analyzeAll();
-        model.addAttribute("allResults", results);
-        return "technical-analysis";
-    }*/
 }

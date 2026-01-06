@@ -17,26 +17,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class AnalysisEngineEndpoints {
 
-    /** Endpoint path for retrieving all on-chain metrics for a symbol */
     private static final String GET_ALL_METRICS = "/metrics";
-
-    /** Endpoint path for retrieving on-chain sentiment indicator for a symbol */
     private static final String GET_SENTIMENT_INDICATOR = "/get-indicator-onchain";
-
-    /** Endpoint path for estimating news sentiment for a symbol */
     private static final String GET_ESTIMATE_NEWS = "/estimate-news";
-
-    /** Endpoint path for retrieving whale movements */
     private static final String GET_WHALE_MOVEMENTS = "/whale-movements";
-
-    /** Endpoint path for retrieving exchange flow for a symbol */
     private static final String GET_EXCHANGE_FLOW = "/exchange-flow";
-
-    /** Endpoint path for retrieving additional indicators for a symbol */
     private static final String GET_INDICATORS = "/identificators";
-
-    /** Endpoint path for retrieving LSTM price prediction for a symbol */
     private static final String GET_LSTM_PREDICTION = "/api/predict";
+    private static final String GET_TECHNICAL_ANALYSIS_ENDPOINT = "/analysis";
 
     /** Base URL for the Analysis Engine, injected from application properties */
     @Value("${analysis.engine.base-url}")
@@ -122,4 +110,6 @@ public class AnalysisEngineEndpoints {
     public String predictionEndpoint(String symbol) {
         return combineEndpointWithSymbol(GET_LSTM_PREDICTION, symbol);
     }
+
+    public String analyzeSymbolEndpoint(String symbol) {return combineEndpointWithSymbol(GET_TECHNICAL_ANALYSIS_ENDPOINT, symbol);}
 }
