@@ -44,17 +44,17 @@ public class UserController {
         return "master-template";
     }
 
-    @PostMapping("/login")
-    public String logInUser(@RequestParam String username, @RequestParam String password, Model model) {
-        User user = userService.logInUserByUsername(username, password);
-        if (user == null) return "redirect:/login?error";
-        if (!user.isEnabled()) {
-            userService.sendVerificationMail(user);
-            return "redirect:/verify";
-        }
-        httpSession.setAttribute("user", user);
-        return "redirect:/dashboard";
-    }
+//    @PostMapping("/login")
+//    public String logInUser(@RequestParam String username, @RequestParam String password, Model model) {
+//        User user = userService.logInUserByUsername(username, password);
+//        if (user == null) return "redirect:/login?error";
+//        if (!user.isEnabled()) {
+//            userService.sendVerificationMail(user);
+//            return "redirect:/verify";
+//        }
+//        httpSession.setAttribute("user", user);
+//        return "redirect:/dashboard";
+//    }
 
     @GetMapping("/watchlist")
     public String getWatchList(Model model) {

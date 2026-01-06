@@ -20,29 +20,30 @@ public class SignUpController {
         this.verificationTokenService = verificationTokenService;
     }
 
-    @GetMapping("/signin")
-    public String signIn(Model model) {
-        model.addAttribute("bodyContent", "sign-in-form");
+    @GetMapping("/signup")
+    public String signUp(Model model) {
+        model.addAttribute("bodyContent", "sign-up-form");
         model.addAttribute("pageTitle", "Register");
         return "master-template";
     }
 
-    @PostMapping("/signin")
-    public String signInUser(@RequestParam String firstname, @RequestParam String lastname,
+    @PostMapping("/signup")
+    public String signUpUser(@RequestParam String firstname, @RequestParam String lastname,
                              @RequestParam String email, @RequestParam String username,
                              @RequestParam String password, Model model) {
-        User user = userService.signInUser(username, firstname, lastname, email, password);
+        User user = userService.signUpUser(username, firstname, lastname, email, password);
         userService.sendVerificationMail(user);
         model.addAttribute("email", user.getEmail());
-        return "redirect:/verify";
+        return "redirect:/verify?email=" + user.getEmail();
     }
 
     @GetMapping("/verify")
-    public String showVerifyPage(Model model) {
-        if (!model.containsAttribute("email")) {
-            return "redirect:/signin";
+    public String showVerifyPage(@RequestParam(required = false) String email, Model model) {
+        if (email == null || email.isEmpty()) {
+            return "redirect:/signup";
         }
 
+        model.addAttribute("email", email);
         model.addAttribute("bodyContent", "verification-form");
         model.addAttribute("pageTitle", "Verify Mail");
         return "master-template";
