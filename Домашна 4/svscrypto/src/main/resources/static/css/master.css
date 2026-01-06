@@ -744,6 +744,9 @@ thead .sticky-col {
     --dashboard-table-hover-effect: #f3f4f6;
     --graph-btn-details-view: #e0e0e0;
     --slider-track: #e9ecef;
+    --nav-text-color: #444;
+    --nav-hover-bg: #f0f0f0;
+    --nav-hover-color: #1e90ff;
 }
 
 .theme-dark {
@@ -762,6 +765,9 @@ thead .sticky-col {
     --graph-btn-details-view: #0f1115;
     --bs-gray-200: #161310 !important;
     --slider-track: #0f1115;
+    --nav-text-color: #ccc;
+    --nav-hover-bg: #333;
+    --nav-hover-color: #4da6ff;
 }
 
 body {
@@ -1076,4 +1082,29 @@ input, select {
 .verify-card {
     background: var(--bg-secondary) !important;
     color: var(--text-color) !important;
+}
+
+.nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    color: var(--nav-text-color) !important;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    cursor: pointer;
+}
+
+.nav-btn svg {
+    transition: transform 0.2s, color 0.2s;
+}
+
+.nav-btn:hover, .nav-btn.selected {
+    background-color: var(--nav-hover-bg);
+    color: var(--nav-hover-color) !important;
+    transform: translateX(3px);
+}
+
+.nav-btn:hover svg, .nav-btn.selected svg {
+    transform: scale(1.1);
 }
