@@ -1,22 +1,15 @@
-if (document.body.classList.contains('theme-dark')) {
-    document.body.setAttribute('data-bs-theme', 'dark');
-} else {
-    document.body.setAttribute('data-bs-theme', 'light');
-}
-
 const themeToggle = document.querySelector(".theme-toggle");
 const themeIcon = document.querySelector("#theme-icon");
-const body = document.body;
+const root = document.documentElement;
+let darkMode = localStorage.getItem("theme") === "dark";
 
-let darkMode = localStorage.getItem("darkMode") === "true";
-
-if (darkMode) body.classList.add("theme-dark");
 updateIcon();
 
 themeToggle.addEventListener("click", () => {
     darkMode = !darkMode;
-    body.classList.toggle("theme-dark", darkMode);
-    localStorage.setItem("darkMode", darkMode);
+    root.classList.toggle("theme-dark", darkMode);
+    root.setAttribute("data-bs-theme", darkMode ? "dark" : "light");
+    localStorage.setItem("theme", darkMode ? "dark" : "light");
     updateIcon();
 });
 

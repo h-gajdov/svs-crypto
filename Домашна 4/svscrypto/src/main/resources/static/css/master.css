@@ -1387,3 +1387,9 @@ input, select {
     right: 0;
     left: auto;
 }
+
+.no-theme-transition *,
+.no-theme-transition *::before,
+.no-theme-transition *::after {
+    transition: none !important;
+}

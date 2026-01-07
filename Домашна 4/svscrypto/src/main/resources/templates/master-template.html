@@ -1,5 +1,7 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <script src="/scripts/disable-initial-paint.js"></script>
+
     <meta charset="UTF-8"/>
     <title th:if="${pageTitle != null}" th:text="${pageTitle}"></title>
     <title th:if="${pageTitle == null}">Title not set!</title>
@@ -19,7 +21,7 @@
     <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>
 </head>
 
-<body class="theme-light" data-bs-theme="light" style="background: var(--bg-color)">
+<body data-bs-theme="light" style="background: var(--bg-color)">
 <div class="body-wrapper">
     <header th:replace="fragments/header"></header>
 
@@ -29,8 +31,14 @@
     <footer th:replace="fragments/footer"></footer>
 </div>
 
-
 <script src="/scripts/theme-toggle.js"></script>
 <script src="/scripts/clickable-row-script.js"></script>
+<script>
+    window.addEventListener("load", () => {
+        requestAnimationFrame(() => {
+            document.documentElement.classList.remove("no-theme-transition");
+        });
+    });
+</script>
 </body>
 </html>
