@@ -1,14 +1,10 @@
-package com.svsbrains.svscrypto.web.controler;
+package com.svsbrains.svscrypto.web.controller;
 
 import com.svsbrains.svscrypto.model.dto.SymbolAnalysisResponse;
 import com.svsbrains.svscrypto.service.TechnicalAnalysisService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
-import java.util.Map;
 
 import static com.svsbrains.svscrypto.util.ResponseUtils.respondOrServiceUnavailable;
 

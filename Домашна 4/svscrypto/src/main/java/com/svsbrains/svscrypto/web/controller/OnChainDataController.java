@@ -1,4 +1,4 @@
-package com.svsbrains.svscrypto.web.controler;
+package com.svsbrains.svscrypto.web.controller;
 
 import com.svsbrains.svscrypto.model.dto.*;
 import com.svsbrains.svscrypto.service.OnChainService;

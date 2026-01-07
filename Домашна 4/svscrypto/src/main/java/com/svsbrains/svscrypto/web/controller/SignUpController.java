@@ -1,4 +1,4 @@
-package com.svsbrains.svscrypto.web.controler;
+package com.svsbrains.svscrypto.web.controller;
 
 import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.model.VerificationToken;

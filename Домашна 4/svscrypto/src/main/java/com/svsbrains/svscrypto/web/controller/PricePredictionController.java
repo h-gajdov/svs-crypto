@@ -1,9 +1,8 @@
-package com.svsbrains.svscrypto.web.controler;
+package com.svsbrains.svscrypto.web.controller;
 
 import com.svsbrains.svscrypto.model.dto.PredictionResponseDto;
 import com.svsbrains.svscrypto.service.PredictionService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import static com.svsbrains.svscrypto.util.ResponseUtils.respondOrServiceUnavailable;
