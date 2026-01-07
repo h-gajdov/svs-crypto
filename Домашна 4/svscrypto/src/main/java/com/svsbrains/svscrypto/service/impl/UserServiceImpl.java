@@ -105,7 +105,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User enableUser(User user) {
+        user.setEnabled(true);
+        verificationTokenService.removeTokenFromUser(user);
+        return user;
+    }
+
+    @Override
     public void sendVerificationMail(User user) {
+        verificationTokenService.removeTokenFromUser(user); // if there was a token previously remove it
+
         String pin = PinGenerator.generatePin();
         VerificationToken verificationToken = new VerificationToken(user, pin);
         verificationTokenService.save(verificationToken);

@@ -93,7 +93,29 @@ public interface DailyDataService {
      */
     int getRankOfSymbol(String symbol);
 
+    /**
+     * Populates the given list of {@link DailyData} objects with calculated change values.
+     * <p>
+     * This method computes relevant price changes (e.g., daily, monthly, or multi-period)
+     * for each coin in the list and sets them into the corresponding fields of {@link DailyData}.
+     * It is typically used before rendering coin data in dashboards or historical views.
+     * </p>
+     *
+     * @param coins the list of {@link DailyData} objects to update with change information
+     */
     void setCoinsChanges(List<DailyData> coins);
 
+    /**
+     * Generates sparkline data for a list of cryptocurrencies.
+     * <p>
+     * A sparkline is a compact representation of a coin's price history,
+     * usually a list of opening prices over the past N days.
+     * This method returns a map where each key is a coin symbol and each value
+     * is a list of doubles representing the historical prices for that coin.
+     * </p>
+     *
+     * @param coins the list of {@link DailyData} objects for which to generate sparkline data
+     * @return a {@link Map} where the key is the coin symbol and the value is a list of historical prices
+     */
     Map<String, List<Double>> getSparklineData(List<DailyData> coins);
 }

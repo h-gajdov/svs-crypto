@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 public interface CoinRepository extends JpaRepository<Coin, Long> {
     @Query("SELECT distinct symbol from DailyData")
-    public List<String> findAllSymbols();
+    List<String> findAllSymbols();
 }

@@ -45,6 +45,22 @@ public interface UserService extends UserDetailsService {
     User getCurrentUser(UserDetails userDetails);
 
     /**
+     * Enables the given user account and removes any existing verification token associated with the user.
+     * <p>
+     * This method is typically called after the user successfully verifies their email or PIN.
+     * It performs two actions:
+     * <ol>
+     *     <li>Sets the {@code enabled} flag of the {@link User} to {@code true}, allowing the user to log in.</li>
+     *     <li>Removes the existing verification token from the user via {@link VerificationTokenService},
+     *         ensuring the token cannot be reused.</li>
+     * </ol>
+     *
+     * @param user the {@link User} to enable
+     * @return the updated {@link User} with {@code enabled = true} and token removed
+     */
+    User enableUser(User user);
+
+    /**
      * Sends a verification email containing a one-time PIN
      * to the user's registered email address.
      *

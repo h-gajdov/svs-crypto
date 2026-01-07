@@ -29,4 +29,14 @@ public interface VerificationTokenService {
      *         or {@code null} if no token exists
      */
     VerificationToken findByUser(User user);
+
+    /**
+     * Removes the verification token associated with the given user.
+     * <p>
+     * This is usually called after the user successfully verifies their account
+     * to ensure the token cannot be reused.
+     *
+     * @param user the {@link User} whose verification token should be removed
+     */
+    void removeTokenFromUser(User user);
 }

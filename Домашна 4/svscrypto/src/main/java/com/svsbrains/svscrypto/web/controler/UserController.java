@@ -5,7 +5,6 @@ import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.ui.Model;
@@ -17,6 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controller for handling user-related operations.
+ * <p>
+ * This controller manages authentication views (login page) and user-specific
+ * functionalities such as managing the watchlist of cryptocurrencies.
+ * </p>
+ */
 @Controller
 public class UserController {
     private final UserService userService;
@@ -39,7 +45,7 @@ public class UserController {
                                @AuthenticationPrincipal UserDetails userDetails) {
         model.addAttribute("bodyContent", "user-list");
 
-        User user = userService.findByUsername(userDetails.getUsername());
+        User user = userService.getCurrentUser(userDetails);
 
         List<DailyData> topPrice = user.getCoins().stream().map(dailyDataService::getBySymbol).toList();
         dailyDataService.setCoinsChanges(topPrice);
@@ -54,17 +60,25 @@ public class UserController {
     }
 
     @PostMapping("/add-coin-to-watchlist")
-    public String addCoinToWatchlist(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession, HttpServletRequest request) {
-        User u = userService.addCoinToWatchlist(username, symbol);
-        httpSession.setAttribute("user", u);
-        String referer = request.getHeader("Referer");
-        return "redirect:" + (referer != null ? referer : "/dashboard");
+    public String addCoinToWatchlist(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String symbol, HttpServletRequest request) {
+        userService.addCoinToWatchlist(userDetails.getUsername(), symbol);
+        return safeRedirectBackHelper(request);
     }
 
     @PostMapping("/delete-coin-from-watchlist")
-    public String deleteCoinFromWatchlist(@RequestParam String username, @RequestParam String symbol, HttpSession httpSession, HttpServletRequest request) {
-        User u = userService.removeCoinFromWatchlist(username, symbol);
-        httpSession.setAttribute("user", u);
+    public String deleteCoinFromWatchlist(@AuthenticationPrincipal UserDetails userDetails, @RequestParam String symbol, HttpServletRequest request) {
+        userService.removeCoinFromWatchlist(userDetails.getUsername(), symbol);
+        return safeRedirectBackHelper(request);
+    }
+
+    /**
+     * Helper method for safely redirecting the user back to the referring page.
+     * Falls back to "/dashboard" if no referer is available.
+     *
+     * @param request the HTTP request containing the referer header
+     * @return a redirect string for Spring MVC
+     */
+    private String safeRedirectBackHelper(HttpServletRequest request) {
         String referer = request.getHeader("Referer");
         return "redirect:" + (referer != null ? referer : "/dashboard");
     }
