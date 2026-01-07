@@ -10,13 +10,52 @@
         </nav>
         <div class="horizontal-center">
             <div class="search-wrapper horizontal-center">
-                <input id="symbolInput" required name="symbol" list="coins" placeholder="Search for a symbol...">
-                <datalist id="coins">
-                    <option th:each="symbol : ${symbols}" th:value="${symbol}"></option>
-                </datalist>
-                <button class="plain-button" type="button" onclick="submitSymbol()">
+                <button class="plain-button search-toggle-btn" type="button" onclick="toggleSearch()">
                     <i class="fa-solid fa-magnifying-glass fa-1_5x icon"></i>
                 </button>
+
+                <div class="dropdown-container search-dropdown-container" id="searchDropdown">
+                    <button type="button" class="dropdown-button search-dropdown-button" onclick="toggleSearchDropdown()">
+                        <span id="selectedSearchText">Search for a coin...</span>
+                        <i class="fa-solid fa-chevron-down search-chevron"></i>
+                    </button>
+
+                    <div class="coin-dropdown-menu search-dropdown-menu" id="searchDropdownMenu">
+                        <input
+                                type="text"
+                                class="dropdown-search"
+                                id="searchInput"
+                                placeholder="Search cryptocurrencies..."
+                                oninput="filterSearchOptions(this.value)"
+                                onclick="event.stopPropagation()"
+                        >
+                        <div id="searchListContainer">
+                            <div class="coin-dropdown-item"
+                                 th:each="coin: ${symbols}"
+                                 th:attr="data-symbol=${coin.symbol}"
+                                 onclick="selectSearchCoin(this)">
+                                <img th:src="'https://img.logo.dev/crypto/' + ${coin.symbol} + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'"
+                                     th:alt="${coin.symbol}"
+                                     class="coin-icon-dropdown"
+                                     onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22><circle cx=%2218%22 cy=%2218%22 r=%2218%22 fill=%22%23ccc%22/></svg>'">
+                                <div class="coin-info-dropdown-wrapper">
+                                    <div class="coin-name-dropdown-row">
+                                        <span class="coin-name-dropdown" th:text="${coin.name}">Bitcoin</span>
+                                        <span class="coin-symbol-dropdown" th:text="${coin.symbol}">BTC</span>
+                                    </div>
+                                    <div class="coin-price-dropdown-row">
+                                        <span class="coin-price-dropdown" th:text="${coin.formattedLastPrice}">$43,521.45</span>
+                                        <span class="coin-change-dropdown"
+                                              th:classappend="${coin.changePercent >= 0} ? 'positive' : 'negative'"
+                                              th:text="${(coin.changePercent < 0 ? '' : '+') + coin.formattedChange + '%'}">
+                                            +2.34%
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <a sec:authorize="isAnonymous()" href="/login" class="icon">
                 <i class="fa-solid fa-right-to-bracket fa-1_5x icon"></i>
@@ -35,22 +74,99 @@
         document.querySelector("#menu-button").addEventListener("click", (e) => {
             document.querySelector("#dropdown-menu").classList.toggle("dropdown-menu")
         })
-        function submitSymbol() {
-            const symbol = document.getElementById('symbolInput').value.toUpperCase();
-            if(symbol) {
-                window.location.href = `/details/${symbol}`;
+
+        let allSearchItems = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchList = document.getElementById('searchListContainer');
+            if (searchList) {
+                allSearchItems = Array.from(searchList.querySelectorAll('.coin-dropdown-item'));
+            }
+        });
+
+        function toggleSearch() {
+            const searchContainer = document.getElementById('searchDropdown');
+            const searchToggleBtn = document.querySelector('.search-toggle-btn');
+
+            if (searchContainer) {
+                searchContainer.classList.toggle('search-active');
+
+                if (searchContainer.classList.contains('search-active')) {
+                    searchToggleBtn.style.transform = 'rotate(90deg)';
+                    setTimeout(() => {
+                        toggleSearchDropdown();
+                    }, 300);
+                } else {
+                    searchToggleBtn.style.transform = 'rotate(0deg)';
+                    const dropdown = document.getElementById('searchDropdown');
+                    const menu = document.getElementById('searchDropdownMenu');
+                    if (dropdown && menu) {
+                        dropdown.classList.remove('active');
+                        menu.classList.remove('active');
+                    }
+                }
             }
         }
 
-        //search when enter is pressed
-        const input = document.getElementById("symbolInput");
-        const datalist = document.getElementById("coins");
+        function toggleSearchDropdown() {
+            const dropdown = document.getElementById('searchDropdown');
+            const menu = document.getElementById('searchDropdownMenu');
 
-        input.addEventListener("keydown", function(event) {
-            if (event.key === "Enter") {
-                const value = input.value;
-                const options = Array.from(datalist.options).map(opt => opt.value);
-                if (options.includes(value)) submitSymbol();
+            if (!dropdown || !menu) return;
+
+            // Only toggle if search is active
+            if (!dropdown.classList.contains('search-active')) return;
+
+            dropdown.classList.toggle('active');
+            menu.classList.toggle('active');
+
+            if (menu.classList.contains('active')) {
+                const searchInput = document.getElementById('searchInput');
+                if (searchInput) {
+                    setTimeout(() => searchInput.focus(), 100);
+                }
+            }
+        }
+
+        function selectSearchCoin(element) {
+            const symbol = element.getAttribute('data-symbol');
+            window.location.href = `/details/${symbol}`;
+        }
+
+        function filterSearchOptions(searchTerm) {
+            const searchLower = searchTerm.toLowerCase();
+
+            allSearchItems.forEach(item => {
+                const symbol = item.getAttribute('data-symbol').toLowerCase();
+                const name = item.querySelector('.coin-name-dropdown').textContent.toLowerCase();
+                const matches = symbol.includes(searchLower) || name.includes(searchLower);
+                item.style.display = matches ? 'flex' : 'none';
+            });
+        }
+
+        // Close search dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const searchDropdown = document.getElementById('searchDropdown');
+            const searchToggleBtn = document.querySelector('.search-toggle-btn');
+
+            if (searchDropdown && !searchDropdown.contains(e.target) && !searchToggleBtn.contains(e.target)) {
+                if (searchDropdown.classList.contains('search-active')) {
+                    toggleSearch();
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter') {
+                        const visibleItems = allSearchItems.filter(item => item.style.display !== 'none');
+                        if (visibleItems.length > 0) {
+                            selectSearchCoin(visibleItems[0]);
+                        }
+                    }
+                });
             }
         });
     </script>

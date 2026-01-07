@@ -2,6 +2,8 @@ package com.svsbrains.svscrypto.web.controler;
 
 import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.model.VerificationToken;
+import com.svsbrains.svscrypto.service.CoinService;
+import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.VerificationTokenService;
 import com.svsbrains.svscrypto.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -30,14 +32,19 @@ import org.springframework.web.bind.support.SessionStatus;
 public class SignUpController {
     private final UserService userService;
     private final VerificationTokenService verificationTokenService;
+    private final DailyDataService dailyDataService;
+    private final CoinService coinService;
 
-    public SignUpController(UserService userService, VerificationTokenService verificationTokenService) {
+    public SignUpController(UserService userService, VerificationTokenService verificationTokenService, DailyDataService dailyDataService, CoinService coinService) {
         this.userService = userService;
         this.verificationTokenService = verificationTokenService;
+        this.dailyDataService = dailyDataService;
+        this.coinService = coinService;
     }
 
     @GetMapping("/signup")
     public String signUpForm(Model model) {
+        model.addAttribute("symbols", dailyDataService.getCoinsBySymbols(coinService.getAllSymbols()));
         model.addAttribute("bodyContent", "sign-up-form");
         model.addAttribute("pageTitle", "Register");
         return "master-template";
@@ -88,6 +95,7 @@ public class SignUpController {
             return "redirect:/signup";
         }
 
+        model.addAttribute("symbols", dailyDataService.getCoinsBySymbols(coinService.getAllSymbols()));
         model.addAttribute("email", email);
         model.addAttribute("bodyContent", "verification-form");
         model.addAttribute("pageTitle", "Verify Mail");

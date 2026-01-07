@@ -2,6 +2,7 @@ package com.svsbrains.svscrypto.web.controler;
 
 import com.svsbrains.svscrypto.model.User;
 import com.svsbrains.svscrypto.service.CoinService;
+import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.DetailedCoinViewService;
 import com.svsbrains.svscrypto.service.UserService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,11 +28,13 @@ public class DetailedViewController {
     private final DetailedCoinViewService detailedCoinViewService;
     private final CoinService coinService;
     private final UserService userService;
+    private final DailyDataService dailyDataService;
 
-    public DetailedViewController(DetailedCoinViewService detailedCoinViewService, CoinService coinService, UserService userService) {
+    public DetailedViewController(DetailedCoinViewService detailedCoinViewService, CoinService coinService, UserService userService, DailyDataService dailyDataService) {
         this.detailedCoinViewService = detailedCoinViewService;
         this.coinService=coinService;
         this.userService = userService;
+        this.dailyDataService = dailyDataService;
     }
 
     /**
@@ -61,7 +65,8 @@ public class DetailedViewController {
             userService.addCoinToSearchHistory(user.getUsername(), symbol);
         }
 
-        model.addAttribute("symbols",coinService.getAllSymbols());
+        List<String> symbols = coinService.getAllSymbols();
+        model.addAttribute("symbols", dailyDataService.getCoinsBySymbols(symbols));
         model.addAttribute("pageTitle", symbol);
         return "master-template";
     }

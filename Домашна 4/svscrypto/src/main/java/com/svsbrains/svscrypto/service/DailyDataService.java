@@ -118,4 +118,6 @@ public interface DailyDataService {
      * @return a {@link Map} where the key is the coin symbol and the value is a list of historical prices
      */
     Map<String, List<Double>> getSparklineData(List<DailyData> coins);
+
+    List<DailyData> getCoinsBySymbols(List<String> symbols);
 }

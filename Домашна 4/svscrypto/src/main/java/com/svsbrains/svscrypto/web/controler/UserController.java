@@ -2,6 +2,7 @@ package com.svsbrains.svscrypto.web.controler;
 
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.User;
+import com.svsbrains.svscrypto.service.CoinService;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,14 +28,17 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final DailyDataService dailyDataService;
+    private final CoinService coinService;
 
-    public UserController(UserService userService, DailyDataService dailyDataService) {
+    public UserController(UserService userService, DailyDataService dailyDataService, CoinService coinService) {
         this.userService = userService;
         this.dailyDataService = dailyDataService;
+        this.coinService = coinService;
     }
 
     @GetMapping("/login")
     public String logIn(Model model) {
+        model.addAttribute("symbols", dailyDataService.getCoinsBySymbols(coinService.getAllSymbols()));
         model.addAttribute("bodyContent", "log-in-form");
         model.addAttribute("pageTitle", "Log in");
         return "master-template";
@@ -52,6 +56,7 @@ public class UserController {
 
         Map<String, List<Double>> sparklineData = dailyDataService.getSparklineData(topPrice);
 
+        model.addAttribute("symbols", dailyDataService.getCoinsBySymbols(coinService.getAllSymbols()));
         model.addAttribute("user", user);
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);

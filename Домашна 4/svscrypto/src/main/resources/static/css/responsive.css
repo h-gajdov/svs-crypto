@@ -22,6 +22,10 @@
 }
 
 @media (max-width: 768px) {
+    main {
+        margin: 1em 1em !important;
+    }
+
     .grid-2col {
         grid-template-columns: 1fr;
     }
@@ -32,5 +36,46 @@
 
     .grid-col button {
         width: 100%;
+    }
+
+    .coin-dropdown-menu {
+        min-width: 280px;
+    }
+
+    .search-dropdown-container {
+        min-width: 200px;
+    }
+
+    .search-dropdown-container.search-active {
+        width: 200px;
+        margin-right: 40px;
+    }
+
+    .dashboard-table td:nth-child(n + 5),
+    .dashboard-table th:nth-child(n + 5){
+        display: none;
+    }
+
+    .dashboard-table td {
+        padding: 2em 0;
+    }
+
+    .graph-btns {
+        gap: 10px;
+    }
+
+    .coin-heading-info {
+        gap: 7px;
+        flex-direction: column;
+    }
+}
+
+@media screen and (max-width: 1200px) {
+    .search-dropdown-container {
+        min-width: 250px;
+    }
+
+    .search-dropdown-container.search-active {
+        width: 250px;
     }
 }

@@ -1,12 +1,15 @@
 package com.svsbrains.svscrypto.web.controler;
 
+import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.service.CoinService;
+import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -26,10 +29,12 @@ public class CompareCryptoController {
 
     private final CoinService coinService;
     private final MarketDataService marketDataService;
+    private final DailyDataService dailyDataService;
 
-    public CompareCryptoController(CoinService coinService, MarketDataService marketDataService) {
+    public CompareCryptoController(CoinService coinService, MarketDataService marketDataService, DailyDataService dailyDataService) {
         this.coinService = coinService;
         this.marketDataService = marketDataService;
+        this.dailyDataService = dailyDataService;
     }
 
     /**
@@ -72,10 +77,11 @@ public class CompareCryptoController {
 
         List<String> symbols = coinService.getAllSymbols();
         symbols.removeAll(currentSymbols);
+        List<DailyData> coinObjects = symbols.stream().map(dailyDataService::getBySymbol).sorted(Comparator.comparing(DailyData::getMarket_cap).reversed()).toList();
 
         model.addAttribute("days", days);
         model.addAttribute("marketData", marketDataService.getMarketDataForSymbols(currentSymbols, days));
-        model.addAttribute("symbols",symbols);
+        model.addAttribute("symbols", coinObjects);
         model.addAttribute("bodyContent", "compare-crypto");
         model.addAttribute("pageTitle", "Compare Coins");
 

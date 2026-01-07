@@ -6,6 +6,7 @@ import com.svsbrains.svscrypto.model.exceptions.DailyDataNotFoundException;
 import com.svsbrains.svscrypto.repository.DailyDataRepository;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.MarketDataService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -104,5 +105,11 @@ public class DailyDataServiceImpl implements DailyDataService {
             sparklineData.put(coin.getSymbol(), res);
         }
         return sparklineData;
+    }
+
+    @Override
+    @Cacheable("dailyDataAllCoins")
+    public List<DailyData> getCoinsBySymbols(List<String> symbols) {
+        return symbols.stream().map(this::getBySymbol).toList();
     }
 }

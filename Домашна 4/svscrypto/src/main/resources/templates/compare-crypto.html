@@ -3,15 +3,55 @@
     <p>Compare performance of multiple cryptocurrencies over time</p>
 
     <div class="wrapper">
+        <h4>Add Symbol to Compare (max 5)</h4>
         <div class="grid-2col">
-            <div class="grid-col">
-                <h4>Add Symbol to Compare (max 5)</h4>
-                <form method="post">
-                    <input required name="symbol" list="coins" placeholder="Search for a coin...">
-                    <datalist id="coins">
-                        <option th:each="symbol: ${symbols}" th:value="${symbol}">
-                    </datalist>
-                    <button class="success-button">
+            <div class="grid-col dropdown-compare-coins-flex-wrapper">
+                <div class="dropdown-container" id="coinDropdown">
+                    <button type="button" class="dropdown-button" onclick="toggleCoinDropdown()">
+                        <span id="selectedCoinText">Select a coin...</span>
+                        <span class="arrow-icon">▼</span>
+                    </button>
+
+                    <div class="coin-dropdown-menu" id="coinDropdownMenu">
+                        <input
+                                type="text"
+                                class="dropdown-search"
+                                id="coinSearchInput"
+                                placeholder="Search cryptocurrencies..."
+                                oninput="filterCoinOptions(this.value)"
+                                onclick="event.stopPropagation()"
+                        >
+                        <div id="coinListContainer">
+                            <div class="coin-dropdown-item"
+                                 th:each="coin: ${symbols}"
+                                 th:attr="data-symbol=${coin.symbol}"
+                                 onclick="selectCoin(this)">
+                                <img th:src="'https://img.logo.dev/crypto/' + ${coin.symbol} + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'"
+                                     th:alt="${coin.symbol}"
+                                     class="coin-icon-dropdown"
+                                     onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22><circle cx=%2218%22 cy=%2218%22 r=%2218%22 fill=%22%23ccc%22/></svg>'">
+                                <div class="coin-info-dropdown-wrapper">
+                                    <div class="coin-name-dropdown-row">
+                                        <span class="coin-name-dropdown" th:text="${coin.name}">Bitcoin</span>
+                                        <span class="coin-symbol-dropdown" th:text="${coin.symbol}">BTC</span>
+                                    </div>
+                                    <div class="coin-price-dropdown-row">
+                                        <span class="coin-price-dropdown" th:text="${coin.formattedLastPrice}">$43,521.45</span>
+                                        <span class="coin-change-dropdown"
+                                              th:classappend="${coin.changePercent >= 0} ? 'positive' : 'negative'"
+                                              th:text="${(coin.changePercent < 0 ? '' : '+') + coin.formattedChange + '%'}">
+                                            +2.34%
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="post" id="addCoinForm" style="display: inline-block; margin-left: 10px;">
+                    <input type="hidden" name="symbol" id="selectedSymbolInput" required>
+                    <button type="submit" class="success-button" id="addCoinBtn" disabled>
                         <i class="fa-solid fa-plus" style="color: white"></i> Add
                     </button>
                 </form>
@@ -19,18 +59,36 @@
 
             <div class="grid-col">
                 <h4>Time Range</h4>
-                <select id="time-range">
-                    <option th:selected="${days == 7}" value="7">7 Days</option>
-                    <option th:selected="${days == 30}" value="30">30 Days</option>
-                    <option th:selected="${days == 90}" value="90">90 Days</option>
-                    <option th:selected="${days == 365}" value="365">1 Year</option>
-                </select>
+                <div class="dropdown-container" id="timeDropdown">
+                    <button type="button" class="dropdown-button" onclick="toggleTimeDropdown()">
+                        <span id="selectedTimeText" th:text="${days == 7 ? '7 Days' : (days == 30 ? '30 Days' : (days == 90 ? '90 Days' : '1 Year'))}">7 Days</span>
+                        <span class="arrow-icon">▼</span>
+                    </button>
+
+                    <div class="coin-dropdown-menu" id="timeDropdownMenu">
+                        <div>
+                            <div class="time-dropdown-item" data-days="7" onclick="selectTime(this)">
+                                <span class="time-option-text">7 Days</span>
+                            </div>
+                            <div class="time-dropdown-item" data-days="30" onclick="selectTime(this)">
+                                <span class="time-option-text">30 Days</span>
+                            </div>
+                            <div class="time-dropdown-item" data-days="90" onclick="selectTime(this)">
+                                <span class="time-option-text">90 Days</span>
+                            </div>
+                            <div class="time-dropdown-item" data-days="365" onclick="selectTime(this)">
+                                <span class="time-option-text">1 Year</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div th:if="${error != null}">
             <p class="error" th:text="${error}"></p>
         </div>
+
         <h4>Comparing (<span th:text="${#lists.size(currentSymbols)}"></span>):</h4>
         <div th:if="${#lists.size(currentSymbols) > 0}">
             <div class="compare-wrapper">
@@ -47,7 +105,6 @@
             <div id="data-graph"></div>
             <script th:inline="javascript">
                 const marketData = /*[[${marketData}]]*/ [];
-                console.log(marketData)
                 const traces = marketData.map((singleCryptoHistory) => {
                     const dates = singleCryptoHistory.map(item => new Date(item.timestamp * 1000));
                     const values = singleCryptoHistory.map(item => item.high);
@@ -79,20 +136,140 @@
                     showlegend: true
                 };
 
-                // 3. Pass the ARRAY of traces to newPlot
                 Plotly.newPlot('data-graph', traces, layout, {responsive: true});
             </script>
         </div>
         <div th:if="${#lists.isEmpty(currentSymbols)}">
-            <h4>Add coin!</h4>
+            <h4>Add coins to compare!</h4>
         </div>
 
         <script>
-            document.getElementById("time-range").addEventListener("change", e => {
+            let allCoinItems = [];
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const coinList = document.getElementById('coinListContainer');
+                if (coinList) {
+                    allCoinItems = Array.from(coinList.querySelectorAll('.coin-dropdown-item'));
+                }
+            });
+
+            function toggleCoinDropdown() {
+                const dropdown = document.getElementById('coinDropdown');
+                const menu = document.getElementById('coinDropdownMenu');
+
+                if (!dropdown || !menu) return;
+
+                dropdown.classList.toggle('active');
+                menu.classList.toggle('active');
+
+                if (menu.classList.contains('active')) {
+                    const searchInput = document.getElementById('coinSearchInput');
+                    if (searchInput) {
+                        setTimeout(() => searchInput.focus(), 100);
+                    }
+                }
+            }
+
+            function toggleTimeDropdown() {
+                const dropdown = document.getElementById('timeDropdown');
+                const menu = document.getElementById('timeDropdownMenu');
+
+                if (!dropdown || !menu) return;
+
+                dropdown.classList.toggle('active');
+                menu.classList.toggle('active');
+            }
+
+            function selectCoin(element) {
+                const symbol = element.getAttribute('data-symbol');
+                const coinName = element.querySelector('.coin-name-dropdown').textContent;
+                const coinSymbol = element.querySelector('.coin-symbol-dropdown').textContent;
+
+                const selectedText = document.getElementById('selectedCoinText');
+                if (selectedText) {
+                    selectedText.textContent = coinName + ' (' + coinSymbol + ')';
+                }
+
+                const hiddenInput = document.getElementById('selectedSymbolInput');
+                if (hiddenInput) {
+                    hiddenInput.value = symbol;
+                }
+
+                const addBtn = document.getElementById('addCoinBtn');
+                if (addBtn) {
+                    addBtn.disabled = false;
+                }
+                toggleCoinDropdown();
+
+                const searchInput = document.getElementById('coinSearchInput');
+                if (searchInput) {
+                    searchInput.value = '';
+                    filterCoinOptions('');
+                }
+            }
+
+            function selectTime(element) {
+                const days = element.getAttribute('data-days');
+                const timeText = element.querySelector('.time-option-text').textContent;
+
+                const selectedText = document.getElementById('selectedTimeText');
+                if (selectedText) {
+                    selectedText.textContent = timeText;
+                }
+
+                toggleTimeDropdown();
+
                 const url = new URL(window.location.href);
-                url.searchParams.set("days", e.target.value);
+                url.searchParams.set("days", days);
                 window.location.href = url.toString();
-            })
+            }
+
+            function filterCoinOptions(searchTerm) {
+                const searchLower = searchTerm.toLowerCase();
+
+                allCoinItems.forEach(item => {
+                    const symbol = item.getAttribute('data-symbol').toLowerCase();
+                    const name = item.querySelector('.coin-name-dropdown').textContent.toLowerCase();
+                    const matches = symbol.includes(searchLower) || name.includes(searchLower);
+                    item.style.display = matches ? 'flex' : 'none';
+                });
+            }
+
+            document.addEventListener('click', function(e) {
+                const coinDropdown = document.getElementById('coinDropdown');
+                const timeDropdown = document.getElementById('timeDropdown');
+
+                if (coinDropdown && !coinDropdown.contains(e.target)) {
+                    coinDropdown.classList.remove('active');
+                    const menu = document.getElementById('coinDropdownMenu');
+                    if (menu) {
+                        menu.classList.remove('active');
+                    }
+                }
+
+                if (timeDropdown && !timeDropdown.contains(e.target)) {
+                    timeDropdown.classList.remove('active');
+                    const menu = document.getElementById('timeDropdownMenu');
+                    if (menu) {
+                        menu.classList.remove('active');
+                    }
+                }
+            });
+
+            const addCoinForm = document.getElementById('addCoinForm');
+            if (addCoinForm) {
+                addCoinForm.addEventListener('submit', function() {
+                    setTimeout(() => {
+                        const selectedText = document.getElementById('selectedCoinText');
+                        const hiddenInput = document.getElementById('selectedSymbolInput');
+                        const addBtn = document.getElementById('addCoinBtn');
+
+                        if (selectedText) selectedText.textContent = 'Select a coin...';
+                        if (hiddenInput) hiddenInput.value = '';
+                        if (addBtn) addBtn.disabled = true;
+                    }, 100);
+                });
+            }
         </script>
     </div>
 </section>

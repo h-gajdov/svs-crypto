@@ -10,6 +10,7 @@ header {
     background-color: var(--bg-color);
     color: var(--text-color);
     transition: background-color 0.25s ease, color 0.25s ease;
+    overflow: visible;
 }
 
 header > div:first-child {
@@ -17,6 +18,7 @@ header > div:first-child {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    overflow: visible;
 }
 
 .horizontal-center {
@@ -158,7 +160,19 @@ button {
 .success-button {
     padding: 0.3em 1em;
     color: white;
-    background: #47cf6d;
+    background: #155DFC;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.2s ease-in-out;
+}
+
+.success-button:hover {
+    background: #0F4ACB;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
+    transition: all 0.2s ease-in-out;
 }
 
 .dashboard-top-stats {
@@ -276,6 +290,11 @@ button {
     border-bottom: 1px solid #D9D9D9;
     padding: 8px 0;
     color: var(--text-color);
+}
+
+.dashboard-table td:last-child {
+    width: 0;
+    padding-right: 1em;
 }
 
 .grey-text {
@@ -779,6 +798,7 @@ body {
     color: var(--text-color);
     font-family: "IBM Plex Sans", sans-serif;
     transition: background-color 0.25s ease, color 0.25s ease;
+    overflow-x: hidden;
 }
 
 main {
@@ -1111,4 +1131,253 @@ input, select {
 
 .nav-btn:hover svg, .nav-btn.selected svg {
     transform: scale(1.1);
+}
+
+.dropdown-container {
+    position: relative;
+    display: flex;
+    flex: 1;
+}
+
+.dropdown-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-secondary);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    flex: 1;
+}
+
+.dropdown-button span:first-child {
+    flex: 1;
+    text-align: left;
+}
+
+.dropdown-button:hover {
+    background: var(--bg-color);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.coin-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    padding: 8px;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+.coin-dropdown-menu.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.coin-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+}
+
+.coin-dropdown-item:last-child {
+    margin-bottom: 0;
+}
+
+.coin-dropdown-item:hover {
+    background: var(--dashboard-table-hover-effect);
+    transform: translateX(4px);
+}
+
+.coin-icon-dropdown {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.coin-info-dropdown-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 2px;
+}
+
+.coin-name-dropdown-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.coin-name-dropdown {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text-color);
+}
+
+.coin-symbol-dropdown {
+    font-size: 13px;
+    color: var(--grey-text);
+    text-transform: uppercase;
+}
+
+.coin-price-dropdown-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.coin-price-dropdown {
+    font-size: 14px;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.coin-change-dropdown {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.coin-change-dropdown.positive {
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.coin-change-dropdown.negative {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.coin-dropdown-menu::-webkit-scrollbar {
+    width: 6px;
+}
+
+.coin-dropdown-menu::-webkit-scrollbar-track {
+    background: var(--bg-color);
+    border-radius: 10px;
+}
+
+.coin-dropdown-menu::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 10px;
+}
+
+.coin-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: var(--grey-text);
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.dropdown-container.active .arrow-icon {
+    transform: rotate(180deg);
+}
+
+.dropdown-compare-coins-flex-wrapper {
+    flex-direction: row !important;
+    align-items: center;
+}
+
+.time-dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+}
+
+.time-dropdown-item:last-child {
+    margin-bottom: 0;
+}
+
+.time-dropdown-item:hover {
+    background: var(--dashboard-table-hover-effect);
+    transform: translateX(4px);
+}
+
+.time-option-text {
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--text-color);
+}
+
+.search-wrapper {
+    position: relative;
+}
+
+.search-toggle-btn {
+    transition: transform 0.3s ease;
+    z-index: 10;
+}
+
+.search-dropdown-container {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    opacity: 0;
+    visibility: hidden;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    z-index: 9;
+}
+
+.search-dropdown-container.search-active {
+    width: 300px;
+    opacity: 1;
+    visibility: visible;
+    margin-right: 45px;
+    overflow: visible;
+}
+
+.search-dropdown-button {
+    width: 100%;
+    justify-content: space-between;
+    white-space: nowrap;
+}
+
+.search-chevron {
+    color: var(--grey-text);
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.search-dropdown-container.active .search-chevron {
+    transform: rotate(180deg);
+}
+
+.search-dropdown-menu {
+    width: 100%;
+    min-width: 100%;
+    right: 0;
+    left: auto;
 }
