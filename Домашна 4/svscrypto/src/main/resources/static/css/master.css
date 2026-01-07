@@ -801,12 +801,18 @@ body {
     overflow-x: hidden;
 }
 
-main {
-    background-color: var(--bg-color);
+/*This is done to fix the footer to the bottom*/
+.body-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-section {
-    /*background-color: var(--bg-secondary);*/
+main {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-color);
+    flex: 1;
 }
 
 a {
