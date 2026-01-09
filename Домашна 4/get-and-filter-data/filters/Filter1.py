@@ -16,13 +16,15 @@ URLs = [
 "https://www.coingecko.com/?page=6&items=300",
 ]
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/120.0.0.0 Safari/537.36"
+}
+
 def fetch_url(url):
-    try:
-        HEADERS = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                          "AppleWebKit/537.36 (KHTML, like Gecko) "
-                          "Chrome/120.0.0.0 Safari/537.36"
-        }
+    """Fetch coin data from a single Coingecko page."""
+    try: 
         resp = requests.get(url, headers=HEADERS, timeout=10)
         bs = BeautifulSoup(resp.text, "html.parser")
         data = []
@@ -40,6 +42,7 @@ def fetch_url(url):
         return []
 
 def get_top_coins():
+    """Fetch coins from all pages concurrently."""
     all_coins = []
 
     with ThreadPoolExecutor(max_workers=len(URLs)) as executor:
@@ -52,6 +55,7 @@ def get_top_coins():
     return all_coins
 
 def filter_liquid_coins(coins, min_liquidity=300_000):
+    """Filter coins by minimal liquidity."""
     filtered = []
     for c in coins:
         volume = c.get("volume", 0)
