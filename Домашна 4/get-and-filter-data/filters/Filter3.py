@@ -12,6 +12,8 @@ load_dotenv()
 BATCH_SIZE = int(os.getenv("BATCH_SIZE", 50))
 
 class FillDatabaseFilter(Filter):
+    """Filter for writing streaming OHLCV and daily data into the database."""
+    
     def consume_stream(self, in_queue):
         self.db = Database()
         daily_data = []
