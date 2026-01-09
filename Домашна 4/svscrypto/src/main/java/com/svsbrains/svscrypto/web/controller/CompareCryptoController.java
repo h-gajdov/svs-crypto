@@ -75,13 +75,12 @@ public class CompareCryptoController {
             model.addAttribute("error", error);
         }
 
-        List<String> symbols = coinService.getAllSymbols();
-        symbols.removeAll(currentSymbols);
-        List<DailyData> coinObjects = symbols.stream().map(dailyDataService::getBySymbol).sorted(Comparator.comparing(DailyData::getMarket_cap).reversed()).toList();
-
+//        List<String> symbols = coinService.getAllSymbols();
+//        symbols.removeAll(currentSymbols);
+//        List<DailyData> coinObjects = symbols.stream().map(dailyDataService::getBySymbol).sorted(Comparator.comparing(DailyData::getMarket_cap).reversed()).toList();
+        
         model.addAttribute("days", days);
         model.addAttribute("marketData", marketDataService.getMarketDataForSymbols(currentSymbols, days));
-        model.addAttribute("symbols", coinObjects);
         model.addAttribute("bodyContent", "compare-crypto");
         model.addAttribute("pageTitle", "Compare Coins");
 

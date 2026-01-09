@@ -2,8 +2,6 @@ package com.svsbrains.svscrypto.web.controller;
 
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.User;
-import com.svsbrains.svscrypto.service.CoinService;
-import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.DashboardService;
 import com.svsbrains.svscrypto.service.UserService;
 import org.springframework.data.domain.Page;
@@ -13,8 +11,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.List;
 
 /**
  * Controller responsible for handling the dashboard page.
@@ -28,15 +24,11 @@ import java.util.List;
 public class DashboardController {
     private final DashboardService dashboardService;
     private final UserService userService;
-    private final CoinService coinService;
-    private final DailyDataService dailyDataService;
 
     public DashboardController(DashboardService dashboardService,
-                               UserService userService, CoinService coinService, DailyDataService dailyDataService) {
+                               UserService userService) {
         this.dashboardService = dashboardService;
         this.userService = userService;
-        this.coinService = coinService;
-        this.dailyDataService = dailyDataService;
     }
 
     @GetMapping({"/", "/dashboard"})
@@ -49,9 +41,6 @@ public class DashboardController {
 
         User user = userService.getCurrentUser(userDetails);
         model.addAttribute("user",user);
-
-        List<String> symbols = coinService.getAllSymbols();
-        model.addAttribute("symbols", dailyDataService.getCoinsBySymbols(symbols));
 
         model.addAttribute("pageNum", pageNum);
         model.addAttribute("totalNumberOfPages", topMarketCap.getTotalPages());

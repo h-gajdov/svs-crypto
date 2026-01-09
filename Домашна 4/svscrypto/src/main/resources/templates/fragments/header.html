@@ -30,29 +30,29 @@
                                 onclick="event.stopPropagation()"
                         >
                         <div id="searchListContainer">
-                            <div class="coin-dropdown-item"
-                                 th:each="coin: ${symbols}"
-                                 th:attr="data-symbol=${coin.symbol}"
-                                 onclick="selectSearchCoin(this)">
-                                <img th:src="'https://img.logo.dev/crypto/' + ${coin.symbol} + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'"
-                                     th:alt="${coin.symbol}"
-                                     class="coin-icon-dropdown"
-                                     onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22><circle cx=%2218%22 cy=%2218%22 r=%2218%22 fill=%22%23ccc%22/></svg>'">
-                                <div class="coin-info-dropdown-wrapper">
-                                    <div class="coin-name-dropdown-row">
-                                        <span class="coin-name-dropdown" th:text="${coin.name}">Bitcoin</span>
-                                        <span class="coin-symbol-dropdown" th:text="${coin.symbol}">BTC</span>
-                                    </div>
-                                    <div class="coin-price-dropdown-row">
-                                        <span class="coin-price-dropdown" th:text="${coin.formattedLastPrice}">$43,521.45</span>
-                                        <span class="coin-change-dropdown"
-                                              th:classappend="${coin.changePercent >= 0} ? 'positive' : 'negative'"
-                                              th:text="${(coin.changePercent < 0 ? '' : '+') + coin.formattedChange + '%'}">
-                                            +2.34%
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
+<!--                            <div class="coin-dropdown-item"-->
+<!--                                 th:each="coin: ${symbols}"-->
+<!--                                 th:attr="data-symbol=${coin.symbol}"-->
+<!--                                 onclick="selectSearchCoin(this)">-->
+<!--                                <img th:src="'https://img.logo.dev/crypto/' + ${coin.symbol} + '?token=pk_Eik_EQB_QCOrBDpPKu6RYQ'"-->
+<!--                                     th:alt="${coin.symbol}"-->
+<!--                                     class="coin-icon-dropdown"-->
+<!--                                     onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22><circle cx=%2218%22 cy=%2218%22 r=%2218%22 fill=%22%23ccc%22/></svg>'">-->
+<!--                                <div class="coin-info-dropdown-wrapper">-->
+<!--                                    <div class="coin-name-dropdown-row">-->
+<!--                                        <span class="coin-name-dropdown" th:text="${coin.name}">Bitcoin</span>-->
+<!--                                        <span class="coin-symbol-dropdown" th:text="${coin.symbol}">BTC</span>-->
+<!--                                    </div>-->
+<!--                                    <div class="coin-price-dropdown-row">-->
+<!--                                        <span class="coin-price-dropdown" th:text="${coin.formattedLastPrice}">$43,521.45</span>-->
+<!--                                        <span class="coin-change-dropdown"-->
+<!--                                              th:classappend="${coin.changePercent >= 0} ? 'positive' : 'negative'"-->
+<!--                                              th:text="${(coin.changePercent < 0 ? '' : '+') + coin.formattedChange + '%'}">-->
+<!--                                            +2.34%-->
+<!--                                        </span>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
                         </div>
                     </div>
                 </div>

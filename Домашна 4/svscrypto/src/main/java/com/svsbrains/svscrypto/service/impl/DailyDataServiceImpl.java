@@ -112,4 +112,13 @@ public class DailyDataServiceImpl implements DailyDataService {
     public List<DailyData> getCoinsBySymbols(List<String> symbols) {
         return symbols.stream().map(this::getBySymbol).toList();
     }
+
+    @Override
+    public Page<DailyData> searchBySymbolOrName(String query, int limit) {
+        if (query == null || query.trim().isEmpty()) {
+            return getTopByMarketCap(0, limit);
+        }
+
+        return dailyDataRepository.searchBySymbolOrName(query, PageRequest.of(0, limit));
+    }
 }

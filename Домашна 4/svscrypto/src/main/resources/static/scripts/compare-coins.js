@@ -1,37 +1,74 @@
-let allCoinItems = [];
-
-document.addEventListener('DOMContentLoaded', function () {
-    const coinList = document.getElementById('coinListContainer');
-    if (coinList) {
-        allCoinItems = Array.from(coinList.querySelectorAll('.coin-dropdown-item'));
-    }
-});
+let coinSearchTimeout = null;
+const coinSearchCache = {}; // cache results
 
 function toggleCoinDropdown() {
     const dropdown = document.getElementById('coinDropdown');
     const menu = document.getElementById('coinDropdownMenu');
-
     if (!dropdown || !menu) return;
 
+    const isOpening = !menu.classList.contains('active');
     dropdown.classList.toggle('active');
     menu.classList.toggle('active');
 
-    if (menu.classList.contains('active')) {
-        const searchInput = document.getElementById('coinSearchInput');
-        if (searchInput) {
-            setTimeout(() => searchInput.focus(), 100);
-        }
+    const searchInput = document.getElementById('coinSearchInput');
+    if (searchInput && isOpening) {
+        setTimeout(() => searchInput.focus(), 100);
+        filterCoinOptions('');
     }
 }
 
-function toggleTimeDropdown() {
-    const dropdown = document.getElementById('timeDropdown');
-    const menu = document.getElementById('timeDropdownMenu');
+function filterCoinOptions(searchTerm) {
+    const container = document.getElementById('coinListContainer');
+    if (!container) return;
 
-    if (!dropdown || !menu) return;
+    container.innerHTML = '';
 
-    dropdown.classList.toggle('active');
-    menu.classList.toggle('active');
+    if (coinSearchCache[searchTerm]) {
+        renderCoinSearchResults(coinSearchCache[searchTerm]);
+        return;
+    }
+
+    clearTimeout(coinSearchTimeout);
+    coinSearchTimeout = setTimeout(() => {
+        fetch(`/api/search/symbols?q=${encodeURIComponent(searchTerm)}&limit=10`)
+            .then(res => res.json())
+            .then(data => {
+                coinSearchCache[searchTerm] = data;
+                renderCoinSearchResults(data);
+            })
+            .catch(err => console.error("Search error:", err));
+    }, 300);
+}
+
+function renderCoinSearchResults(data) {
+    const container = document.getElementById('coinListContainer');
+    container.innerHTML = '';
+
+    data.forEach(coin => {
+        const div = document.createElement('div');
+        div.className = 'coin-dropdown-item';
+        div.setAttribute('data-symbol', coin.symbol);
+        div.onclick = () => selectCoin(div);
+
+        div.innerHTML = `
+            <img src="https://img.logo.dev/crypto/${coin.symbol}?token=pk_Eik_EQB_QCOrBDpPKu6RYQ"
+                 alt="${coin.symbol}" class="coin-icon-dropdown"
+                 onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2236%22 height=%2236%22><circle cx=%2218%22 cy=%2218%22 r=%2218%22 fill=%22%23ccc%22/></svg>'">
+            <div class="coin-info-dropdown-wrapper">
+                <div class="coin-name-dropdown-row">
+                    <span class="coin-name-dropdown">${coin.name}</span>
+                    <span class="coin-symbol-dropdown">${coin.symbol}</span>
+                </div>
+                <div class="coin-price-dropdown-row">
+                    <span class="coin-price-dropdown">${coin.formattedLastPrice}</span>
+                    <span class="coin-change-dropdown ${coin.changePercent >= 0 ? 'positive' : 'negative'}">
+                        ${coin.changePercent >= 0 ? '+' : ''}${coin.formattedChange}%
+                    </span>
+                </div>
+            </div>
+        `;
+        container.appendChild(div);
+    });
 }
 
 function selectCoin(element) {
@@ -45,14 +82,11 @@ function selectCoin(element) {
     }
 
     const hiddenInput = document.getElementById('selectedSymbolInput');
-    if (hiddenInput) {
-        hiddenInput.value = symbol;
-    }
+    if (hiddenInput) hiddenInput.value = symbol;
 
     const addBtn = document.getElementById('addCoinBtn');
-    if (addBtn) {
-        addBtn.disabled = false;
-    }
+    if (addBtn) addBtn.disabled = false;
+
     toggleCoinDropdown();
 
     const searchInput = document.getElementById('coinSearchInput');
@@ -60,67 +94,4 @@ function selectCoin(element) {
         searchInput.value = '';
         filterCoinOptions('');
     }
-}
-
-function selectTime(element) {
-    const days = element.getAttribute('data-days');
-    const timeText = element.querySelector('.time-option-text').textContent;
-
-    const selectedText = document.getElementById('selectedTimeText');
-    if (selectedText) {
-        selectedText.textContent = timeText;
-    }
-
-    toggleTimeDropdown();
-
-    const url = new URL(window.location.href);
-    url.searchParams.set("days", days);
-    window.location.href = url.toString();
-}
-
-function filterCoinOptions(searchTerm) {
-    const searchLower = searchTerm.toLowerCase();
-
-    allCoinItems.forEach(item => {
-        const symbol = item.getAttribute('data-symbol').toLowerCase();
-        const name = item.querySelector('.coin-name-dropdown').textContent.toLowerCase();
-        const matches = symbol.includes(searchLower) || name.includes(searchLower);
-        item.style.display = matches ? 'flex' : 'none';
-    });
-}
-
-document.addEventListener('click', function (e) {
-    const coinDropdown = document.getElementById('coinDropdown');
-    const timeDropdown = document.getElementById('timeDropdown');
-
-    if (coinDropdown && !coinDropdown.contains(e.target)) {
-        coinDropdown.classList.remove('active');
-        const menu = document.getElementById('coinDropdownMenu');
-        if (menu) {
-            menu.classList.remove('active');
-        }
-    }
-
-    if (timeDropdown && !timeDropdown.contains(e.target)) {
-        timeDropdown.classList.remove('active');
-        const menu = document.getElementById('timeDropdownMenu');
-        if (menu) {
-            menu.classList.remove('active');
-        }
-    }
-});
-
-const addCoinForm = document.getElementById('addCoinForm');
-if (addCoinForm) {
-    addCoinForm.addEventListener('submit', function () {
-        setTimeout(() => {
-            const selectedText = document.getElementById('selectedCoinText');
-            const hiddenInput = document.getElementById('selectedSymbolInput');
-            const addBtn = document.getElementById('addCoinBtn');
-
-            if (selectedText) selectedText.textContent = 'Select a coin...';
-            if (hiddenInput) hiddenInput.value = '';
-            if (addBtn) addBtn.disabled = true;
-        }, 100);
-    });
 }

@@ -33,12 +33,23 @@ public interface DailyDataRepository extends JpaRepository<DailyData, Long> {
     List<DailyData> findTopVolumes(Pageable pageable);
 
     @Query("""
-        SELECT 
-            1 + (SELECT COUNT(d2) 
-                 FROM DailyData d2 
-                 WHERE d2.market_cap > d.market_cap)
-        FROM DailyData d
-        WHERE d.symbol = :symbol
-    """)
+                SELECT 
+                    1 + (SELECT COUNT(d2) 
+                         FROM DailyData d2 
+                         WHERE d2.market_cap > d.market_cap)
+                FROM DailyData d
+                WHERE d.symbol = :symbol
+            """)
     Integer findRankBySymbol(@Param("symbol") String symbol);
+
+    @Query("""
+                SELECT d FROM DailyData d
+                WHERE LOWER(d.symbol) LIKE LOWER(CONCAT('%', :query, '%'))
+                   OR LOWER(d.name)   LIKE LOWER(CONCAT('%', :query, '%'))
+                ORDER BY d.market_cap DESC
+            """)
+    Page<DailyData> searchBySymbolOrName(
+            @Param("query") String query,
+            Pageable pageable
+    );
 }

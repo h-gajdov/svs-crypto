@@ -3,6 +3,8 @@ package com.svsbrains.svscrypto.service;
 import com.svsbrains.svscrypto.model.DailyData;
 import com.svsbrains.svscrypto.model.MarketData;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -120,4 +122,9 @@ public interface DailyDataService {
     Map<String, List<Double>> getSparklineData(List<DailyData> coins);
 
     List<DailyData> getCoinsBySymbols(List<String> symbols);
+
+    Page<DailyData> searchBySymbolOrName(
+            @Param("query") String query,
+            int limit
+    );
 }

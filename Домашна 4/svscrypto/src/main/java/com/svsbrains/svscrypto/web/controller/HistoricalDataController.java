@@ -30,12 +30,10 @@ import java.util.Map;
 public class HistoricalDataController {
     private final DailyDataService dailyDataService;
     private final UserService userService;
-    private final CoinService coinService;
 
     public HistoricalDataController(DailyDataService dailyDataService, UserService userService, CoinService coinService) {
         this.dailyDataService = dailyDataService;
         this.userService = userService;
-        this.coinService = coinService;
     }
 
     @GetMapping
@@ -49,8 +47,6 @@ public class HistoricalDataController {
 
         Map<String, List<Double>> sparklineData = dailyDataService.getSparklineData(topPrice);
 
-        List<String> symbols = coinService.getAllSymbols();
-        model.addAttribute("symbols", dailyDataService.getCoinsBySymbols(symbols));
         model.addAttribute("user", user);
         model.addAttribute("tableCoins", topPrice);
         model.addAttribute("sparklineData", sparklineData);

@@ -56,7 +56,6 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
                 .map(MarketData::getOpen)
                 .toList();
 
-        model.put("symbols", coinService.getAllSymbols());
         model.put("timestamps", timestamps);
         model.put("values", values);
         model.put("rank", dailyDataService.getRankOfSymbol(symbol));
