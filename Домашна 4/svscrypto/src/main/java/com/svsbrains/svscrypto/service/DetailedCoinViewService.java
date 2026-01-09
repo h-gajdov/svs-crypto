@@ -39,20 +39,17 @@ public interface DetailedCoinViewService {
     /**
      * Generates plot data for a cryptocurrency over a specified period and field.
      * <p>
-     * The returned map contains two lists:
-     * <ul>
-     *     <li>"timestamps": a list of epoch timestamps for the data points</li>
-     *     <li>"values": a list of numerical values corresponding to the selected field</li>
-     * </ul>
-     * The field parameter determines which value to extract from the market data, such as:
-     * "open", "high", "low", "close", or "volume". The time parameter can be either a
-     * number of days (e.g., "7") or "max" to include all available data.
-     * </p>
+     * If a single field is requested (e.g., "open", "high", "low", "close", "volume"),
+     * the returned map contains "timestamps" (epoch seconds) and "values" for that field.
+     * If the field is "candles", the map contains "timestamps" and separate entries for
+     * "open", "high", "low", "close", and "volume".
+     * <p>
+     * The time parameter can be a number of days (e.g., "7") or "max" to include all available data.
      *
-     * @param symbol the cryptocurrency symbol
-     * @param time   the period for which to retrieve data (number of days or "max")
-     * @param field  the market data field to extract ("open", "high", "low", "close", "volume")
-     * @return a map containing timestamps and corresponding field values for plotting
+     * @param symbol the cryptocurrency symbol, e.g., "BTC"
+     * @param time   the period to retrieve data, as a number of days or "max"
+     * @param field  the market data field to extract: "open", "high", "low", "close", "volume", or "candles"
+     * @return a map containing the timestamps and corresponding values for plotting
      */
     Map<String, Object> getPlotData(String symbol, String time, String field);
 }

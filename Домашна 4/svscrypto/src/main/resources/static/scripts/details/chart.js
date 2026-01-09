@@ -6,95 +6,92 @@ let currentTime = "max";
 export function initChart(data) {
     chartDiv = document.getElementById("data-graph");
 
-    const dates = data.timestamps.map(ts => new Date(ts * 1000));
-    const values = data.values;
-
     layout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         margin: { t: 20, r: 20, l: 60, b: 80 },
         yaxis: { tickformat: '$,', autorange: true },
-        xaxis: { tickangle: -45, type: 'date', tickformat: "%d %b", nticks: 10 }
+        xaxis: {
+            type: 'date',
+            tickangle: -45,
+            tickformat: "%d %b %Y",
+            nticks: 10
+        }
     };
 
-    Plotly.newPlot(
-        chartDiv,
-        [getTraceForField(currentField, dates, values)],
-        layout,
-        { responsive: true }
-    );
+    renderChart(data);
 }
 
 export function initChartControls(symbol) {
-
     document.querySelectorAll(".timeframe-btn").forEach(btn => {
         btn.addEventListener("click", e => {
             e.preventDefault();
 
-            document.querySelectorAll(".timeframe-btn")
-                .forEach(b => b.classList.remove("graph-btn-selected"));
+            document.querySelectorAll(".timeframe-btn").forEach(b => b.classList.remove("graph-btn-selected"));
             btn.classList.add("graph-btn-selected");
 
             currentTime = btn.dataset.time;
-
-            fetch(`/details/${symbol}/plot/${currentTime}`)
-                .then(res => res.json())
-                .then(data => {
-                    const dates = data.timestamps.map(ts => new Date(ts * 1000));
-                    Plotly.react(
-                        chartDiv,
-                        [getTraceForField(currentField, dates, data.values)],
-                        layout
-                    );
-                });
+            fetchChartData(symbol);
         });
     });
 
+    // Field buttons
     document.querySelectorAll("[data-field]").forEach(btn => {
         btn.addEventListener("click", () => {
 
-            document.querySelectorAll("[data-field]")
-                .forEach(b => b.classList.remove("graph-btn-selected"));
+            document.querySelectorAll("[data-field]").forEach(b => b.classList.remove("graph-btn-selected"));
             btn.classList.add("graph-btn-selected");
 
             currentField = btn.dataset.field.toLowerCase();
-
-            fetch(`/details/${symbol}/plot/${currentTime}?field=${currentField}`)
-                .then(res => res.json())
-                .then(data => {
-                    const dates = data.timestamps.map(ts => new Date(ts * 1000));
-                    Plotly.react(
-                        chartDiv,
-                        [getTraceForField(currentField, dates, data.values)],
-                        layout
-                    );
-                });
+            fetchChartData(symbol);
         });
     });
 }
 
-function getTraceForField(field, dates, values) {
-    if (field === "price") {
-        return {
+function fetchChartData(symbol) {
+    const fieldParam = currentField === "candles" ? "candles" : currentField;
+    fetch(`/details/${symbol}/plot/${currentTime}?field=${fieldParam}`)
+        .then(res => res.json())
+        .then(data => renderChart(data));
+}
+
+function renderChart(data) {
+    const dates = data.timestamps.map(ts => new Date(ts * 1000));
+    let trace;
+
+    if (currentField === "price") {
+        trace = {
             x: dates,
-            y: values,
+            y: data.values,
             type: "scatter",
             mode: "lines",
             fill: "tozeroy",
             line: { color: "#4A90E2" }
         };
+    } else if (currentField === "candles") {
+        trace = {
+            x: dates,
+            open: data.open,
+            high: data.high,
+            low: data.low,
+            close: data.close,
+            type: "candlestick",
+            increasing: { line: { color: "#4caf50" } },
+            decreasing: { line: { color: "#f44336" } }
+        };
+    } else {
+        const values = data.values || data[currentField] || [];
+        const colors = values.map((v, i) => i === 0 ? "#47cf6d" : v >= values[i - 1] ? "#47cf6d" : "#ff4d4d");
+
+        trace = {
+            x: dates,
+            y: values,
+            type: "bar",
+            marker: { color: colors }
+        };
     }
 
-    const colors = values.map((v, i) =>
-        i === 0 ? "#47cf6d" : v >= values[i - 1] ? "#47cf6d" : "#ff4d4d"
-    );
-
-    return {
-        x: dates,
-        y: values,
-        type: "bar",
-        marker: { color: colors }
-    };
+    Plotly.react(chartDiv, [trace], layout);
 }
 
 export function initDownloadButton(filename = "chart") {

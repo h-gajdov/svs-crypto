@@ -39,7 +39,7 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
 
         enrichWithChanges(dailyDataCoin);
 
-        Map<String, Object> model=new HashMap<>();
+        Map<String, Object> model = new HashMap<>();
 
         MarketData allTimeLow = marketDataService.getAllTimeLow(symbol);
         MarketData allTimeHigh = marketDataService.getAllTimeHigh(symbol);
@@ -56,7 +56,7 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
                 .map(MarketData::getOpen)
                 .toList();
 
-        model.put("symbols",coinService.getAllSymbols());
+        model.put("symbols", coinService.getAllSymbols());
         model.put("timestamps", timestamps);
         model.put("values", values);
         model.put("rank", dailyDataService.getRankOfSymbol(symbol));
@@ -74,31 +74,85 @@ public class DetailedCoinViewServiceImpl implements DetailedCoinViewService {
 
     @Override
     public Map<String, Object> getPlotData(String symbol, String time, String field) {
-        List<MarketData> data;
-        if(time.equals("max")) {
-            data = marketDataService.getBySymbol(symbol);
-        } else {
-            data = marketDataService.getKDaysDataOfSymbol(symbol, Integer.parseInt(time));
-        }
-
-        List<Long> timestamps = data.stream().map(MarketData::getTimestamp).toList();
-        List<Double> values = data.stream().map(md ->extractField(md,field)).toList();
+        List<MarketData> data = fetchMarketData(symbol, time);
 
         Map<String, Object> response = new HashMap<>();
+        response.put("timestamps", extractTimestamps(data));
 
-        response.put("timestamps", timestamps);
-        response.put("values", values);
+        if ("candles".equalsIgnoreCase(field)) {
+            response.putAll(extractOHLCV(data));
+        } else {
+            response.put("values", extractSingleField(data, field));
+        }
 
         return response;
     }
 
-    private double extractField(MarketData md, String field) {
-        return switch (field) {
+    /**
+     * Fetches market data for a given cryptocurrency symbol and timeframe.
+     *
+     * @param symbol the symbol of the cryptocurrency (e.g., "BTC")
+     * @param time   the timeframe to fetch ("max" for all data or number of days as a string)
+     * @return a list of {@link MarketData} for the given symbol and timeframe
+     */
+    private List<MarketData> fetchMarketData(String symbol, String time) {
+        if (time.equalsIgnoreCase("max")) {
+            return marketDataService.getBySymbol(symbol);
+        }
+        return marketDataService.getKDaysDataOfSymbol(symbol, Integer.parseInt(time));
+    }
+
+    /**
+     * Extracts the timestamps from a list of MarketData.
+     *
+     * @param data a list of {@link MarketData} objects
+     * @return a list of timestamps (in seconds since epoch) corresponding to each data point
+     */
+    private List<Long> extractTimestamps(List<MarketData> data) {
+        return data.stream().map(MarketData::getTimestamp).toList();
+    }
+
+    /**
+     * Extracts OHLCV (Open, High, Low, Close, Volume) data from a list of MarketData.
+     *
+     * @param data a list of {@link MarketData} objects
+     * @return a map containing the OHLCV data, with keys:
+     *         <ul>
+     *           <li>"open"  -> list of opening prices</li>
+     *           <li>"high"  -> list of high prices</li>
+     *           <li>"low"   -> list of low prices</li>
+     *           <li>"close" -> list of closing prices</li>
+     *           <li>"volume"-> list of volumes</li>
+     *         </ul>
+     */
+    private Map<String, List<Double>> extractOHLCV(List<MarketData> data) {
+        Map<String, List<Double>> ohlcv = new HashMap<>();
+        ohlcv.put("open", data.stream().map(MarketData::getOpen).toList());
+        ohlcv.put("high", data.stream().map(MarketData::getHigh).toList());
+        ohlcv.put("low", data.stream().map(MarketData::getLow).toList());
+        ohlcv.put("close", data.stream().map(MarketData::getClose).toList());
+        ohlcv.put("volume", data.stream().map(MarketData::getVolume).toList());
+        return ohlcv;
+    }
+
+    /**
+     * Extracts a single numeric field from a list of MarketData.
+     *
+     * @param data  a list of {@link MarketData} objects
+     * @param field the field to extract; possible values: "open", "high", "low", "close", "volume", "price"
+     * @return a list of double values corresponding to the specified field
+     *         <p>
+     *         "price" is treated as the opening price by default.
+     *         Any unrecognized field will default to "open".
+     *         </p>
+     */
+    private List<Double> extractSingleField(List<MarketData> data, String field) {
+        return data.stream().map(md -> switch (field.toLowerCase()) {
             case "high" -> md.getHigh();
             case "low" -> md.getLow();
             case "close" -> md.getClose();
             case "volume" -> md.getVolume();
             default -> md.getOpen();
-        };
+        }).toList();
     }
 }
