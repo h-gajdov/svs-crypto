@@ -43,7 +43,11 @@ public class SignUpController {
     }
 
     @GetMapping("/signup")
-    public String signUpForm(Model model) {
+    public String signUpForm(@RequestParam(required = false) String error, Model model) {
+        if (error != null && !error.isEmpty()) {
+            model.addAttribute("error");
+        }
+
         model.addAttribute("symbols", dailyDataService.getCoinsBySymbols(coinService.getAllSymbols()));
         model.addAttribute("bodyContent", "sign-up-form");
         model.addAttribute("pageTitle", "Register");
@@ -66,16 +70,21 @@ public class SignUpController {
      * @param email     user's email
      * @param username  desired username
      * @param password  desired password
-     * @param model     the Spring MVC model
      * @return a redirect to the verification page for the registered email
      */
     @PostMapping("/signup")
-    public String handleSignUpSubmission(@RequestParam String firstname, @RequestParam String lastname,
-                             @RequestParam String email, @RequestParam String username,
-                             @RequestParam String password, Model model) {
-        User user = userService.signUpUser(username, firstname, lastname, email, password);
-        userService.sendVerificationMail(user);
-        return "redirect:/verify?email=" + user.getEmail();
+    public String handleSignUpSubmission(@RequestParam String firstname,
+                                         @RequestParam String lastname,
+                                         @RequestParam String email,
+                                         @RequestParam String username,
+                                         @RequestParam String password) {
+        try {
+            User user = userService.signUpUser(username, firstname, lastname, email, password);
+            userService.sendVerificationMail(user);
+            return "redirect:/verify?email=" + user.getEmail();
+        } catch (Exception e) {
+            return "redirect:/signup?error=" + e.getMessage();
+        }
     }
 
     /**

@@ -1393,3 +1393,24 @@ input, select {
 .no-theme-transition *::after {
     transition: none !important;
 }
+
+.password-rules {
+    font-size: 0.85rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    padding: 10px;
+}
+
+.password-rules ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.password-rules li {
+    color: #dc3545;
+}
+
+.password-rules li.valid {
+    color: #198754;
+}

@@ -27,19 +27,71 @@
 
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input pattern="^(?=.*\d)(?=.*[\W_]).{8,}$" type="password" class="form-control" name="password" required>
-            </div>
+                <input pattern="^(?=.*\d)(?=.*[\W_]).{8,}$" type="password" class="form-control" name="password" id="password" required>
 
-            <div th:if="${param.error}" class="alert alert-danger py-2">
-                Invalid username or password.
+                <div id="password-rules" class="password-rules mt-2" style="display: none;">
+                    <p>Password must contain:</p>
+                    <ul>
+                        <li id="rule-length">❌ At least 8 characters</li>
+<!--                        <li id="rule-upper">❌ One uppercase letter</li>-->
+                        <li id="rule-lower">❌ One lowercase letter</li>
+                        <li id="rule-number">❌ One number</li>
+                        <li id="rule-special">❌ One special character</li>
+                    </ul>
+                </div>
             </div>
 
             <div th:if="${param.logout}" class="alert alert-success py-2">
                 You have been logged out.
             </div>
 
+            <div th:if="${param.error}" th:text="${param.error}" class="alert alert-danger py-2">
+                Invalid username or password.
+            </div>
+
             <button type="submit" class="btn btn-primary w-100">Create</button>
             <p style="text-align: center">Already have an account? <a style="text-decoration: underline !important; color: #0F4ACB !important" href="/login">Log in</a></p>
         </form>
     </div>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+        const rulesBox = document.getElementById("password-rules");
+
+        const rules = {
+            length: document.getElementById("rule-length"),
+            // upper: document.getElementById("rule-upper"),
+            lower: document.getElementById("rule-lower"),
+            number: document.getElementById("rule-number"),
+            special: document.getElementById("rule-special")
+        };
+
+        passwordInput.addEventListener("focus", () => {
+            rulesBox.style.display = "block";
+        });
+
+        passwordInput.addEventListener("blur", () => {
+            rulesBox.style.display = "none";
+        });
+
+        passwordInput.addEventListener("input", () => {
+            const value = passwordInput.value;
+
+            toggleRule(rules.length, value.length >= 8);
+            // toggleRule(rules.upper, /[A-Z]/.test(value));
+            toggleRule(rules.lower, /[a-z]/.test(value));
+            toggleRule(rules.number, /\d/.test(value));
+            toggleRule(rules.special, /[^A-Za-z0-9]/.test(value));
+        });
+
+        function toggleRule(element, condition) {
+            if (condition) {
+                element.classList.add("valid");
+                element.textContent = element.textContent.replace("❌", "✔️");
+            } else {
+                element.classList.remove("valid");
+                element.textContent = element.textContent.replace("✔️", "❌");
+            }
+        }
+    </script>
 </div>

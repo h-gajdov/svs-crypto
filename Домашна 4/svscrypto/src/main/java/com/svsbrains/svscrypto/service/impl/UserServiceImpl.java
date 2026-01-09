@@ -6,6 +6,7 @@ import com.svsbrains.svscrypto.model.VerificationToken;
 import com.svsbrains.svscrypto.model.exceptions.EmailAlreadyUsedException;
 import com.svsbrains.svscrypto.model.exceptions.EmailNotFoundException;
 import com.svsbrains.svscrypto.model.exceptions.InvalidCredentialsException;
+import com.svsbrains.svscrypto.model.exceptions.UsernameAlreadyUsedException;
 import com.svsbrains.svscrypto.repository.UserRepository;
 import com.svsbrains.svscrypto.service.DailyDataService;
 import com.svsbrains.svscrypto.service.EmailService;
@@ -42,6 +43,10 @@ public class UserServiceImpl implements UserService {
         if(userRepository.findByEmail(email).isPresent()){
             throw new EmailAlreadyUsedException(email);
         }
+        if(userRepository.findUserByUsername(username).isPresent()) {
+            throw new UsernameAlreadyUsedException(username);
+        }
+
         User user = new User(username, firstName, lastName, email, passwordEncoder.encode(password));
         userRepository.save(user);
         return user;
