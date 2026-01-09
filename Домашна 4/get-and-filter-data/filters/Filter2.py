@@ -18,6 +18,7 @@ DEFAULT_TIMESTAMP = int(os.getenv('FILTER2_DEFAULT_TIMESTAMP', 1420070400))
 THREADS_COUNT = int(os.getenv('FILTER2_THREAD_COUNT', 30))
 
 def get_session_with_retries():
+    """Return a requests session with retry logic."""
     session = requests.Session()
     retries = Retry(
         total=5,
@@ -30,19 +31,29 @@ def get_session_with_retries():
     session.mount("http://", adapter)
     return session
 
+def get_midnight_utc_timestamp(dateGiven=None):
+    """Return timestamp of midnight UTC for a given date or today."""
+    dt = dateGiven or datetime.now(timezone.utc).date()
+    midnight = datetime.combine(dt, dt_time(0, 0, 0, tzinfo=timezone.utc))
+    return int(midnight.timestamp())
+
 class GetDataForCoinsFilter(Filter):
+    """Filter for fetching daily OHLCV and market data for coins."""
+
+    def __init__(self):
+        self.db = Database()
+
     def process(self, data):
+        """Fetch daily OHLCV data for given symbols from last timestamp to today."""
         result_dfs = []
 
         last_fetched_timestamp = self.db.fetchone("SELECT EXTRACT(EPOCH FROM DATE_TRUNC('day', TO_TIMESTAMP(MAX(timestamp))))::BIGINT AS last_timestamp FROM market_data;")['last_timestamp']
-        start_timestamp = last_fetched_timestamp if last_fetched_timestamp else 1420070400
-
-        midnight_utc = datetime.combine(date.today(), dt_time(0, 0, 0, tzinfo=timezone.utc))
-        end_timestamp = int(midnight_utc.timestamp()) #timestamp of today's date at 00:00
+        start_timestamp = last_fetched_timestamp or DEFAULT_TIMESTAMP
+        end_timestamp = get_midnight_utc_timestamp()
 
         if end_timestamp == start_timestamp:
             print("Data is up to date!")
-            return pd.DataFrame() #dont fetch data just return empty data frame
+            return pd.DataFrame() 
 
         with ThreadPoolExecutor(max_workers=THREADS_COUNT) as executor:
             ohlcv = [executor.submit(GetDataForCoinsFilter.get_daily_ohlcv, sym, "USD", start_timestamp, end_timestamp) for sym in data["symbol"]] #[:1] means take only the first coin to take all coins just delete [:1]
@@ -59,11 +70,9 @@ class GetDataForCoinsFilter(Filter):
         return final_df
 
     def process_stream(self, data, out_queue):
-        self.db = Database()
 
-        today_utc = datetime.now(timezone.utc).date()
-        midnight_utc = datetime.combine(today_utc, dt_time(0, 0, 0, tzinfo=timezone.utc))
-        end_timestamp = int(midnight_utc.timestamp()) #timestamp of today's date at 00:00
+        self.db = Database()
+        end_timestamp = get_midnight_utc_timestamp()
 
         # Fetch one last timestamp per symbol
         # Multiplication and division by 86400 is done to
